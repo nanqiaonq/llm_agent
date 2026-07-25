@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Harness Engineering 驾驭工程 · 第四节：Hermes 记忆系统 + Nudge 机制 + F5 取舍分析" />
+  <title>Harness Engineering L4 · Hermes + Nudge + F5</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- GSAP 3.12.x (版本锁定) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- 全局样式 -->
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+<!-- ========================================================
+     进度条（顶部固定）
+     ======================================================== -->
+<div id="progress-bar-track">
+  <div id="progress-bar"></div>
+</div>
+
+<!-- ========================================================
+     页码指示器（右下固定）
+     ======================================================== -->
+<div id="page-indicator">
+  <span id="page-current">1</span>
+  <span class="sep">/</span>
+  <span id="page-total">28</span>
+</div>
+
+<!-- ========================================================
+     主布局
+     ======================================================== -->
+<div id="app">
+
+  <!-- Slide 视口 -->
+  <div id="slide-viewport"></div>
+
+</div>
+
+<!-- ========================================================
+     左侧垂直胶囊工具栏（五件套，缺一不可）
+     硬清单：M 目录 / T 钢笔 / D 画板 / 颜色选择器 / F 全屏
+     每按钮结构：svg icon + span.btn-key 字母 + span.btn-label 中文
+     按钮 onclick 必须显式声明（T16 验证）
+     ======================================================== -->
+<div id="toolbar">
+
+  <!-- M: 目录 -->
+  <button id="btn-menu" class="tb-btn" onclick="window.__toggleMenu()" title="目录 (M)" aria-label="目录">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+    <span class="btn-key">M</span>
+    <span class="btn-label">目录</span>
+  </button>
+
+  <div class="tb-divider"></div>
+
+  <!-- T: 钢笔拖尾 -->
+  <button id="btn-pen" class="tb-btn" onclick="window.__togglePenTrail()" title="钢笔拖尾 (T)" aria-label="钢笔拖尾">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+      <path d="M2 2l7.586 7.586"/>
+      <circle cx="11" cy="11" r="2"/>
+    </svg>
+    <span class="btn-key">T</span>
+    <span class="btn-label">钢笔</span>
+  </button>
+
+  <!-- D: 画板 -->
+  <button id="btn-draw" class="tb-btn" onclick="window.__toggleDrawBoard()" title="画板 (D)" aria-label="画板">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3h18v18H3z"/>
+      <path d="M9 9c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z"/>
+      <path d="M9 15c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z"/>
+      <line x1="13" y1="9" x2="15" y2="9"/>
+      <line x1="13" y1="15" x2="15" y2="15"/>
+    </svg>
+    <span class="btn-key">D</span>
+    <span class="btn-label">画板</span>
+  </button>
+
+  <!-- 颜色选择器（不加文字标签）-->
+  <div id="color-picker-wrap">
+    <button id="btn-color" class="tb-btn" onclick="window.__toggleColorPicker()" title="颜色" aria-label="颜色选择器">
+      <div id="color-dot-indicator"></div>
+    </button>
+    <!-- 4 色弹出面板 -->
+    <div id="color-picker-popup" role="listbox" aria-label="绘图颜色">
+      <div class="color-dot" data-color="#d4a574" style="background:#d4a574" onclick="window.__setDrawColor('#d4a574')" title="琥珀" role="option" tabindex="0"></div>
+      <div class="color-dot" data-color="#7dd3c0" style="background:#7dd3c0" onclick="window.__setDrawColor('#7dd3c0')" title="冷青" role="option" tabindex="0"></div>
+      <div class="color-dot" data-color="#e8ecf0" style="background:#e8ecf0" onclick="window.__setDrawColor('#e8ecf0')" title="米白" role="option" tabindex="0"></div>
+      <div class="color-dot" data-color="#e57373" style="background:#e57373" onclick="window.__setDrawColor('#e57373')" title="警示红" role="option" tabindex="0"></div>
+    </div>
+  </div>
+
+  <div class="tb-divider"></div>
+
+  <!-- F: 全屏 -->
+  <button id="btn-fullscreen" class="tb-btn" onclick="window.__toggleFullscreen()" title="全屏 (F)" aria-label="全屏">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 3 21 3 21 9"/>
+      <polyline points="9 21 3 21 3 15"/>
+      <line x1="21" y1="3" x2="14" y2="10"/>
+      <line x1="3" y1="21" x2="10" y2="14"/>
+    </svg>
+    <span class="btn-key">F</span>
+    <span class="btn-label">全屏</span>
+  </button>
+
+</div>
+
+<!-- ========================================================
+     侧边目录菜单
+     ======================================================== -->
+<div id="menu-overlay"></div>
+<nav id="side-menu" role="navigation" aria-label="课件目录">
+  <div id="menu-header">
+    <h3>课程目录</h3>
+    <p>Harness Engineering L4 · 28 页</p>
+  </div>
+  <div id="menu-list" role="list">
+    <!-- 由 js/main.js buildMenu() 动态生成 -->
+  </div>
+</nav>
+
+<!-- ========================================================
+     双 Canvas（标配，不可省略）
+     pen-trail-canvas: T键画笔拖尾 z-index:9999
+     draw-board-canvas: D键画板     z-index:9998
+     ======================================================== -->
+<canvas id="pen-trail-canvas"  aria-hidden="true"></canvas>
+<canvas id="draw-board-canvas" aria-hidden="true"></canvas>
+
+<!-- ========================================================
+     Script 加载（顺序：interactive.js 先注册 hooks，main.js 再初始化）
+     ======================================================== -->
+<script src="js/interactive.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

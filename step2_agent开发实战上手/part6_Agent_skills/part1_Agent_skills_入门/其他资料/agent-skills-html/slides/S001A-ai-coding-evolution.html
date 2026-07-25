@@ -1,0 +1,140 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content" style="padding:var(--slide-pad-y) var(--slide-pad-x);display:flex;flex-direction:column;justify-content:flex-start;align-items:center;height:100%;padding-top:100px;">
+
+        <!-- 标题区 -->
+        <div class="animate-ready" data-delay="0" style="text-align:center;margin-bottom:40px;">
+            <h2 style="font-size:clamp(1.8rem,4vw,2.5rem);margin:0 0 6px 0;color:var(--text-primary);">
+                在开始之前，先看看我们身处的时代
+            </h2>
+            <p style="font-size:clamp(0.95rem,2vw,1.1rem);color:var(--text-secondary);margin:0;">
+                AI 编程能力的演进：从代码生成到 Agent 时代
+            </p>
+        </div>
+
+        <!-- 交互式时间轴容器 -->
+        <div class="animate-ready" data-delay="0.1" style="width:100%;max-width:1200px;position:relative;display:flex;align-items:center;overflow:visible;margin-bottom:40px;">
+
+            <!-- 时间轴线条 -->
+            <div id="timeline-track" style="position:absolute;top:50%;left:0;right:0;height:4px;background:linear-gradient(90deg, var(--border) 0%, var(--teal) 50%, var(--purple) 100%);border-radius:2px;transform:translateY(-50%);"></div>
+
+            <!-- 时间轴滑动容器 -->
+            <div id="timeline-container" style="position:relative;width:100%;height:200px;cursor:grab;user-select:none;">
+
+                <!-- 2023 节点 -->
+                <div class="timeline-node" data-year="2023" style="position:absolute;left:5%;top:50%;transform:translate(-50%, -50%);">
+                    <div class="node-dot" style="width:20px;height:20px;background:var(--bg-white);border:3px solid var(--border);border-radius:50%;cursor:pointer;transition:all 0.3s;"></div>
+                    <div class="node-label" style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:0.875rem;font-weight:600;color:var(--text-secondary);">2023</div>
+                    <div class="node-card" style="position:absolute;top:40px;left:0;width:240px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:all 0.3s;">
+                        <p style="margin:0;font-size:0.9rem;line-height:1.5;color:var(--text-primary);">能够生成简单代码，准确率很低</p>
+                    </div>
+                </div>
+
+                <!-- 2024 节点 -->
+                <div class="timeline-node" data-year="2024" style="position:absolute;left:35%;top:50%;transform:translate(-50%, -50%);">
+                    <div class="node-dot" style="width:20px;height:20px;background:var(--bg-white);border:3px solid var(--border);border-radius:50%;cursor:pointer;transition:all 0.3s;"></div>
+                    <div class="node-label" style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:0.875rem;font-weight:600;color:var(--text-secondary);">2024</div>
+                    <div class="node-card" style="position:absolute;top:40px;left:50%;transform:translateX(-50%);width:260px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:all 0.3s;">
+                        <p style="margin:0 0 8px 0;font-size:0.9rem;line-height:1.5;color:var(--text-primary);">理性思维能力、编程能力大幅提升</p>
+                        <p style="margin:0;font-size:0.85rem;color:var(--text-secondary);">能辅助完成简单项目开发</p>
+                    </div>
+                </div>
+
+                <!-- 2025 节点（高亮） -->
+                <div class="timeline-node highlight" data-year="2025" style="position:absolute;left:65%;top:50%;transform:translate(-50%, -50%);">
+                    <div class="node-dot" style="width:28px;height:28px;background:var(--teal);border:4px solid var(--teal-light);border-radius:50%;cursor:pointer;transition:all 0.3s;box-shadow:0 0 0 0 rgba(13,148,136,0.4);animation:pulse 2s infinite;"></div>
+                    <div class="node-label" style="position:absolute;top:-45px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:1rem;font-weight:700;color:var(--teal);">2025</div>
+                    <div class="node-card" style="position:absolute;top:50px;left:50%;transform:translateX(-50%);width:300px;background:var(--teal-pale);border:2px solid var(--teal);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:all 0.3s;">
+                        <p style="margin:0 0 12px 0;font-size:1rem;font-weight:600;color:var(--teal);">关键转折点</p>
+                        <ul style="margin:0;padding-left:20px;font-size:0.9rem;line-height:1.6;color:var(--text-primary);">
+                            <li>Agentic Coding 概念诞生</li>
+                            <li>Claude Code、Codex 发布</li>
+                            <li><strong>Agent Skills 出现</strong></li>
+                            <li>AI 编程能力超越平均程序员</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2026 节点 -->
+                <div class="timeline-node" data-year="2026" style="position:absolute;left:95%;top:50%;transform:translate(-50%, -50%);">
+                    <div class="node-dot" style="width:20px;height:20px;background:var(--bg-white);border:3px solid var(--purple);border-radius:50%;cursor:pointer;transition:all 0.3s;"></div>
+                    <div class="node-label" style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:0.875rem;font-weight:600;color:var(--text-secondary);">2026</div>
+                    <div class="node-card" style="position:absolute;top:40px;right:0;width:300px;background:var(--bg-white);border:1px solid var(--purple-border);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:all 0.3s;">
+                        <p style="margin:0 0 12px 0;font-size:0.95rem;line-height:1.5;color:var(--text-primary);">AI 编程能力指数级进化</p>
+                        <blockquote style="margin:12px 0 0 0;padding:12px;background:var(--purple-pale);border-left:4px solid var(--purple);border-radius:var(--radius-sm);">
+                            <p style="margin:0 0 6px 0;font-size:0.9rem;font-style:italic;color:var(--text-primary);">"内部工程师已经几乎不自己写代码了"</p>
+                            <cite style="font-size:0.8rem;color:var(--text-secondary);">— Claude CEO, 2026达沃斯论坛</cite>
+                        </blockquote>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 底部提示 -->
+        <div class="animate-ready" data-delay="0.2" style="text-align:center;margin-top:100px;">
+            <p style="font-size:0.85rem;color:var(--text-tertiary);margin:0 0 6px 0;">
+                💡 点击时间节点查看详情，拖动时间轴探索历史
+            </p>
+            <div style="display:inline-block;padding:6px 14px;background:var(--teal-pale);border:1px solid var(--teal-border);border-radius:var(--radius-full);">
+                <p style="margin:0;font-size:0.85rem;color:var(--teal);font-weight:500;">
+                    在这个背景下，<strong>Agent Skills</strong> 不是可选技术，而是 AI 时代的核心竞争力
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13,148,136,0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(13,148,136,0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(13,148,136,0);
+    }
+}
+
+.timeline-node .node-dot:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.timeline-node.active .node-card {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+#timeline-container.dragging {
+    cursor: grabbing;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    #timeline-container {
+        height: 240px !important;
+    }
+
+    .timeline-node .node-card {
+        width: 220px !important;
+        padding: 14px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .timeline-node.highlight .node-card {
+        width: 260px !important;
+    }
+}
+
+@media (max-height: 700px) {
+    #timeline-container {
+        height: 220px !important;
+    }
+}
+</style>

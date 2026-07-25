@@ -1,0 +1,752 @@
+<style>
+/* ── S04 · Hermes Agent 灵魂页 ── */
+.s04-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1.5rem 2rem 1rem;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  overflow-wrap: anywhere;
+  justify-content: center;
+}
+
+/* 标题区 */
+.s04-headline {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  letter-spacing: 0.02em;
+  opacity: 0;
+}
+.s04-tagline {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  text-align: center;
+  margin-top: 0.25rem;
+  letter-spacing: 0.04em;
+  opacity: 0;
+}
+
+/* GitHub 数据条 */
+.s04-github-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  margin-top: 0.75rem;
+  opacity: 0;
+}
+.s04-github-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+  background: var(--card-bg-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+}
+.s04-github-item .s04-gh-icon {
+  font-size: 0.9rem;
+}
+.s04-github-item .s04-gh-val {
+  font-weight: 700;
+  color: var(--accent-amber);
+  font-family: var(--font-mono);
+}
+
+/* 图表容器 */
+.s04-chart-wrap {
+  width: 100%;
+  max-width: 860px;
+  margin-top: 0.75rem;
+  opacity: 0;
+  position: relative;
+}
+
+/* 图例 */
+.s04-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 0.4rem;
+}
+.s04-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-family: var(--font-body);
+}
+.s04-legend-dot {
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.s04-legend-dot.cyan  { background: var(--secondary); }
+.s04-legend-dot.amber { background: var(--accent-amber); }
+.s04-legend-dot.gray  { background: var(--text-subtle); }
+
+/* SVG 曲线图 */
+.s04-stars-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.stars-curve {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.curve-cyan  { stroke: var(--secondary);    }
+.curve-amber { stroke: var(--accent-amber); stroke-width: 3; }
+.curve-gray  { stroke: var(--text-subtle);  }
+.s04-axis-line  { stroke: var(--rule-line); stroke-width: 1; fill: none; }
+.s04-axis-tick  { stroke: var(--rule-line); stroke-width: 1; fill: none; }
+.s04-axis-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--text-dim);
+}
+.s04-grid-line  { stroke: var(--blueprint-grid); stroke-width: 1; fill: none; stroke-dasharray: 4 4;
+  pointer-events: none;
+}
+.s04-curve-area { fill: none; }
+.s04-data-dot {
+  cursor: pointer;
+  transition: r 0.2s ease;
+}
+.s04-data-dot:hover { r: 6; }
+
+/* hover 参考线 */
+.s04-hover-line {
+  stroke: var(--rule-line-dashed);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.s04-hover-line.visible { opacity: 1; }
+
+/* SVG tooltip */
+.s04-svg-tooltip {
+  position: fixed;
+  z-index: 500;
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-body);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.s04-svg-tooltip.visible { opacity: 1; }
+.s04-tooltip-title {
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+  margin-bottom: 0.3rem;
+  font-family: var(--font-body);
+}
+.s04-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  line-height: 1.6;
+}
+.s04-tooltip-label { color: var(--text-subtle); }
+.s04-tooltip-cyan   { color: var(--secondary);   font-weight: 700; }
+.s04-tooltip-amber  { color: var(--accent-amber); font-weight: 700; }
+.s04-tooltip-gray   { color: var(--text-subtle);  font-weight: 700; }
+
+/* 6 chip grid */
+.s04-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 860px;
+  margin-top: 0.75rem;
+}
+@media (max-width: 900px) {
+  .s04-chip-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 540px) {
+  .s04-chip-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.s04-chip {
+  background: var(--card-bg-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  opacity: 0;
+  text-align: center;
+}
+.s04-chip:hover, .s04-chip.active {
+  border-color: var(--accent-amber);
+  background: var(--hover-bg);
+  transform: translateY(-2px);
+}
+.s04-chip-name {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  display: block;
+}
+.s04-chip-detail {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+  display: block;
+  margin-top: 0.15rem;
+  line-height: 1.4;
+}
+
+/* chip 详情面板（fixed） */
+.s04-chip-panel {
+  position: fixed;
+  z-index: 600;
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  max-width: 260px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+  font-family: var(--font-body);
+}
+.s04-chip-panel.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.s04-chip-panel-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  margin-bottom: 0.35rem;
+}
+.s04-chip-panel-text {
+  font-size: 0.78rem;
+  color: var(--text-body);
+  line-height: 1.55;
+}
+
+/* 版本时间线 */
+.s04-timeline-wrap {
+  width: 100%;
+  max-width: 860px;
+  margin-top: 1rem;
+}
+.s04-timeline-title {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+  text-align: center;
+  opacity: 0;
+}
+.s04-timeline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 0.5rem;
+}
+.s04-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 10px;
+  height: 2px;
+  background: var(--card-border);
+  z-index: 0;
+}
+.s04-vnode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  opacity: 0;
+  flex: 1;
+}
+.s04-vnode-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--card-border);
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+.s04-vnode.lit .s04-vnode-dot {
+  border-color: var(--accent-amber);
+  background: var(--accent-amber);
+  transform: scale(1.1);
+}
+.s04-vnode:hover .s04-vnode-dot {
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 0 4px rgba(212,165,116,0.2);
+}
+.s04-vnode-ver {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: 0.35rem;
+  transition: color 0.2s ease;
+  text-align: center;
+}
+.s04-vnode.lit .s04-vnode-ver {
+  color: var(--accent-amber);
+}
+.s04-vnode-date {
+  font-family: var(--font-body);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  margin-top: 0.1rem;
+  text-align: center;
+}
+
+/* 版本卡片 modal */
+.s04-version-modal {
+  position: fixed;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  min-width: 280px;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.s04-version-modal.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.s04-version-modal-overlay {
+  position: fixed;
+  z-index: 998;
+  inset: 0;
+  background: rgba(26,35,50,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.s04-version-modal-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.s04-modal-ver {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent-amber);
+}
+.s04-modal-code {
+  font-size: 0.8rem;
+  color: var(--secondary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+.s04-modal-date {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  margin-top: 0.15rem;
+}
+.s04-modal-feature {
+  font-size: 0.85rem;
+  color: var(--text-body);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--rule-line);
+}
+.s04-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--text-subtle);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+  line-height: 1;
+}
+.s04-modal-close:hover {
+  color: var(--text-primary);
+  background: var(--hover-bg);
+}
+
+/* 底部 callout */
+.s04-callout {
+  margin-top: 0.75rem;
+  padding: 0.45rem 1rem;
+  background: var(--card-bg-soft);
+  border-left: 3px solid var(--accent-amber);
+  border-radius: 0 6px 6px 0;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-body);
+  opacity: 0;
+  align-self: flex-end;
+}
+.s04-callout.pulse-active {
+  animation: s04-pulse 2.8s ease-in-out infinite;
+}
+.s04-callout .s04-callout-accent {
+  color: var(--accent-amber);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+@keyframes s04-pulse {
+  0%, 100% { border-left-color: var(--accent-amber); }
+  50%       { border-left-color: var(--accent-amber-strong); box-shadow: 0 0 12px rgba(212,165,116,0.25); }
+}
+
+/* prefers-reduced-motion: 直接显示终态 */
+@media (prefers-reduced-motion: reduce) {
+  .s04-headline, .s04-tagline, .s04-github-bar,
+  .s04-chart-wrap, .s04-chip, .s04-vnode,
+  .s04-timeline-title, .s04-callout {
+    opacity: 1 !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  .s04-vnode { opacity: 1 !important; }
+  .s04-vnode-dot { border-color: var(--accent-amber); background: var(--accent-amber); }
+  .stars-curve { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; transition: none !important; }
+  .s04-callout { animation: none !important; }
+}
+
+  /* ←FM-A4-2: 低高屏响应式降级 */
+  @media (max-height: 700px) {
+    .s04-wrap { padding: 1rem 1.5rem 0.8rem; }
+    .s04-wrap h1, .s04-wrap .s04-headline { font-size: 1.4rem; }
+    .s04-wrap .s04-tagline, .s04-wrap .s04-subtitle { font-size: 0.85rem; }
+  }
+  @media (max-height: 600px) {
+    .s04-wrap { padding: 0.8rem 1.2rem 0.6rem; }
+    .s04-wrap h1, .s04-wrap .s04-headline { font-size: 1.2rem; }
+    .s04-wrap .s04-tagline, .s04-wrap .s04-subtitle { font-size: 0.78rem; }
+  }
+
+</style>
+
+<div class="slide" data-slide-id="S04">
+  <div class="s04-wrap">
+
+    <!-- 标题 + 口号 -->
+    <h1 class="s04-headline">Hermes Agent · 集大成者</h1>
+    <p class="s04-tagline">The agent that grows with you</p>
+
+    <!-- GitHub 数据条 -->
+    <div class="s04-github-bar">
+      <span class="s04-github-item">
+        <span class="s04-gh-icon">⭐</span>
+        <span class="s04-gh-val">137K+</span> Stars
+      </span>
+      <span class="s04-github-item">
+        <span class="s04-gh-icon">⚖</span>
+        <span class="s04-gh-val">MIT</span> 协议
+      </span>
+      <span class="s04-github-item">
+        <span class="s04-gh-icon">#</span>
+        <span class="s04-gh-val">3,516</span> commits
+      </span>
+      <span class="s04-github-item">
+        <span class="s04-gh-icon">🏢</span>
+        <span class="s04-gh-val">NousResearch</span> 出品
+      </span>
+      <span class="s04-github-item">
+        <span class="s04-gh-icon">👤</span>
+        <span>teknium 贡献</span>
+        <span class="s04-gh-val">179/209 PR (86%)</span>
+      </span>
+    </div>
+
+    <!-- 图表区 -->
+    <div class="s04-chart-wrap">
+      <!-- 图例 -->
+      <div class="s04-legend">
+        <div class="s04-legend-item">
+          <span class="s04-legend-dot cyan"></span>
+          <span>OpenClaw（爆发式）</span>
+        </div>
+        <div class="s04-legend-item">
+          <span class="s04-legend-dot amber"></span>
+          <span>Hermes Agent（深度迭代）</span>
+        </div>
+        <div class="s04-legend-item">
+          <span class="s04-legend-dot gray"></span>
+          <span>Gstack（角色编排）</span>
+        </div>
+      </div>
+
+      <!-- Stars 增长曲线 SVG -->
+      <svg id="s04-stars-svg" class="s04-stars-svg"
+           viewBox="0 0 800 280"
+           preserveAspectRatio="xMidYMid meet"
+           role="img"
+           aria-label="60 天 Stars 增长曲线对比">
+
+        <!-- 蓝图背景网格线 -->
+        <line class="s04-grid-line" x1="40" y1="40"  x2="760" y2="40"/>
+        <line class="s04-grid-line" x1="40" y1="97"  x2="760" y2="97"/>
+        <line class="s04-grid-line" x1="40" y1="154" x2="760" y2="154"/>
+        <line class="s04-grid-line" x1="40" y1="211" x2="760" y2="211"/>
+
+        <!-- X 轴垂直网格线 -->
+        <line class="s04-grid-line" x1="160" y1="20" x2="160" y2="248"/>
+        <line class="s04-grid-line" x1="280" y1="20" x2="280" y2="248"/>
+        <line class="s04-grid-line" x1="400" y1="20" x2="400" y2="248"/>
+        <line class="s04-grid-line" x1="520" y1="20" x2="520" y2="248"/>
+        <line class="s04-grid-line" x1="640" y1="20" x2="640" y2="248"/>
+
+        <!-- Y 轴 -->
+        <line class="s04-axis-line" x1="40" y1="20" x2="40" y2="248"/>
+        <!-- X 轴 -->
+        <line class="s04-axis-line" x1="40" y1="240" x2="768" y2="240"/>
+
+        <!-- Y 轴标签 -->
+        <text class="s04-axis-label" x="2"  y="44"  text-anchor="start">350K</text>
+        <text class="s04-axis-label" x="2"  y="101" text-anchor="start">250K</text>
+        <text class="s04-axis-label" x="2"  y="158" text-anchor="start">150K</text>
+        <text class="s04-axis-label" x="2"  y="215" text-anchor="start">50K</text>
+
+        <!-- X 轴标签（天数） -->
+        <text class="s04-axis-label" x="40"  y="264" text-anchor="middle">0d</text>
+        <text class="s04-axis-label" x="160" y="264" text-anchor="middle">10d</text>
+        <text class="s04-axis-label" x="280" y="264" text-anchor="middle">20d</text>
+        <text class="s04-axis-label" x="400" y="264" text-anchor="middle">30d</text>
+        <text class="s04-axis-label" x="520" y="264" text-anchor="middle">40d</text>
+        <text class="s04-axis-label" x="640" y="264" text-anchor="middle">50d</text>
+        <text class="s04-axis-label" x="760" y="264" text-anchor="middle">60d</text>
+
+        <!-- Y 轴单位 -->
+        <text class="s04-axis-label" x="44" y="18" text-anchor="start" style="fill: var(--text-dim); font-size:9px;">Stars</text>
+
+        <!-- OpenClaw 曲线（cyan） -->
+        <!-- 数据点 Y: [240,237.14,225.71,188.57,137.14,97.14,42.29] -->
+        <path id="curve-openclaw" class="stars-curve curve-cyan"
+          d="M 40,240
+             C 88,240 112,237.14 160,237.14
+             C 208,237.14 232,225.71 280,225.71
+             C 328,225.71 352,188.57 400,188.57
+             C 448,188.57 472,137.14 520,137.14
+             C 568,137.14 592,97.14 640,97.14
+             C 688,97.14 712,42.29 760,42.29"/>
+
+        <!-- Hermes Agent 曲线（amber）-->
+        <!-- 数据点 Y: [240,237.20,229.91,218.69,206.36,189.54,163.19] · 数值 [0K,5K,18K,38K,60K,90K,137K] -->
+        <path id="curve-hermes" class="stars-curve curve-amber"
+          d="M 40,240
+             C 88,240 112,237.20 160,237.20
+             C 208,237.20 232,229.91 280,229.91
+             C 328,229.91 352,218.69 400,218.69
+             C 448,218.69 472,206.36 520,206.36
+             C 568,206.36 592,189.54 640,189.54
+             C 688,189.54 712,163.19 760,163.19"/>
+
+        <!-- Gstack 曲线（secondary/gray） -->
+        <!-- 数据点 Y: [240,227.43,220,212.57,208,204.57,201.37] -->
+        <path id="curve-gstack" class="stars-curve curve-gray"
+          d="M 40,240
+             C 88,240 112,227.43 160,227.43
+             C 208,227.43 232,220 280,220
+             C 328,220 352,212.57 400,212.57
+             C 448,212.57 472,208 520,208
+             C 568,208 592,204.57 640,204.57
+             C 688,204.57 712,201.37 760,201.37"/>
+
+        <!-- hover 参考线（JS 控制显隐） -->
+        <line id="s04-hover-vline" class="s04-hover-line" x1="40" y1="20" x2="40" y2="240"/>
+
+        <!-- 数据点（hover 区域，每条曲线 7 点）-->
+        <!-- OpenClaw -->
+        <circle class="s04-data-dot" data-curve="openclaw" data-i="0" cx="40"  cy="240"    r="4" fill="var(--secondary)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="openclaw" data-i="1" cx="160" cy="237.14" r="4" fill="var(--secondary)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="openclaw" data-i="2" cx="280" cy="225.71" r="4" fill="var(--secondary)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="openclaw" data-i="3" cx="400" cy="188.57" r="4" fill="var(--secondary)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="openclaw" data-i="4" cx="520" cy="137.14" r="4" fill="var(--secondary)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="openclaw" data-i="5" cx="640" cy="97.14"  r="4" fill="var(--secondary)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="openclaw" data-i="6" cx="760" cy="42.29"  r="4" fill="var(--secondary)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <!-- Hermes -->
+        <circle class="s04-data-dot" data-curve="hermes" data-i="0" cx="40"  cy="240"    r="4.5" fill="var(--accent-amber)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="hermes" data-i="1" cx="160" cy="237.20" r="4.5" fill="var(--accent-amber)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="hermes" data-i="2" cx="280" cy="229.91" r="4.5" fill="var(--accent-amber)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="hermes" data-i="3" cx="400" cy="218.69" r="4.5" fill="var(--accent-amber)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="hermes" data-i="4" cx="520" cy="206.36"    r="4.5" fill="var(--accent-amber)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="hermes" data-i="5" cx="640" cy="189.54"    r="4.5" fill="var(--accent-amber)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="hermes" data-i="6" cx="760" cy="163.19" r="4.5" fill="var(--accent-amber)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <!-- Gstack -->
+        <circle class="s04-data-dot" data-curve="gstack" data-i="0" cx="40"  cy="240"    r="4" fill="var(--text-subtle)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="gstack" data-i="1" cx="160" cy="227.43" r="4" fill="var(--text-subtle)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="gstack" data-i="2" cx="280" cy="220"    r="4" fill="var(--text-subtle)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="gstack" data-i="3" cx="400" cy="212.57" r="4" fill="var(--text-subtle)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="gstack" data-i="4" cx="520" cy="208"    r="4" fill="var(--text-subtle)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="gstack" data-i="5" cx="640" cy="204.57" r="4" fill="var(--text-subtle)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+        <circle class="s04-data-dot" data-curve="gstack" data-i="6" cx="760" cy="201.37" r="4" fill="var(--text-subtle)" stroke="var(--bg-surface)" stroke-width="1.5"/>
+
+        <!-- 曲线终点标签 -->
+        <text x="765" y="46"    class="s04-axis-label" fill="var(--secondary)"    font-size="9" font-weight="700">346K</text>
+        <text x="765" y="205"   class="s04-axis-label" fill="var(--text-subtle)"  font-size="9" font-weight="700">67.6K</text>
+        <text x="765" y="161"   class="s04-axis-label" fill="var(--accent-amber)" font-size="10" font-weight="800">137K+</text>
+        <text x="765" y="174"   class="s04-axis-label" fill="var(--text-subtle)"  font-size="7" font-weight="500" opacity="0.85">实时 · 5/7</text>
+      </svg>
+    </div>
+
+    <!-- 6 特性 chip -->
+    <div class="s04-chip-grid" id="s04-chip-grid">
+      <div class="s04-chip" data-chip-index="0" tabindex="0" role="button" aria-haspopup="true">
+        <span class="s04-chip-name">47 工具</span>
+        <span class="s04-chip-detail">20 Toolset</span>
+      </div>
+      <div class="s04-chip" data-chip-index="1" tabindex="0" role="button" aria-haspopup="true">
+        <span class="s04-chip-name">14+ 平台</span>
+        <span class="s04-chip-detail">Telegram/Slack/飞书/钉钉...</span>
+      </div>
+      <div class="s04-chip" data-chip-index="2" tabindex="0" role="button" aria-haspopup="true">
+        <span class="s04-chip-name">4 层记忆</span>
+        <span class="s04-chip-detail">MEMORY+USER+SQLite FTS5+8 Provider</span>
+      </div>
+      <div class="s04-chip" data-chip-index="3" tabindex="0" role="button" aria-haspopup="true">
+        <span class="s04-chip-name">技能自生成</span>
+        <span class="s04-chip-detail">Nudge 计数器→fork→落盘</span>
+      </div>
+      <div class="s04-chip" data-chip-index="4" tabindex="0" role="button" aria-haspopup="true">
+        <span class="s04-chip-name">GEPA 进化</span>
+        <span class="s04-chip-detail">ICLR 2026 Oral，跨 6 任务超 GRPO 6%</span>
+      </div>
+      <div class="s04-chip" data-chip-index="5" tabindex="0" role="button" aria-haspopup="true">
+        <span class="s04-chip-name">国产模型原生</span>
+        <span class="s04-chip-detail">DeepSeek/Kimi/MiniMax/智谱 GLM</span>
+      </div>
+    </div>
+
+    <!-- 版本时间线 -->
+    <div class="s04-timeline-wrap">
+      <div class="s04-timeline-title">版本进化 · 42 天 8 版本</div>
+      <div class="s04-timeline" id="s04-timeline">
+        <div class="s04-vnode" data-v="v0.1.0" tabindex="0" role="button" aria-label="v0.1.0 首次发布">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.1.0</div>
+          <div class="s04-vnode-date">02-25</div>
+        </div>
+        <div class="s04-vnode" data-v="v0.2.0" tabindex="0" role="button" aria-label="v0.2.0 多平台网关">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.2.0</div>
+          <div class="s04-vnode-date">03-12</div>
+        </div>
+        <div class="s04-vnode" data-v="v0.3.0" tabindex="0" role="button" aria-label="v0.3.0 流式与插件">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.3.0</div>
+          <div class="s04-vnode-date">03-17</div>
+        </div>
+        <div class="s04-vnode" data-v="v0.4.0" tabindex="0" role="button" aria-label="v0.4.0 OpenAI 兼容 API">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.4.0</div>
+          <div class="s04-vnode-date">03-23</div>
+        </div>
+        <div class="s04-vnode" data-v="v0.5.0" tabindex="0" role="button" aria-label="v0.5.0 157 PRs">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.5.0</div>
+          <div class="s04-vnode-date">03-28</div>
+        </div>
+        <div class="s04-vnode" data-v="v0.6.0" tabindex="0" role="button" aria-label="v0.6.0 MCP Server">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.6.0</div>
+          <div class="s04-vnode-date">03-30</div>
+        </div>
+        <div class="s04-vnode" data-v="v0.7.0" tabindex="0" role="button" aria-label="v0.7.0 韧性版">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.7.0</div>
+          <div class="s04-vnode-date">04-03</div>
+        </div>
+        <div class="s04-vnode" data-v="v0.8.0" tabindex="0" role="button" aria-label="v0.8.0 智能版">
+          <div class="s04-vnode-dot"></div>
+          <div class="s04-vnode-ver">v0.8.0</div>
+          <div class="s04-vnode-date">04-08</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部 callout -->
+    <p class="s04-callout" id="s04-callout">
+      💡 任务执行 <span class="s04-callout-accent">10-20 次</span>后效率提升
+      <span class="s04-callout-accent">2-3 倍</span>（官方数据）
+    </p>
+
+  </div><!-- /s04-wrap -->
+
+  <!-- chip 详情面板（fixed，JS 控制位置） -->
+  <div class="s04-chip-panel" id="s04-chip-panel" role="tooltip" aria-live="polite">
+    <div class="s04-chip-panel-title" id="s04-panel-title"></div>
+    <div class="s04-chip-panel-text"  id="s04-panel-text"></div>
+  </div>
+
+  <!-- SVG tooltip -->
+  <div class="s04-svg-tooltip" id="s04-svg-tooltip">
+    <div class="s04-tooltip-title" id="s04-tt-title"></div>
+    <div class="s04-tooltip-row"><span class="s04-tooltip-label">OpenClaw</span><span class="s04-tooltip-cyan"  id="s04-tt-oc"></span></div>
+    <div class="s04-tooltip-row"><span class="s04-tooltip-label">Hermes</span>  <span class="s04-tooltip-amber" id="s04-tt-hm"></span></div>
+    <div class="s04-tooltip-row"><span class="s04-tooltip-label">Gstack</span>  <span class="s04-tooltip-gray"  id="s04-tt-gs"></span></div>
+  </div>
+
+  <!-- 版本 modal 遮罩 -->
+  <div class="s04-version-modal-overlay" id="s04-modal-overlay"></div>
+
+  <!-- 版本特性 modal -->
+  <div class="s04-version-modal" id="s04-version-modal" role="dialog" aria-modal="true" aria-labelledby="s04-modal-ver">
+    <button class="s04-modal-close" id="s04-modal-close" aria-label="关闭">✕</button>
+    <div class="s04-modal-ver" id="s04-modal-ver"></div>
+    <div class="s04-modal-code" id="s04-modal-code"></div>
+    <div class="s04-modal-date" id="s04-modal-date"></div>
+    <div class="s04-modal-feature" id="s04-modal-feature"></div>
+  </div>
+
+</div>

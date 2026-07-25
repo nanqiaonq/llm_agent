@@ -1,0 +1,484 @@
+<style>
+  /* ── S23 第三章过渡破题 · 3 问评价法不是新词，是三个工程问题的代号 ── */
+
+  /* ── 居中铁律：height + center + center ── */
+  .s23i-wrap {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 4rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* ── Chapter 03 标签 ── */
+  .s23i-chapter-label {
+    font-family: var(--font-mono);
+    font-size: clamp(0.85rem, 1.4vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    margin-bottom: 0.9rem;
+
+    opacity: 0;
+    animation: s23i-fade-in 0.4s ease forwards;
+    animation-delay: 0ms;
+  }
+
+  /* ── Hero 大问句 ── */
+  .s23i-hero {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3.4vw, 2.2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    max-width: 1100px;
+    margin: 0 auto 0.9rem;
+
+    opacity: 0;
+    transform: translateY(14px);
+    animation: s23i-fade-up 0.5s ease forwards;
+    animation-delay: 350ms;
+  }
+
+  .s23i-hero .s23i-hero-em {
+    color: var(--accent-amber);
+  }
+
+  /* ── 副标题 ── */
+  .s23i-subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+    font-weight: 400;
+    color: var(--text-subtle);
+    margin-bottom: 2rem;
+    font-style: normal;
+
+    opacity: 0;
+    animation: s23i-fade-in 0.4s ease forwards;
+    animation-delay: 800ms;
+  }
+
+  .s23i-subtitle .s23i-sub-mark {
+    font-family: var(--font-mono);
+    color: var(--accent-amber);
+    font-weight: 600;
+    background: rgba(212, 165, 116, 0.10);
+    border: 1px solid rgba(212, 165, 116, 0.32);
+    border-radius: 4px;
+    padding: 0.05em 0.4em;
+    font-size: 0.92em;
+    margin: 0 0.15em;
+  }
+
+  /* ── 三连击容器 ── */
+  .s23i-chain {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    width: min(1080px, 100%);
+    margin: 0 auto 1.5rem;
+  }
+
+  /* ── 单个节点（横向：左 pill + 箭头 + 右张力条）── */
+  .s23i-node {
+    display: grid;
+    grid-template-columns: minmax(280px, 38%) 36px 1fr;
+    align-items: center;
+    gap: 0.9rem;
+
+    /* 初始 opacity:0，由 hookFn 加 .lit 切换 */
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .s23i-node.lit {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ── 左侧：工程问题 pill ── */
+  .s23i-node-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+    font-weight: 600;
+    color: var(--text-body);
+    background: rgba(36, 49, 66, 0.65);
+    border: 1.5px solid var(--text-subtle);
+    border-radius: 999px;
+    padding: 0.55rem 1.1rem;
+    white-space: nowrap;
+    transition:
+      color var(--transition-base),
+      border-color var(--transition-base),
+      background var(--transition-base);
+  }
+
+  .s23i-node.lit .s23i-node-pill {
+    color: var(--accent-amber);
+    border-color: var(--accent-amber);
+    background: rgba(212, 165, 116, 0.12);
+  }
+
+  .s23i-node-num {
+    font-family: var(--font-mono);
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--text-subtle);
+    transition: color var(--transition-base);
+  }
+
+  .s23i-node.lit .s23i-node-num {
+    color: var(--accent-amber);
+  }
+
+  /* ── 中间箭头 ── */
+  .s23i-arrow {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    color: var(--text-dim);
+    text-align: center;
+    transition: color var(--transition-base);
+  }
+
+  .s23i-node.lit .s23i-arrow {
+    color: var(--accent-amber);
+  }
+
+  /* ── 右侧：张力条（双端标签 + SVG 流动线 + 底部白话） ── */
+  .s23i-tension {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: left;
+  }
+
+  .s23i-tension-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .s23i-tension-end {
+    font-family: var(--font-mono);
+    font-size: clamp(0.85rem, 1.3vw, 0.98rem);
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    transition: color var(--transition-base);
+  }
+
+  .s23i-node.lit .s23i-tension-end {
+    color: var(--text-body);
+  }
+
+  /* SVG 张力线 */
+  .s23i-tension-svg {
+    width: 100%;
+    height: 22px;
+    overflow: visible;
+    display: block;
+  }
+
+  .s23i-tension-line {
+    fill: none;
+    stroke: var(--accent-amber);
+    stroke-width: 2;
+    stroke-linecap: round;
+    /* dashoffset 由 hookFn 计算 setProperty 后，加 .draw 切到 0 */
+  }
+
+  .s23i-tension-line.draw {
+    stroke-dashoffset: 0 !important;
+    transition: stroke-dashoffset 0.5s ease-out;
+  }
+
+  /* 张力条两端的小圆点 */
+  .s23i-tension-dot {
+    fill: var(--text-subtle);
+    transition: fill var(--transition-base);
+  }
+
+  .s23i-node.lit .s23i-tension-dot {
+    fill: var(--accent-amber);
+  }
+
+  /* 底部白话 */
+  .s23i-tension-caption {
+    font-family: var(--font-body);
+    font-size: clamp(0.78rem, 1.15vw, 0.88rem);
+    color: var(--text-dim);
+    line-height: 1.5;
+    padding-left: 0.1rem;
+  }
+
+  .s23i-node.lit .s23i-tension-caption {
+    color: var(--text-subtle);
+  }
+
+  /* ── 结论 pill（三段式） ── */
+  .s23i-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-body);
+    font-size: clamp(0.92rem, 1.45vw, 1.05rem);
+    font-weight: 600;
+    color: var(--accent-amber);
+    background: rgba(212, 165, 116, 0.10);
+    border: 1px solid rgba(212, 165, 116, 0.45);
+    border-radius: 999px;
+    padding: 0.55rem 1.3rem;
+    margin: 0 auto 1.5rem;
+    font-style: normal;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .s23i-pill.lit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .s23i-pill::before {
+    content: '▶';
+    font-size: 0.7em;
+    color: var(--accent-amber);
+  }
+
+  .s23i-pill-sep {
+    color: var(--text-dim);
+    font-weight: 400;
+    margin: 0 0.1rem;
+  }
+
+  /* ── 底部锚点（章节节奏） ── */
+  .s23i-anchor {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    border-top: 1px dashed var(--rule-line-dashed, rgba(91, 140, 184, 0.35));
+    padding-top: 0.9rem;
+
+    opacity: 0;
+    animation: s23i-fade-in 0.5s ease forwards;
+    animation-delay: 2700ms;
+  }
+
+  .s23i-anchor-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .s23i-anchor-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem 1rem;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .s23i-anchor-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  .s23i-anchor-item .s23i-anchor-tag {
+    font-family: var(--font-mono);
+    color: var(--accent-teal);
+    font-weight: 500;
+    flex: 0 0 auto;
+  }
+
+  .s23i-anchor-item .s23i-anchor-text {
+    color: var(--text-body);
+  }
+
+  /* ── Keyframes ── */
+  @keyframes s23i-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes s23i-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── prefers-reduced-motion 兜底：直接跳到终态 ── */
+  @media (prefers-reduced-motion: reduce) {
+    .s23i-chapter-label,
+    .s23i-hero,
+    .s23i-subtitle,
+    .s23i-anchor {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .s23i-node,
+    .s23i-pill {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .s23i-tension-line {
+      stroke-dashoffset: 0 !important;
+    }
+  }
+</style>
+
+<div class="slide" id="S23" data-slide-id="S23">
+  <div class="s23i-wrap">
+
+    <!-- Chapter 03 标签 -->
+    <span class="s23i-chapter-label">Chapter 03 · 取舍分析</span>
+
+    <!-- Hero 大问句 -->
+    <h1 class="s23i-hero">
+      评价一个 harness，<span class="s23i-hero-em">要问什么？</span>
+    </h1>
+
+    <!-- 副标题 -->
+    <p class="s23i-subtitle">
+      <span class="s23i-sub-mark">3 问</span>
+      不是新词，是三个工程问题的代号
+    </p>
+
+    <!-- 三连击节点容器 -->
+    <div class="s23i-chain" id="s23i-chain">
+
+      <!-- 节点 ①：能力怎么增长 / 静态 ↔ 动态 -->
+      <div class="s23i-node" data-idx="1" id="s23i-node-1">
+        <div class="s23i-node-pill">
+          <span class="s23i-node-num">①</span>
+          <span class="s23i-node-text">能力怎么增长</span>
+        </div>
+        <div class="s23i-arrow">→</div>
+        <div class="s23i-tension">
+          <div class="s23i-tension-bar">
+            <span class="s23i-tension-end">静态</span>
+            <svg class="s23i-tension-svg" viewBox="0 0 600 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="s23i-tension-dot" cx="6" cy="11" r="4"/>
+              <line class="s23i-tension-line" id="s23i-line-1" x1="14" y1="11" x2="586" y2="11"/>
+              <circle class="s23i-tension-dot" cx="594" cy="11" r="4"/>
+            </svg>
+            <span class="s23i-tension-end">动态</span>
+          </div>
+          <div class="s23i-tension-caption">人写死规则 vs 系统从经验自动学</div>
+        </div>
+      </div>
+
+      <!-- 节点 ②：风险怎么控制 / 信任 ↔ 约束 -->
+      <div class="s23i-node" data-idx="2" id="s23i-node-2">
+        <div class="s23i-node-pill">
+          <span class="s23i-node-num">②</span>
+          <span class="s23i-node-text">风险怎么控制</span>
+        </div>
+        <div class="s23i-arrow">→</div>
+        <div class="s23i-tension">
+          <div class="s23i-tension-bar">
+            <span class="s23i-tension-end">信任</span>
+            <svg class="s23i-tension-svg" viewBox="0 0 600 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="s23i-tension-dot" cx="6" cy="11" r="4"/>
+              <line class="s23i-tension-line" id="s23i-line-2" x1="14" y1="11" x2="586" y2="11"/>
+              <circle class="s23i-tension-dot" cx="594" cy="11" r="4"/>
+            </svg>
+            <span class="s23i-tension-end">约束</span>
+          </div>
+          <div class="s23i-tension-caption">相信 agent 自己判断 vs 沙盒/权限锁住</div>
+        </div>
+      </div>
+
+      <!-- 节点 ③：入口怎么组织 / 集中 ↔ 分治 -->
+      <div class="s23i-node" data-idx="3" id="s23i-node-3">
+        <div class="s23i-node-pill">
+          <span class="s23i-node-num">③</span>
+          <span class="s23i-node-text">入口怎么组织</span>
+        </div>
+        <div class="s23i-arrow">→</div>
+        <div class="s23i-tension">
+          <div class="s23i-tension-bar">
+            <span class="s23i-tension-end">集中</span>
+            <svg class="s23i-tension-svg" viewBox="0 0 600 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="s23i-tension-dot" cx="6" cy="11" r="4"/>
+              <line class="s23i-tension-line" id="s23i-line-3" x1="14" y1="11" x2="586" y2="11"/>
+              <circle class="s23i-tension-dot" cx="594" cy="11" r="4"/>
+            </svg>
+            <span class="s23i-tension-end">分治</span>
+          </div>
+          <div class="s23i-tension-caption">统一中枢调度 vs 各子 agent 各管各的</div>
+        </div>
+      </div>
+
+    </div><!-- /s23i-chain -->
+
+    <!-- 结论 pill（三段式） -->
+    <div class="s23i-pill" id="s23i-pill">
+      <span>3 问 ≠ 新词</span>
+      <span class="s23i-pill-sep">/</span>
+      <span>3 问 = 三个工程问题 · 加 CE 即四维评价</span>
+      <span class="s23i-pill-sep">/</span>
+      <span>不打分，看选了什么、放弃了什么</span>
+    </div>
+
+    <!-- 底部锚点：本章 7 页节奏 -->
+    <div class="s23i-anchor">
+      <div class="s23i-anchor-title">本章节奏 · 7 页 · 三轴定义 → 三轴 walk → 综合定位 → 演示器 → 关键词</div>
+      <div class="s23i-anchor-grid">
+        <div class="s23i-anchor-item">
+          <span class="s23i-anchor-tag">§3.1</span>
+          <span class="s23i-anchor-text">三轴定义</span>
+        </div>
+        <div class="s23i-anchor-item">
+          <span class="s23i-anchor-tag">§3.2</span>
+          <span class="s23i-anchor-text">动态轴 · 19 平台</span>
+        </div>
+        <div class="s23i-anchor-item">
+          <span class="s23i-anchor-tag">§3.3</span>
+          <span class="s23i-anchor-text">约束轴 · 4 维 vs Claude Code</span>
+        </div>
+        <div class="s23i-anchor-item">
+          <span class="s23i-anchor-tag">§3.4</span>
+          <span class="s23i-anchor-text">分治轴 · ACP 双入口</span>
+        </div>
+        <div class="s23i-anchor-item">
+          <span class="s23i-anchor-tag">§3.5</span>
+          <span class="s23i-anchor-text">综合定位</span>
+        </div>
+        <div class="s23i-anchor-item">
+          <span class="s23i-anchor-tag">§3.6</span>
+          <span class="s23i-anchor-text">三轴互动演示器</span>
+        </div>
+        <div class="s23i-anchor-item">
+          <span class="s23i-anchor-tag">§3.7</span>
+          <span class="s23i-anchor-text">关键词映射</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /s23i-wrap -->
+</div>

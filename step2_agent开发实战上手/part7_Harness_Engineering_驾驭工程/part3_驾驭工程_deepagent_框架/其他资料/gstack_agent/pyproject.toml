@@ -1,0 +1,35 @@
+[project]
+name = "gstack-agent"
+version = "0.1.0"
+description = "Interactive DeepAgents-based coding assistant powered by gstack skills + DeepSeek"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "deepagents==0.5.3",
+    "langchain==1.2.15",
+    "langgraph==1.1.10",
+    "langchain-deepseek==1.0.1",
+    "langgraph-sdk>=0.2.0",
+    "rich>=13.0",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+gstack-agent = "gstack_agent.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+# 当前目录 = gstack_agent 包：用 package-dir 显式映射，避免 packages.find 在
+# "包目录即 pyproject.toml 所在目录" 的布局下歧义
+[tool.setuptools]
+packages = ["gstack_agent", "gstack_agent.tools", "gstack_agent.middleware"]
+
+[tool.setuptools.package-dir]
+"gstack_agent" = "."
+"gstack_agent.tools" = "tools"
+"gstack_agent.middleware" = "middleware"
+
+[tool.setuptools.package-data]
+gstack_agent = ["prompts/*.md"]

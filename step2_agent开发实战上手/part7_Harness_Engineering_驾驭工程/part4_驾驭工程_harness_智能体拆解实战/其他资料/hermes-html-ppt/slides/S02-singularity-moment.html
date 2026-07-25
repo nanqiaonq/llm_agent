@@ -1,0 +1,490 @@
+<style>
+  /* S02 · 智能体奇点时刻 */
+  /* 参考课件铁律：justify-content: center + 显式 margin-top 控制元素间距 + padding 3rem 4rem */
+  #s02-wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  /* 元素间距：参考第一节课 S001 节奏（1.5/3/2.5rem）*/
+  #s02-wrap .s02-headline   { margin-top: 1.2rem; }
+  #s02-wrap .s02-cards-grid { margin-top: 3rem; }
+  #s02-wrap .s02-hook-wrap  { margin-top: 2.5rem; }
+
+  /* 顶部章节标签 */
+  #s02-wrap .s02-chapter-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--accent-teal);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  #s02-wrap .s02-chapter-tag.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 主标题 */
+  #s02-wrap .s02-headline {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.25;
+    font-style: normal;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  #s02-wrap .s02-headline.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #s02-wrap .s02-headline .year-badge {
+    font-family: var(--font-mono);
+    font-weight: 800;
+    color: var(--accent-amber);
+  }
+
+  /* 5卡片网格 */
+  #s02-wrap .s02-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.85rem;
+    width: 100%;
+  }
+
+  /* 单张卡片 */
+  #s02-wrap .s02-data-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 1rem 0.9rem 0.85rem;
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    position: relative;
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+    cursor: default;
+    min-width: 0;
+  }
+
+  /* 角标 */
+  #s02-wrap .s02-data-card::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid var(--primary);
+    border-right: 1px solid var(--primary);
+    opacity: 0.32;
+    pointer-events: none;
+  }
+
+  #s02-wrap .s02-data-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #s02-wrap .s02-data-card:hover {
+    border-color: var(--accent-amber);
+    box-shadow: 0 6px 24px rgba(212, 165, 116, 0.18);
+    transform: translateY(-4px);
+  }
+
+  /* 卡片标签（产品名）*/
+  #s02-wrap .s02-card-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--accent-teal);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: normal;
+  }
+
+  /* 大数字 */
+  #s02-wrap .s02-big-num {
+    font-family: var(--font-mono);
+    font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    font-weight: 800;
+    color: var(--accent-amber);
+    line-height: 1;
+    font-style: normal;
+    letter-spacing: -0.02em;
+  }
+
+  /* 单位 */
+  #s02-wrap .s02-unit {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+    line-height: 1.3;
+    font-style: normal;
+  }
+
+  /* 日期 */
+  #s02-wrap .s02-date {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    font-style: normal;
+    margin-top: 0.1rem;
+  }
+
+  /* 注脚 */
+  #s02-wrap .s02-note {
+    font-size: 0.69rem;
+    color: var(--text-body);
+    line-height: 1.45;
+    font-style: normal;
+    padding-top: 0.35rem;
+    border-top: 1px solid var(--rule-line);
+    margin-top: auto;
+  }
+
+  /* 底部钩子 callout */
+  #s02-wrap .s02-hook-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 72%;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  #s02-wrap .s02-hook-wrap.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #s02-wrap .s02-hook-line {
+    width: 48px;
+    height: 1px;
+    background: var(--rule-line-dashed);
+  }
+
+  #s02-wrap .s02-hook-text {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.8vw, 1.3rem);
+    font-weight: 700;
+    color: var(--accent-amber);
+    text-align: center;
+    line-height: 1.35;
+    font-style: normal;
+  }
+
+  /* 数学陷阱标注 */
+  #s02-wrap .s02-math-trap {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  #s02-wrap .s02-math-trap.visible {
+    opacity: 1;
+  }
+
+  #s02-wrap .s02-math-trap .trap-highlight {
+    color: var(--accent-amber);
+    font-weight: 700;
+  }
+
+  /* 右下角 hint */
+  .s02-next-hint {
+    position: absolute;
+    bottom: 1.2rem;
+    right: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-style: normal;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .s02-next-hint.visible {
+    opacity: 1;
+  }
+
+  .s02-next-hint .hint-arrow {
+    color: var(--accent-teal);
+    margin-right: 0.3rem;
+  }
+
+  /* 响应式 */
+  @media (max-height: 700px) {
+    #s02-wrap {
+      gap: 0.75rem;
+      padding: 1.2rem 1rem;
+    }
+    #s02-wrap .s02-data-card {
+      padding: 0.7rem 0.7rem 0.65rem;
+    }
+    #s02-wrap .s02-big-num {
+      font-size: clamp(1.3rem, 2vw, 1.8rem);
+    }
+  }
+
+  @media (max-height: 600px) {
+    #s02-wrap {
+      gap: 0.5rem;
+      padding: 0.8rem 1rem;
+    }
+    #s02-wrap .s02-hook-wrap {
+      max-width: 85%;
+    }
+    #s02-wrap .s02-data-card {
+      padding: 0.5rem 0.55rem;
+    }
+    #s02-wrap .s02-big-num {
+      font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    }
+    #s02-wrap .s02-note {
+      display: none;
+    }
+  }
+
+  /* 减弱动效 */
+  @media (prefers-reduced-motion: reduce) {
+    #s02-wrap .s02-chapter-tag,
+    #s02-wrap .s02-headline,
+    #s02-wrap .s02-data-card,
+    #s02-wrap .s02-hook-wrap,
+    #s02-wrap .s02-math-trap,
+    .s02-next-hint {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<div class="slide" id="s02" data-slide-id="S02">
+  <div id="s02-wrap">
+
+    <!-- 章节标签 -->
+    <div class="s02-chapter-tag">C00 · 开场角色声明</div>
+
+    <!-- 主标题 -->
+    <div class="s02-headline">
+      <span class="year-badge">2026</span> · 智能体的奇点时刻
+    </div>
+
+    <!-- 5 张数据卡 -->
+    <div class="s02-cards-grid">
+
+      <!-- Card 1: GPT-5.4 -->
+      <div class="s02-data-card" data-target-raw="100" data-format="wan" data-display="100万">
+        <div class="s02-card-label">GPT-5.4</div>
+        <div class="s02-big-num" data-counter>0</div>
+        <div class="s02-unit">token 上下文</div>
+        <div class="s02-date">2026-03-05</div>
+        <div class="s02-note">推理效率前代提升 33% / 原生 Computer Use</div>
+      </div>
+
+      <!-- Card 2: Claude Opus 4.6 -->
+      <div class="s02-data-card" data-target-raw="12.8" data-format="wan-decimal" data-display="12.8万">
+        <div class="s02-card-label">Claude Opus 4.6</div>
+        <div class="s02-big-num" data-counter>0</div>
+        <div class="s02-unit">token 输出</div>
+        <div class="s02-date">2026-02-05</div>
+        <div class="s02-note">100万上下文 / "有史以来最高编码分数"</div>
+      </div>
+
+      <!-- Card 3: Claude Code 实验 -->
+      <div class="s02-data-card" data-target-raw="16" data-format="integer" data-display="16">
+        <div class="s02-card-label">Claude Code 实验</div>
+        <div class="s02-big-num" data-counter>0</div>
+        <div class="s02-unit">Agent 并行</div>
+        <div class="s02-date">—</div>
+        <div class="s02-note">5 个月写 10 万行 C 编译器 / GCC 99% 通过率 / 2 万美元 API</div>
+      </div>
+
+      <!-- Card 4: OpenClaw -->
+      <div class="s02-data-card" data-target-raw="346" data-format="k-plus" data-display="346K+">
+        <div class="s02-card-label">OpenClaw</div>
+        <div class="s02-big-num" data-counter>0</div>
+        <div class="s02-unit">GitHub Stars</div>
+        <div class="s02-date">2026-01</div>
+        <div class="s02-note">超越 React 成为 Stars 最多软件项目</div>
+      </div>
+
+      <!-- Card 5: 增长速度 -->
+      <div class="s02-data-card" data-target-raw="60" data-format="integer" data-display="60">
+        <div class="s02-card-label">Stars 增长速度</div>
+        <div class="s02-big-num" data-counter>0</div>
+        <div class="s02-unit">天破 25 万</div>
+        <div class="s02-date">2025-11→2026-01</div>
+        <div class="s02-note">智能体飞入寻常百姓家</div>
+      </div>
+
+    </div><!-- /.s02-cards-grid -->
+
+    <!-- 底部钩子 -->
+    <div class="s02-hook-wrap">
+      <div class="s02-hook-line"></div>
+      <div class="s02-hook-text">但"上手"容易，"驾驭"是真正的挑战</div>
+      <!-- 数学陷阱 -->
+      <div class="s02-math-trap">
+        端到端成功率 = <span class="trap-highlight">0.95<sup>20</sup> = 35.8%</span> — 复合失败的数学陷阱
+      </div>
+    </div>
+
+  </div><!-- /#s02-wrap -->
+
+  <!-- 右下角导航 hint -->
+  <div class="s02-next-hint">
+    <span class="hint-arrow">→</span>S03 Harness Engineering
+  </div>
+</div>
+
+<script>
+(function() {
+  var slide = document.getElementById('s02');
+  if (!slide) return;
+
+  // prefers-reduced-motion：直接显示终值，跳过动画
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var chapterTag = slide.querySelector('.s02-chapter-tag');
+  var headline = slide.querySelector('.s02-headline');
+  var cards = slide.querySelectorAll('.s02-data-card');
+  var hookWrap = slide.querySelector('.s02-hook-wrap');
+  var mathTrap = slide.querySelector('.s02-math-trap');
+  var nextHint = slide.querySelector('.s02-next-hint');
+
+  if (prefersReduced) {
+    // 直接显示所有终值
+    cards.forEach(function(card) {
+      var counter = card.querySelector('[data-counter]');
+      var fmt = card.dataset.format;
+      var raw = parseFloat(card.dataset.targetRaw);
+      if (counter) counter.textContent = formatValue(fmt, raw, 1);
+    });
+    return;
+  }
+
+  // 格式化函数
+  function formatValue(fmt, raw, progress) {
+    var cur = raw * progress;
+    if (fmt === 'wan') {
+      return Math.round(cur) + '万';
+    } else if (fmt === 'wan-decimal') {
+      return cur.toFixed(1) + '万';
+    } else if (fmt === 'integer') {
+      return Math.round(cur).toString();
+    } else if (fmt === 'k-plus') {
+      return Math.round(cur) + 'K+';
+    }
+    return Math.round(cur).toString();
+  }
+
+  // easeOut cubic
+  function easeOut(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  // count-up 单张卡片
+  function runCountUp(card) {
+    var counter = card.querySelector('[data-counter]');
+    if (!counter) return;
+    var fmt = card.dataset.format;
+    var raw = parseFloat(card.dataset.targetRaw);
+    var duration = 1500;
+    var startTime = null;
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var elapsed = timestamp - startTime;
+      var t = Math.min(elapsed / duration, 1);
+      var progress = easeOut(t);
+      counter.textContent = formatValue(fmt, raw, progress);
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        counter.textContent = formatValue(fmt, raw, 1);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // 入场时序
+  // t=0: chapter tag
+  chapterTag.classList.add('visible');
+
+  // t=50ms: headline
+  setTimeout(function() {
+    headline.classList.add('visible');
+  }, 50);
+
+  // t=200ms: 5卡 stagger (每张 120ms 间隔)
+  var countUpStarted = false;
+  cards.forEach(function(card, i) {
+    setTimeout(function() {
+      card.classList.add('visible');
+      // 第一张卡片入场时同步启动 count-up（所有卡片一起开始）
+      if (i === 0 && !countUpStarted) {
+        countUpStarted = true;
+        cards.forEach(function(c) { runCountUp(c); });
+      }
+    }, 200 + i * 120);
+  });
+
+  // t=1000ms (200 + 4*120 + 320): 底部钩子
+  setTimeout(function() {
+    hookWrap.classList.add('visible');
+  }, 1000);
+
+  // t=1350ms: 数学陷阱
+  setTimeout(function() {
+    mathTrap.classList.add('visible');
+  }, 1350);
+
+  // t=1600ms: 右下角 hint
+  setTimeout(function() {
+    nextHint.classList.add('visible');
+  }, 1600);
+
+})();
+</script>

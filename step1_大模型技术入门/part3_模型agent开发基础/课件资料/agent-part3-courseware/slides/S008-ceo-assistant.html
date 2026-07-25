@@ -1,0 +1,213 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s008-vs {
+            max-width: 1120px;
+            width: 100%;
+            display: flex;
+            gap: 3vw;
+            align-items: stretch;
+        }
+
+        .s008-panel {
+            flex: 1;
+            min-height: 360px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .s008-panel-title {
+            font-size: 1.18em;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .s008-visual {
+            position: relative;
+            min-height: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .s008-visual-left {
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .s008-bot {
+            font-size: 3.4em;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .s008-bot.b {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.12);
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.2);
+        }
+
+        .s008-chat-wrap {
+            width: min(86%, 320px);
+            margin: 0 auto;
+        }
+
+        .s008-chat {
+            position: relative;
+            border-radius: 16px 16px 6px 16px;
+            border: 1px solid rgba(100, 116, 139, 0.35);
+            background: rgba(148, 163, 184, 0.12);
+            padding: 10px 12px;
+            color: #475569;
+            font-size: 0.86em;
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        .s008-chat::after {
+            content: "";
+            position: absolute;
+            left: 18px;
+            bottom: -7px;
+            width: 12px;
+            height: 12px;
+            background: rgba(148, 163, 184, 0.12);
+            border-left: 1px solid rgba(100, 116, 139, 0.35);
+            border-bottom: 1px solid rgba(100, 116, 139, 0.35);
+            transform: rotate(-45deg);
+        }
+
+        .s008-ellipsis {
+            display: inline-block;
+            animation: s008-blink 1.2s steps(2, end) infinite;
+        }
+
+        .s008-orbit {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto;
+            animation: s008-orbit-spin 20s linear infinite;
+        }
+
+        .s008-tool {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(37, 99, 235, 0.35);
+            background: rgba(37, 99, 235, 0.13);
+            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.15);
+            animation: s008-orbit-counter-spin 20s linear infinite;
+            gap: 2px;
+            line-height: 1;
+        }
+
+        .s008-tool-icon {
+            font-size: 0.96em;
+            line-height: 1;
+        }
+
+        .s008-tool-label {
+            font-size: 0.58em;
+            color: #1e3a8a;
+            font-weight: 600;
+            letter-spacing: 0;
+            line-height: 1;
+        }
+
+        .s008-tool.t1 { top: 2px; left: 82px; }
+        .s008-tool.t2 { top: 30px; right: 10px; }
+        .s008-tool.t3 { bottom: 30px; right: 10px; }
+        .s008-tool.t4 { bottom: 2px; left: 82px; }
+        .s008-tool.t5 { bottom: 30px; left: 10px; }
+        .s008-tool.t6 { top: 30px; left: 10px; }
+
+        .s008-list {
+            margin-left: 1.1em;
+            color: var(--text-secondary);
+            line-height: 1.62;
+            font-size: clamp(1rem, 1.25vw, 1.12rem);
+        }
+
+        @keyframes s008-orbit-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes s008-orbit-counter-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        @keyframes s008-blink {
+            0%, 35% { opacity: 1; }
+            36%, 100% { opacity: 0.3; }
+        }
+
+        @media (max-width: 1024px) {
+            .s008-vs {
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .s008-panel {
+                min-height: 320px;
+            }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">第二章 · 2.1</span></div>
+    <h2 class="page-title animate-ready delay-2">Agent 的定义：CEO 的两种助手</h2>
+    <p class="page-subtitle animate-ready delay-3">核心区别不在“会不会说”，而在“能不能做”</p>
+
+    <div class="s008-vs animate-ready delay-4">
+        <div class="vs-panel s008-panel" style="border:1.5px solid rgba(100,116,139,0.35);opacity:0.88;">
+            <div class="s008-panel-title" style="color:#475569;">助手 A · 聊天机器人</div>
+            <div class="s008-visual s008-visual-left">
+                <div class="s008-bot">🤖</div>
+                <div class="s008-chat-wrap">
+                    <div class="s008-chat">我无法访问实时数据<span class="s008-ellipsis">...</span></div>
+                </div>
+            </div>
+            <ul class="s008-list">
+                <li>只能“说”，不能“做”</li>
+                <li>本质：基于训练数据生成文本</li>
+            </ul>
+        </div>
+
+        <div class="vs-panel s008-panel" style="border:2px solid rgba(37,99,235,0.45);box-shadow:0 12px 32px rgba(37,99,235,0.12);">
+            <div class="s008-panel-title" style="color:var(--primary);">助手 B · Agent</div>
+            <div class="s008-visual animate-ready delay-5">
+                <div class="s008-orbit">
+                    <div class="s008-tool t1"><span class="s008-tool-icon">🔍</span><span class="s008-tool-label">搜索</span></div>
+                    <div class="s008-tool t2"><span class="s008-tool-icon">📊</span><span class="s008-tool-label">分析</span></div>
+                    <div class="s008-tool t3"><span class="s008-tool-icon">📅</span><span class="s008-tool-label">日期</span></div>
+                    <div class="s008-tool t4"><span class="s008-tool-icon">🌐</span><span class="s008-tool-label">浏览</span></div>
+                    <div class="s008-tool t5"><span class="s008-tool-icon">📈</span><span class="s008-tool-label">报表</span></div>
+                    <div class="s008-tool t6"><span class="s008-tool-icon">📧</span><span class="s008-tool-label">邮件</span></div>
+                    <div class="s008-bot b" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);">🤖</div>
+                </div>
+            </div>
+            <ul class="s008-list">
+                <li>不仅能回答，还能调用工具执行</li>
+                <li>本质：感知环境 + 自主规划 + 行动</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="animate-ready delay-6" style="margin-top:14px;padding:11px 22px;background:rgba(22,163,74,0.10);border:1px solid rgba(22,163,74,0.32);border-radius:10px;max-width:980px;font-size:0.9em;color:#166534;">
+        AI Agent = 以 LLM 为大脑 + 感知环境 + 自主规划 + 调用工具 → 完成复杂目标
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<!-- S005 同任务三模式演示 -->
+<div style="width:100%;max-width:900px;">
+  <div class="slide-header" style="text-align:center;margin-bottom:1.5rem;">
+    <div class="chapter-badge anim-fade-in" style="animation-delay:0.1s;opacity:0;">同任务对比</div>
+    <h2 class="slide-title anim-fade-in" style="animation-delay:0.2s;opacity:0;">同任务三模式演示</h2>
+    <p class="anim-fade-in" style="animation-delay:0.3s;opacity:0;color:var(--text-dim);font-size:0.9rem;">让差异从表格里跳出来</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap: 1.7rem;max-width:800px;margin:0 auto;">
+    <!-- 画面 A -->
+    <div class="glass-card mode-card anim-slide-left" style="animation-delay:0.4s;opacity:0;">
+      <div class="mode-title">
+        <span style="display:inline-block;width:2rem;height:2rem;border-radius:50%;background:rgba(231,76,60,0.1);color:#e74c3c;text-align:center;line-height:2rem;font-weight:700;margin-right:0.5rem;">A</span>
+        裸 API（GPT-5）
+      </div>
+      <div class="mode-desc">
+        把"实现一个待办应用"的任务扔给裸 GPT-5。它会返回三块代码，但<strong>永远不会真的创建文件、运行测试、看到失败后自己改</strong>。它只是在对话框里写字。
+      </div>
+    </div>
+
+    <!-- 画面 B -->
+    <div class="glass-card mode-card anim-slide-left" style="animation-delay:0.6s;opacity:0;">
+      <div class="mode-title">
+        <span style="display:inline-block;width:2rem;height:2rem;border-radius:50%;background:rgba(241,196,15,0.1);color:#d4a017;text-align:center;line-height:2rem;font-weight:700;margin-right:0.5rem;">B</span>
+        Code Interpreter
+      </div>
+      <div class="mode-desc">
+        同样的任务，它会真的创建 .py 文件、运行 pytest、看到失败。但它没有访问你本地项目的能力，没有 git，也没有任何跨 session 的持久化。<strong>关闭窗口，所有进度清零。</strong>
+      </div>
+    </div>
+
+    <!-- 画面 C -->
+    <div class="glass-card mode-card active anim-slide-left" style="animation-delay:0.8s;opacity:0;">
+      <div class="mode-title">
+        <span style="display:inline-block;width:2rem;height:2rem;border-radius:50%;background:rgba(46,204,113,0.1);color:#27ae60;text-align:center;line-height:2rem;font-weight:700;margin-right:0.5rem;">C</span>
+        Claude Code
+      </div>
+      <div class="mode-desc">
+        在你本地创建完整项目结构，写完代码跑 pytest，失败了就改，最后 commit 到 git，下次打开从 claude-progress.txt 接着跑。<strong>这就是 harness 的力量。</strong>
+      </div>
+    </div>
+  </div>
+
+  <p class="anim-fade-in" style="animation-delay:1s;opacity:0;margin-top: 1.8rem;text-align:center;font-size:0.85rem;color:var(--text-dim);">
+    三个画面的差距，不是"模型变聪明了"，是"模型外面被加了一层肉眼看不到的工程系统"。
+  </p>
+</div>

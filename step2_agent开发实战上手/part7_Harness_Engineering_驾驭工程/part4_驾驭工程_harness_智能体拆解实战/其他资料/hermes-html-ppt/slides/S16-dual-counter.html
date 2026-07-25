@@ -1,0 +1,730 @@
+<style>
+/* ─── S16 双计数器 · memory user-turn vs skill tool-iter （🔴🔴 灵魂页）─── */
+
+/* 居中铁律 */
+.slide[data-slide-id="S16"] .s16d-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.2rem 2.6rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  gap: 0.9rem;
+}
+
+/* 头部 */
+.slide[data-slide-id="S16"] .s16d-header {
+  text-align: center;
+  width: 100%;
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S16"] .s16d-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem 0;
+  font-style: normal;
+  letter-spacing: -0.01em;
+}
+.slide[data-slide-id="S16"] .s16d-title .s16d-pill-mem {
+  display: inline-block;
+  padding: 0.05rem 0.5rem;
+  margin: 0 0.2rem;
+  background: rgba(91,140,184,0.15);
+  border: 1px solid rgba(91,140,184,0.4);
+  border-radius: 6px;
+  color: #5b8cb8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+}
+.slide[data-slide-id="S16"] .s16d-title .s16d-pill-skill {
+  display: inline-block;
+  padding: 0.05rem 0.5rem;
+  margin: 0 0.2rem;
+  background: rgba(212,165,116,0.15);
+  border: 1px solid rgba(212,165,116,0.45);
+  border-radius: 6px;
+  color: var(--accent-warm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+}
+.slide[data-slide-id="S16"] .s16d-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-subtle);
+  margin: 0;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-subtitle strong {
+  color: var(--accent-warm);
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 主体网格：左 stage 1100px / 右 callout */
+.slide[data-slide-id="S16"] .s16d-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 1.2rem;
+  width: 100%;
+  max-width: 1340px;
+  align-items: stretch;
+}
+
+/* 左 stage：上下三轨道 */
+.slide[data-slide-id="S16"] .s16d-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(36,49,66,0.55);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem 0.95rem 1.1rem;
+  position: relative;
+  min-width: 0;
+}
+
+/* ── 单条轨道 ── */
+.slide[data-slide-id="S16"] .s16d-track {
+  display: grid;
+  grid-template-columns: 138px 1fr 110px;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(45,59,80,0.45);
+  border: 1px solid var(--card-border);
+  position: relative;
+  min-height: 64px;
+}
+.slide[data-slide-id="S16"] .s16d-track-mem {
+  border-left: 3px solid #5b8cb8;
+}
+.slide[data-slide-id="S16"] .s16d-track-skill {
+  border-left: 3px solid var(--accent-warm);
+}
+
+/* 轨道标签（左） */
+.slide[data-slide-id="S16"] .s16d-track-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.slide[data-slide-id="S16"] .s16d-track-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-style: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slide[data-slide-id="S16"] .s16d-track-mem .s16d-track-name { color: #7fb1d9; }
+.slide[data-slide-id="S16"] .s16d-track-skill .s16d-track-name { color: var(--accent-warm); }
+.slide[data-slide-id="S16"] .s16d-track-rule {
+  font-size: 0.66rem;
+  color: var(--text-subtle);
+  font-style: normal;
+}
+
+/* 轨道时间轴（中） */
+.slide[data-slide-id="S16"] .s16d-axis {
+  position: relative;
+  height: 44px;
+  border-bottom: 1px dashed rgba(125,141,164,0.25);
+}
+/* 阈值线（threshold = 10） */
+.slide[data-slide-id="S16"] .s16d-threshold {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 0;
+  border-right: 1.5px dashed currentColor;
+  pointer-events: none;
+}
+.slide[data-slide-id="S16"] .s16d-track-mem .s16d-threshold { color: rgba(91,140,184,0.55); }
+.slide[data-slide-id="S16"] .s16d-track-skill .s16d-threshold { color: rgba(212,165,116,0.65); }
+.slide[data-slide-id="S16"] .s16d-threshold-label {
+  position: absolute;
+  top: -16px;
+  right: -1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: inherit;
+  white-space: nowrap;
+  font-style: normal;
+}
+
+/* 时间轴上的 tick（小方块） */
+.slide[data-slide-id="S16"] .s16d-tick {
+  position: absolute;
+  bottom: 8px;
+  width: 12px;
+  height: 18px;
+  border-radius: 2px;
+  opacity: 0;            /* 配对 hookFn 控制 */
+  transform: translateY(4px) scale(0.6);
+  pointer-events: none;
+}
+.slide[data-slide-id="S16"] .s16d-track-mem .s16d-tick {
+  background: linear-gradient(180deg, #6fa6d4 0%, #4a7aa3 100%);
+  box-shadow: 0 0 8px rgba(91,140,184,0.5);
+}
+.slide[data-slide-id="S16"] .s16d-track-skill .s16d-tick {
+  background: linear-gradient(180deg, #e3b889 0%, #b8814f 100%);
+  box-shadow: 0 0 8px rgba(212,165,116,0.55);
+}
+
+/* 计数器（右） */
+.slide[data-slide-id="S16"] .s16d-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+.slide[data-slide-id="S16"] .s16d-counter-num {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: inline-block;
+  min-width: 1.2em;
+  text-align: right;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-track-mem .s16d-counter-num { color: #7fb1d9; }
+.slide[data-slide-id="S16"] .s16d-track-skill .s16d-counter-num { color: var(--accent-warm); }
+.slide[data-slide-id="S16"] .s16d-counter-divider {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  margin: 0 0.15rem;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-counter-thresh {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  font-weight: 600;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-counter-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.05rem;
+}
+.slide[data-slide-id="S16"] .s16d-counter-tag {
+  font-size: 0.6rem;
+  color: var(--text-subtle);
+  margin-top: 0.2rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+}
+
+/* 计数器跳数动画 class */
+.slide[data-slide-id="S16"] .s16d-counter-num.bump {
+  animation: s16d-bump 0.45s ease-out;
+}
+@keyframes s16d-bump {
+  0%   { transform: scale(1);    color: inherit; }
+  35%  { transform: scale(1.4);  filter: brightness(1.6); }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1);    filter: none; }
+}
+
+/* 阈值穿透闪光（add 触发时） */
+.slide[data-slide-id="S16"] .s16d-track.fired {
+  animation: s16d-fire 1.1s ease-out;
+}
+@keyframes s16d-fire {
+  0%   { box-shadow: 0 0 0 0 rgba(212,165,116,0); background: rgba(45,59,80,0.45); }
+  30%  { box-shadow: 0 0 0 4px rgba(212,165,116,0.55); background: rgba(212,165,116,0.18); }
+  100% { box-shadow: 0 0 0 0 rgba(212,165,116,0); background: rgba(45,59,80,0.45); }
+}
+
+/* spawn_review 触发标签 */
+.slide[data-slide-id="S16"] .s16d-fire-badge {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  padding: 0.18rem 0.55rem;
+  background: var(--accent-warm);
+  color: #1a2332;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(4px) scale(0.85);
+  pointer-events: none;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-fire-badge.show {
+  animation: s16d-badge-pop 1.6s ease-out;
+}
+@keyframes s16d-badge-pop {
+  0%   { opacity: 0; transform: translateY(4px) scale(0.85); }
+  20%  { opacity: 1; transform: translateY(0)   scale(1.05); }
+  80%  { opacity: 1; transform: translateY(0)   scale(1); }
+  100% { opacity: 0; transform: translateY(-4px) scale(0.95); }
+}
+
+/* ── 中央对话区（一个完整 user-turn）── */
+.slide[data-slide-id="S16"] .s16d-conv {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.6rem 0.7rem;
+  background: rgba(36,49,66,0.4);
+  border: 1px dashed rgba(125,141,164,0.25);
+  border-radius: 8px;
+  min-height: 130px;
+  position: relative;
+}
+.slide[data-slide-id="S16"] .s16d-conv-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  padding: 0.05rem 0.55rem;
+  background: var(--bg-mid);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--text-subtle);
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-conv-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.slide[data-slide-id="S16"] .s16d-conv-user {
+  justify-content: flex-end;
+}
+.slide[data-slide-id="S16"] .s16d-bubble-user {
+  background: rgba(91,140,184,0.16);
+  border: 1px solid rgba(91,140,184,0.32);
+  border-radius: 14px 14px 4px 14px;
+  padding: 0.4rem 0.75rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  font-style: normal;
+  max-width: 75%;
+  line-height: 1.45;
+  opacity: 0;
+}
+.slide[data-slide-id="S16"] .s16d-tool-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  padding-left: 1.4rem;
+}
+.slide[data-slide-id="S16"] .s16d-tool-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  background: rgba(45,59,80,0.6);
+  border: 1px solid rgba(125,141,164,0.25);
+  border-radius: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+  opacity: 0.35;
+  transition: opacity 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-tool-node .s16d-tool-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(125,141,164,0.4);
+  flex-shrink: 0;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.slide[data-slide-id="S16"] .s16d-tool-node.lit {
+  opacity: 1;
+  background: rgba(212,165,116,0.14);
+  border-color: rgba(212,165,116,0.55);
+  color: var(--accent-warm);
+}
+.slide[data-slide-id="S16"] .s16d-tool-node.lit .s16d-tool-dot {
+  background: var(--accent-warm);
+  box-shadow: 0 0 8px rgba(212,165,116,0.7);
+}
+.slide[data-slide-id="S16"] .s16d-tool-arrow {
+  color: var(--text-subtle);
+  font-size: 0.7rem;
+  opacity: 0.4;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-conv-agent {
+  justify-content: flex-start;
+}
+.slide[data-slide-id="S16"] .s16d-bubble-agent {
+  background: rgba(125,211,192,0.10);
+  border: 1px solid rgba(125,211,192,0.28);
+  border-radius: 14px 14px 14px 4px;
+  padding: 0.4rem 0.75rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-body);
+  font-style: normal;
+  max-width: 75%;
+  line-height: 1.45;
+  opacity: 0;
+}
+.slide[data-slide-id="S16"] .s16d-avatar {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  width: 1.3rem;
+  text-align: center;
+  font-style: normal;
+  line-height: 1.6;
+}
+
+/* ── 控制条 ── */
+.slide[data-slide-id="S16"] .s16d-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(45,59,80,0.55);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+}
+.slide[data-slide-id="S16"] .s16d-btn {
+  background: rgba(91,140,184,0.12);
+  border: 1px solid rgba(91,140,184,0.35);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-btn:hover {
+  background: rgba(91,140,184,0.25);
+}
+.slide[data-slide-id="S16"] .s16d-btn:active {
+  transform: scale(0.96);
+}
+.slide[data-slide-id="S16"] .s16d-btn.primary {
+  background: rgba(125,211,192,0.15);
+  border-color: rgba(125,211,192,0.4);
+  color: var(--secondary);
+}
+.slide[data-slide-id="S16"] .s16d-slider-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  color: var(--text-subtle);
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-slider-group select {
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border);
+  color: var(--accent-warm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.18rem 0.4rem;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+.slide[data-slide-id="S16"] .s16d-state-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 10px;
+  background: rgba(125,141,164,0.15);
+  color: var(--text-subtle);
+  border: 1px solid rgba(125,141,164,0.3);
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-state-pill.playing {
+  background: rgba(125,211,192,0.18);
+  color: var(--secondary);
+  border-color: rgba(125,211,192,0.45);
+}
+.slide[data-slide-id="S16"] .s16d-state-pill.paused {
+  background: rgba(212,165,116,0.18);
+  color: var(--accent-warm);
+  border-color: rgba(212,165,116,0.45);
+}
+
+/* ── 右侧 callout ── */
+.slide[data-slide-id="S16"] .s16d-callouts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.slide[data-slide-id="S16"] .s16d-callout-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  position: relative;
+}
+.slide[data-slide-id="S16"] .s16d-callout-card::before {
+  content: '';
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 5px; height: 5px;
+  border-top: 1px solid rgba(125,141,164,0.5);
+  border-right: 1px solid rgba(125,141,164,0.5);
+}
+.slide[data-slide-id="S16"] .s16d-callout-card.highlight {
+  border-color: rgba(212,165,116,0.5);
+  background: linear-gradient(135deg, rgba(212,165,116,0.10) 0%, rgba(36,49,66,0.6) 100%);
+}
+.slide[data-slide-id="S16"] .s16d-callout-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-warm);
+  margin-bottom: 0.35rem;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-callout-body {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.74rem;
+  color: var(--text-body);
+  line-height: 1.55;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-callout-body code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  background: rgba(91,140,184,0.15);
+  color: #7fb1d9;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+}
+.slide[data-slide-id="S16"] .s16d-callout-body strong {
+  color: var(--accent-warm);
+  font-weight: 700;
+  font-style: normal;
+}
+.slide[data-slide-id="S16"] .s16d-callout-eq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-warm);
+  text-align: center;
+  padding: 0.25rem 0;
+  font-style: normal;
+}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .slide[data-slide-id="S16"] .s16d-bubble-user,
+  .slide[data-slide-id="S16"] .s16d-bubble-agent,
+  .slide[data-slide-id="S16"] .s16d-tool-node,
+  .slide[data-slide-id="S16"] .s16d-tick {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .slide[data-slide-id="S16"] .s16d-counter-num.bump,
+  .slide[data-slide-id="S16"] .s16d-track.fired,
+  .slide[data-slide-id="S16"] .s16d-fire-badge.show {
+    animation: none !important;
+  }
+}
+</style>
+
+<div class="slide" data-slide-id="S16">
+  <div class="s16d-wrap">
+
+    <!-- ── 头部 ── -->
+    <header class="s16d-header">
+      <h1 class="s16d-title">
+        双计数器：<span class="s16d-pill-mem">_turns_since_memory</span>
+        vs
+        <span class="s16d-pill-skill">_iters_since_skill</span>
+      </h1>
+      <p class="s16d-subtitle">
+        同样阈值 10，<strong>skill 涨速 ≈ 5× memory</strong> — 反直觉的工程取舍
+      </p>
+    </header>
+
+    <!-- ── 主网格 ── -->
+    <div class="s16d-grid">
+
+      <!-- ─── 左：stage（上下三轨道）─── -->
+      <div class="s16d-stage">
+
+        <!-- ── 上轨道：memory（蓝）── -->
+        <div class="s16d-track s16d-track-mem" id="s16d-track-mem">
+          <div class="s16d-fire-badge" id="s16d-fire-mem">📌 spawn_review</div>
+          <div class="s16d-track-label">
+            <div class="s16d-track-name">_turns_since_memory</div>
+            <div class="s16d-track-rule">规则：每 user-turn +1</div>
+          </div>
+          <div class="s16d-axis" id="s16d-axis-mem">
+            <!-- 10 个 tick 占位 -->
+            <div class="s16d-tick" id="s16d-tick-mem-1"  style="left:5%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-2"  style="left:14%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-3"  style="left:23%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-4"  style="left:32%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-5"  style="left:41%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-6"  style="left:50%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-7"  style="left:59%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-8"  style="left:68%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-9"  style="left:77%;"></div>
+            <div class="s16d-tick" id="s16d-tick-mem-10" style="left:86%;"></div>
+            <!-- 阈值线（threshold = 10，对齐第 10 个 tick）-->
+            <div class="s16d-threshold" id="s16d-thresh-mem" style="left:90%;">
+              <span class="s16d-threshold-label">2</span>
+            </div>
+          </div>
+          <div class="s16d-counter">
+            <div class="s16d-counter-row">
+              <span class="s16d-counter-num" id="s16d-cnt-mem">0</span>
+              <span class="s16d-counter-divider">/</span>
+              <span class="s16d-counter-thresh">2</span>
+            </div>
+            <div class="s16d-counter-tag">user-turn 计数 <small style="opacity:.65;">(demo 用 2，生产默认 10)</small></div>
+          </div>
+        </div>
+
+        <!-- ── 中央对话区（一个完整 user-turn 内部展开）── -->
+        <div class="s16d-conv">
+          <span class="s16d-conv-label">▼ 一个完整 user-turn 内部</span>
+
+          <!-- user 气泡 -->
+          <div class="s16d-conv-row s16d-conv-user">
+            <div class="s16d-bubble-user" id="s16d-bubble-user">帮我修这个 pytest flaky test</div>
+            <span class="s16d-avatar">👤</span>
+          </div>
+
+          <!-- Agent 5 步 tool chain -->
+          <div class="s16d-tool-chain" id="s16d-tool-chain">
+            <span class="s16d-avatar">🤖</span>
+            <span class="s16d-tool-node" id="s16d-tool-1">
+              <span class="s16d-tool-dot"></span>① read_file
+            </span>
+            <span class="s16d-tool-arrow">→</span>
+            <span class="s16d-tool-node" id="s16d-tool-2">
+              <span class="s16d-tool-dot"></span>② grep
+            </span>
+            <span class="s16d-tool-arrow">→</span>
+            <span class="s16d-tool-node" id="s16d-tool-3">
+              <span class="s16d-tool-dot"></span>③ bash
+            </span>
+            <span class="s16d-tool-arrow">→</span>
+            <span class="s16d-tool-node" id="s16d-tool-4">
+              <span class="s16d-tool-dot"></span>④ llm_eval
+            </span>
+            <span class="s16d-tool-arrow">→</span>
+            <span class="s16d-tool-node" id="s16d-tool-5">
+              <span class="s16d-tool-dot"></span>⑤ write_patch
+            </span>
+          </div>
+
+          <!-- agent final response -->
+          <div class="s16d-conv-row s16d-conv-agent">
+            <span class="s16d-avatar">🤖</span>
+            <div class="s16d-bubble-agent" id="s16d-bubble-agent">
+              已修复 ✓ 建议加 retry 装饰器避免再次 flaky
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 下轨道：skill（橙）── -->
+        <div class="s16d-track s16d-track-skill" id="s16d-track-skill">
+          <div class="s16d-fire-badge" id="s16d-fire-skill">📌 spawn_review</div>
+          <div class="s16d-track-label">
+            <div class="s16d-track-name">_iters_since_skill</div>
+            <div class="s16d-track-rule">规则：每 tool-iter +1</div>
+          </div>
+          <div class="s16d-axis" id="s16d-axis-skill">
+            <div class="s16d-tick" id="s16d-tick-skill-1"  style="left:5%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-2"  style="left:14%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-3"  style="left:23%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-4"  style="left:32%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-5"  style="left:41%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-6"  style="left:50%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-7"  style="left:59%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-8"  style="left:68%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-9"  style="left:77%;"></div>
+            <div class="s16d-tick" id="s16d-tick-skill-10" style="left:86%;"></div>
+            <div class="s16d-threshold" id="s16d-thresh-skill" style="left:90%;">
+              <span class="s16d-threshold-label" id="s16d-thresh-skill-label">10</span>
+            </div>
+          </div>
+          <div class="s16d-counter">
+            <div class="s16d-counter-row">
+              <span class="s16d-counter-num" id="s16d-cnt-skill">0</span>
+              <span class="s16d-counter-divider">/</span>
+              <span class="s16d-counter-thresh" id="s16d-cnt-skill-thresh">10</span>
+            </div>
+            <div class="s16d-counter-tag">tool-iter 计数</div>
+          </div>
+        </div>
+
+        <!-- ── 控制条 ── -->
+        <div class="s16d-controls">
+          <button class="s16d-btn primary" id="s16d-btn-play" type="button">▶ 播放</button>
+          <button class="s16d-btn"         id="s16d-btn-step" type="button">⏭ 单步</button>
+          <button class="s16d-btn"         id="s16d-btn-reset" type="button">🔄 重置</button>
+          <span class="s16d-state-pill"    id="s16d-state-pill">idle</span>
+          <div class="s16d-slider-group">
+            <label for="s16d-slider">nudge_interval =</label>
+            <select id="s16d-slider">
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+            </select>
+          </div>
+        </div>
+
+      </div><!-- /s16d-stage -->
+
+      <!-- ─── 右：callout 卡片 ─── -->
+      <aside class="s16d-callouts">
+        <div class="s16d-callout-card highlight">
+          <div class="s16d-callout-title">⚡ 涨速对比</div>
+          <div class="s16d-callout-eq">5 tool / turn</div>
+          <div class="s16d-callout-body">
+            典型一个 user-turn 含 <strong>5 次 tool call</strong>，所以
+            <code>skill</code> 涨速 ≈ <strong>5×</strong> <code>memory</code>。
+          </div>
+        </div>
+
+        <div class="s16d-callout-card">
+          <div class="s16d-callout-title">🎯 阈值穿透时间点</div>
+          <div class="s16d-callout-body">
+            阈值同为 10：<br>
+            ·&nbsp; <code>skill</code> 第 <strong>2</strong> turn 就触发<br>
+            ·&nbsp; <code>memory</code> 要等到第 <strong>2</strong> turn（demo 用 2 / 生产默认 10）
+          </div>
+        </div>
+
+        <div class="s16d-callout-card">
+          <div class="s16d-callout-title">🛠 可调 nudge_interval</div>
+          <div class="s16d-callout-body">
+            改 <code>nudge_interval = 3</code> →
+            第 <strong>1</strong> turn 就触发；
+            <br>但生产质量风险高（review 太频繁）。
+          </div>
+        </div>
+      </aside>
+
+    </div><!-- /grid -->
+
+  </div><!-- /wrap -->
+</div>

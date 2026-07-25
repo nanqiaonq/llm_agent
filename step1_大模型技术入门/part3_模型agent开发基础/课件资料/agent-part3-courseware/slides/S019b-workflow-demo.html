@@ -1,0 +1,216 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;min-height:84vh;padding:5vh 0 3vh;">
+    <style>
+        .wf-board {
+            position: relative;
+            width: min(980px, 96%);
+            height: 310px;
+            margin: 0 auto 2.4vh;
+            border-radius: 16px;
+            border: 1px solid rgba(37,99,235,0.22);
+            background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(248,250,252,0.68));
+            box-shadow: 0 12px 30px rgba(30,64,175,0.08);
+            overflow: hidden;
+        }
+
+        .wf-node {
+            position: absolute;
+            width: 148px;
+            height: 74px;
+            border-radius: 12px;
+            border: 1.6px solid rgba(37,99,235,0.4);
+            background: rgba(255,255,255,0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            opacity: 0.45;
+            transition: all 0.35s ease;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .wf-node .wf-emoji { font-size: 1.22rem; line-height: 1; }
+        .wf-node .wf-label { font-size: 0.83rem; font-weight: 600; }
+
+        .wf-node.active {
+            opacity: 1;
+            border-color: rgba(37,99,235,0.95);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12), 0 10px 24px rgba(37,99,235,0.2);
+            transform: translateY(-1px);
+        }
+
+        .wf-node.done {
+            opacity: 0.66;
+            border-color: rgba(22,163,74,0.7);
+            box-shadow: none;
+            transform: none;
+        }
+
+        .wf-node.muted-branch {
+            opacity: 0.3;
+            border-color: rgba(148,163,184,0.45);
+        }
+
+        .wf-decision {
+            width: 88px;
+            height: 88px;
+            border-radius: 12px;
+            transform: rotate(45deg);
+            border-color: rgba(124,58,237,0.55);
+        }
+
+        .wf-decision .wf-inner {
+            transform: rotate(-45deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .wf-decision.active {
+            border-color: rgba(124,58,237,0.95);
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.12), 0 10px 24px rgba(124,58,237,0.22);
+        }
+
+        .wf-line {
+            position: absolute;
+            height: 2px;
+            border-top: 2px dashed rgba(148,163,184,0.6);
+            opacity: 0.75;
+            transition: all 0.35s ease;
+        }
+
+        .wf-line::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: -6px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 8px solid rgba(148,163,184,0.65);
+            transition: border-left-color 0.35s ease;
+        }
+
+        .wf-line.active {
+            border-top-style: solid;
+            border-top-color: rgba(37,99,235,0.95);
+            opacity: 1;
+        }
+
+        .wf-line.active::after { border-left-color: rgba(37,99,235,0.95); }
+
+        .wf-line-branch {
+            width: 2px;
+            border-top: none;
+            border-left: 2px dashed rgba(148,163,184,0.6);
+        }
+
+        .wf-line-branch::after {
+            right: -4px;
+            top: auto;
+            bottom: -2px;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid rgba(148,163,184,0.65);
+            border-bottom: 0;
+        }
+
+        .wf-line-branch.active {
+            border-left-style: solid;
+            border-left-color: rgba(124,58,237,0.86);
+        }
+
+        .wf-line-branch.active::after { border-top-color: rgba(124,58,237,0.86); }
+
+        .wf-branch-label {
+            position: absolute;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        #wf-line-1 { left: 178px; top: 129px; width: 60px; }
+        #wf-line-2 { left: 386px; top: 129px; width: 48px; }
+        #wf-line-3 { left: 558px; top: 129px; width: 52px; }
+        #wf-line-4 { left: 758px; top: 129px; width: 60px; }
+        #wf-line-severe { left: 496px; top: 170px; height: 54px; }
+
+        #wf-node-intake { left: 30px; top: 92px; }
+        #wf-node-classify { left: 238px; top: 92px; }
+        #wf-node-severity { left: 452px; top: 85px; }
+        #wf-node-auto { left: 610px; top: 92px; }
+        #wf-node-notify { left: 818px; top: 92px; }
+        #wf-node-manual { left: 422px; top: 224px; }
+
+        #wf-label-normal { left: 575px; top: 102px; }
+        #wf-label-severe { left: 508px; top: 194px; }
+
+        @media (max-width: 1200px) {
+            .wf-board { transform: scale(0.94); transform-origin: top center; margin-bottom: 0.1vh; }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:0.8vh;"><span class="badge">第五章 · 5.1</span></div>
+    <h2 class="page-title animate-ready delay-2" style="margin-bottom:2.2vh;">Workflow 是什么？</h2>
+    <p class="page-subtitle animate-ready delay-3" style="margin-bottom:2.6vh;font-size:clamp(0.96rem,1.5vw,1.2rem);">路径固定 · 按序执行 · 条件分支可预测</p>
+
+    <div class="wf-board animate-ready delay-4">
+        <div id="wf-line-1" class="wf-line"></div>
+        <div id="wf-line-2" class="wf-line"></div>
+        <div id="wf-line-3" class="wf-line"></div>
+        <div id="wf-line-4" class="wf-line"></div>
+        <div id="wf-line-severe" class="wf-line wf-line-branch"></div>
+
+        <div id="wf-label-normal" class="wf-branch-label">一般</div>
+        <div id="wf-label-severe" class="wf-branch-label">严重</div>
+
+        <div id="wf-node-intake" class="wf-node">
+            <div class="wf-emoji">📥</div>
+            <div class="wf-label">接收投诉</div>
+        </div>
+
+        <div id="wf-node-classify" class="wf-node">
+            <div class="wf-emoji">🏷️</div>
+            <div class="wf-label">智能分类</div>
+        </div>
+
+        <div id="wf-node-severity" class="wf-node wf-decision">
+            <div class="wf-inner">
+                <div class="wf-emoji">⚖️</div>
+                <div class="wf-label">判断严重度</div>
+            </div>
+        </div>
+
+        <div id="wf-node-auto" class="wf-node">
+            <div class="wf-emoji">✅</div>
+            <div class="wf-label">自动处理</div>
+        </div>
+
+        <div id="wf-node-notify" class="wf-node">
+            <div class="wf-emoji">📧</div>
+            <div class="wf-label">发送通知</div>
+        </div>
+
+        <div id="wf-node-manual" class="wf-node muted-branch">
+            <div class="wf-emoji">🚨</div>
+            <div class="wf-label">转人工</div>
+        </div>
+    </div>
+
+    <div id="wf-step-desc" class="animate-ready delay-5" style="min-height:28px;font-size:0.92rem;color:var(--text-secondary);margin-bottom:2.2vh;">
+        点击开始，观察 Workflow 按序执行。
+    </div>
+
+    <button id="wf-start-btn" class="animate-ready delay-6" style="height:44px;padding:0 18px;border-radius:10px;border:1px solid rgba(37,99,235,0.34);background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:600;cursor:pointer;">
+        ▶ 开始执行
+    </button>
+
+    <div class="animate-ready delay-6" style="margin-top:2.2vh;padding:10px 16px;max-width:880px;border:1px solid rgba(37,99,235,0.22);border-radius:10px;background:rgba(37,99,235,0.08);font-size:0.83rem;color:var(--text-secondary);">
+        Workflow = 人编排路径，机器按序跑。
+    </div>
+</div>

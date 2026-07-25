@@ -1,0 +1,59 @@
+# ========================================
+# Harness-DeepAgents 课件 + gstack-agent 完整依赖
+# ----------------------------------------
+# Conda env: harness  (Python 3.11)
+# 更新日期: 2026-04-29
+# 安装：
+#   pip install -r requirements.txt
+# 国内镜像加速：
+#   pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+# ========================================
+
+
+# ── Jupyter Notebook 环境 ──
+jupyter==1.1.1
+notebook==7.2.2
+ipykernel==6.29.5
+nbformat==5.10.4
+
+
+# ── Agent 框架核心 ──
+deepagents==0.5.3
+langchain==1.2.15
+langgraph==1.1.10
+langgraph-cli==0.4.24                # langgraph dev 服务（ipynb 第 7 章用到）
+
+
+# ── LangChain 生态（传递依赖显式 pin） ──
+langchain-core==1.3.2
+langchain-community==0.4.1
+langchain-text-splitters==1.1.2
+langgraph-sdk==0.3.13
+langgraph-checkpoint==4.0.3
+langgraph-prebuilt==1.0.12
+langgraph-runtime-inmem==0.28.0      # langgraph dev 内存运行时
+
+
+# ── LLM Provider（教学一次装齐，方便课堂切换） ──
+langchain-deepseek==1.0.1
+langchain-openai==1.2.1
+langchain-anthropic==1.4.1
+langchain-google-genai==4.2.2
+anthropic==0.97.0
+openai==2.32.0
+
+
+# ── 通用工具 ──
+python-dotenv==1.0.1
+pydantic==2.13.3
+rich==15.0.0
+
+
+# ========================================
+# 说明：
+# 1. Jupyter 环境为课件运行必需
+# 2. DeepAgents 固定 0.5.3（包含虚拟文件系统 + Middleware 系统）
+# 3. langgraph-cli + langgraph-runtime-inmem 是第 7 章 langgraph dev 服务必需
+# 4. LLM Provider 一次装齐（教学切换方便），课堂默认走 DeepSeek
+# 5. 全部 == 精确版本，避免课堂环境漂移
+# ========================================

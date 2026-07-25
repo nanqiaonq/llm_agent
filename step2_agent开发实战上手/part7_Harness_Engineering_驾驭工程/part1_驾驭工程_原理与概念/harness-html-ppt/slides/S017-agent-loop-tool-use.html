@@ -1,0 +1,60 @@
+<!-- S017 Agent Loop + Tool Use -->
+<style>
+  #s17-wrap { width:100%; max-width:900px; margin:0 auto; }
+  #s17-title { font-family:var(--font-heading); font-size:clamp(1.4rem,2.6vw,2rem); font-weight:700; color:var(--primary); text-align:center; opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s17-pair { display:flex; gap: 1.7rem; margin-top: 1.8rem; flex-wrap:nowrap; }
+  .s17-col { flex:1; min-width:0; background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:12px; padding: 1.2rem 1.4rem; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; }
+  .s17-col.visible { opacity:1; transform:translateY(0); }
+  .s17-col:hover { border-color:var(--accent); }
+  .s17-col-head { display:flex; align-items:center; gap:.4rem; margin-bottom: .55rem; padding-bottom:.3rem; border-bottom:1px solid var(--card-border); }
+  .s17-num { width:1.5rem; height:1.5rem; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:.7rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .s17-name { font-family:var(--font-heading); font-size:clamp(1rem,1.4vw,1.15rem); font-weight:700; color:var(--primary); }
+  .s17-fix { font-size:clamp(.6rem,.9vw,.7rem); color:var(--accent); margin-left:auto; }
+  .s17-def { font-size:clamp(.82rem,1.1vw,.95rem); color:var(--card-text); line-height:1.65; margin-bottom: .65rem; }
+  .s17-ana { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); line-height:1.65; padding:.5rem .6rem; background:rgba(45,90,122,.04); border-radius:6px; margin-bottom: .65rem; }
+  .s17-code { background:rgba(30,35,45,.85); backdrop-filter:blur(8px); border-radius:8px; padding:.8rem 1rem; font-family:'SF Mono',monospace; font-size:clamp(.78rem,1.05vw,.9rem); color:#d4d4d4; line-height:1.7; overflow-x:auto; white-space:pre-wrap; }
+  .s17-code .k { color:#c586c0; } .s17-code .f { color:#dcdcaa; } .s17-code .s { color:#ce9178; } .s17-code .c { color:#6a9955; }
+  @media(max-width:700px){ #s17-pair{ flex-direction:column; } }
+</style>
+
+<div id="s17-wrap">
+  <div id="s17-title">7.1 Agent Loop + 7.2 Tool Use</div>
+  <div id="s17-pair">
+    <div class="s17-col">
+      <div class="s17-col-head"><div class="s17-num">1</div><div class="s17-name">Agent Loop 四相循环</div><span class="s17-fix">救 ①</span></div>
+      <div class="s17-def">Gather → Action → Verify → Iterate，硬性加上 max_iterations 和显式终止条件。</div>
+      <div class="s17-ana"><strong>类比</strong>：驾校教练的四步口诀——看路况 → 踩油门 → 看前方 → 调整方向。教练给你定了"跑 10 圈必须停"的硬规则。</div>
+      <div class="s17-code">
+<span class="c"># for 循环代替 while True</span>
+<span class="k">for</span> i <span class="k">in</span> <span class="f">range</span>(<span class="s">MAX_ITER</span>):
+    context = <span class="f">gather_context</span>(state)
+    action  = <span class="f">take_action</span>(context)
+    result  = <span class="f">verify</span>(action)
+    state   = <span class="f">iterate</span>(state, result)
+    <span class="k">if</span> state.<span class="f">is_done</span>(): <span class="k">break</span>
+      </div>
+    </div>
+    <div class="s17-col">
+      <div class="s17-col-head"><div class="s17-num">2</div><div class="s17-name">Tool Use 工具编排</div><span class="s17-fix">救 ④</span></div>
+      <div class="s17-def">所有工具调用包裹在结构化 schema 里，失败时返回 {"status": "error"}，不是空字符串。</div>
+      <div class="s17-ana"><strong>类比</strong>：USB-C 接口——host 能读到设备身份、能力、故障码；不兼容也返回"设备不识别"，而非死线静默。</div>
+      <div class="s17-code">
+<span class="k">try</span>:
+    result = <span class="f">TOOL_REGISTRY</span>[tool_name](**kwargs)
+    <span class="k">return</span> {<span class="s">"status"</span>: <span class="s">"ok"</span>, <span class="s">"result"</span>: result}
+<span class="k">except</span> <span class="f">Exception</span> <span class="k">as</span> e:
+    <span class="k">return</span> {<span class="s">"status"</span>: <span class="s">"error"</span>, <span class="s">"error"</span>: <span class="f">str</span>(e)}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s17-title');
+  var cols=document.querySelectorAll('.s17-col');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ cols[0].classList.add('visible'); },500);
+  setTimeout(function(){ cols[1].classList.add('visible'); },800);
+})();
+</script>

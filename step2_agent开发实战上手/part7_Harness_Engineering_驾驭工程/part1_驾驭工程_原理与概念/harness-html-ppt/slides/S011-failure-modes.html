@@ -1,0 +1,80 @@
+<!-- S011 八大故障模式清单 -->
+<div style="width:100%;max-width:900px;">
+  <div class="slide-header" style="text-align:center;margin-bottom:1.2rem;">
+    <div class="chapter-badge anim-fade-in" style="animation-delay:0.1s;opacity:0;">问题轴</div>
+    <h2 class="slide-title anim-fade-in" style="animation-delay:0.2s;opacity:0;">八大故障模式清单</h2>
+    <p class="anim-fade-in" style="animation-delay:0.3s;opacity:0;color:var(--text-dim);font-size:0.85rem;">本课最重要的记忆载体——30 秒内背出来</p>
+  </div>
+
+  <div class="card-grid card-grid-4" style="max-width:850px;margin:0 auto;">
+    <div class="glass-card anim-slide-up" style="animation-delay:0.35s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">1</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">循环失控</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：while True 或无终止验证<br><strong>后果</strong>：API 额度耗尽、资源无限占用</div>
+    </div>
+
+    <div class="glass-card anim-slide-up" style="animation-delay:0.4s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">2</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">Context 溢出</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：messages 无限 append<br><strong>后果</strong>：超 window 报错、token 费用失控</div>
+    </div>
+
+    <div class="glass-card anim-slide-up" style="animation-delay:0.45s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">3</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">Cache Miss</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：前缀在循环内被改动<br><strong>后果</strong>：延迟翻倍、费用翻倍</div>
+    </div>
+
+    <div class="glass-card anim-slide-up" style="animation-delay:0.5s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">4</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">Tool 错误吞</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：except 吞异常或丢 returncode<br><strong>后果</strong>：在错误基础上继续操作</div>
+    </div>
+
+    <div class="glass-card anim-slide-up" style="animation-delay:0.55s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">5</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">状态丢失</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：无 progress 文件<br><strong>后果</strong>：session 关闭全丢，无法续传</div>
+    </div>
+
+    <div class="glass-card anim-slide-up" style="animation-delay:0.6s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">6</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">缺权限闸</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：rm -rf / sudo 直接执行<br><strong>后果</strong>：数据毁损、生产事故</div>
+    </div>
+
+    <div class="glass-card anim-slide-up" style="animation-delay:0.65s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">7</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">缺自动化评审</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：agent 自评无第三方把关<br><strong>后果</strong>：发现问题时产物已交付</div>
+    </div>
+
+    <div class="glass-card anim-slide-up" style="animation-delay:0.7s;opacity:0;">
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem;">
+        <span class="fault-badge">8</span>
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--primary);font-size:1.15rem;">成本失控</span>
+      </div>
+      <div style="font-size:0.95rem;color:var(--card-text);line-height:1.65;"><strong>现场</strong>：无 token budget<br><strong>后果</strong>：长任务耗尽月度 API 预算</div>
+    </div>
+  </div>
+
+  <div class="anim-fade-in" style="animation-delay:0.9s;opacity:0;margin-top: 1.8rem;text-align:center;">
+    <div style="display:inline-block;background:rgba(193,127,89,0.08);border:1px solid rgba(193,127,89,0.2);border-radius:0.6rem;padding:0.6rem 1.2rem;font-size:0.8rem;color:var(--accent);">
+      <strong>学习钩子</strong>：从下一节开始，每当看到一个新机制，先问自己"它救的是哪一条？"
+    </div>
+  </div>
+</div>

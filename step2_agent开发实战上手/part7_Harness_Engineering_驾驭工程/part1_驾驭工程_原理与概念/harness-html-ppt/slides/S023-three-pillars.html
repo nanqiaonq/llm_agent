@@ -1,0 +1,115 @@
+<!-- S023 Three Pillars Overview -->
+<style>
+  #s23-wrap { width:100%; max-width:1180px; margin:0 auto; text-align:center; }
+  #s23-title { font-family:var(--font-heading); font-size:clamp(1.5rem,2.8vw,2.15rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; letter-spacing:.01em; }
+  #s23-title .s23-axis { color:var(--accent); font-weight:700; }
+  #s23-subtitle { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); margin-top:.35rem; opacity:0; transition:opacity .5s ease; }
+  #s23-pillars { display:flex; gap: 1.2rem; justify-content:center; align-items:stretch; margin-top: 1.5rem; flex-wrap:nowrap; }
+  .s23-pillar { flex:1; min-width:0; background:rgba(255,255,255,0.78); backdrop-filter:blur(12px); border:1.5px solid var(--card-border); border-radius:12px; padding:1.1rem 1.05rem 1rem; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; text-align:left; box-shadow:0 4px 20px rgba(45,90,122,0.06); display:flex; flex-direction:column; }
+  .s23-pillar.visible { opacity:1; transform:translateY(0); }
+  .s23-pillar:hover { border-color:var(--accent); }
+  .s23-head { display:flex; align-items:center; gap:.55rem; margin-bottom:.55rem; }
+  .s23-icon { font-size:clamp(1.35rem,2vw,1.6rem); flex-shrink:0; }
+  .s23-name { font-family:var(--font-heading); font-size:clamp(.98rem,1.35vw,1.12rem); font-weight:700; color:var(--primary); flex:1; line-height:1.2; }
+  .s23-badge { font-size:clamp(.66rem,.85vw,.74rem); font-weight:700; padding:.2rem .55rem; border-radius:10px; white-space:nowrap; letter-spacing:.02em; }
+  .s23-b-in  { background:rgba(45,90,122,.14); color:var(--primary); }
+  .s23-b-ctl { background:rgba(193,127,89,.16); color:var(--accent); }
+  .s23-b-gc  { background:rgba(39,174,96,.14); color:#1f7a44; }
+  .s23-tag { font-size:clamp(.78rem,1vw,.88rem); color:var(--card-text); line-height:1.55; margin-bottom:.6rem; font-style:italic; border-left:2.5px solid var(--accent); padding-left:.6rem; }
+  .s23-q { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--accent); font-weight:700; margin-bottom:.55rem; }
+  .s23-ex { background:rgba(45,90,122,.04); border-radius:8px; padding:.55rem .65rem .45rem; margin-bottom:.6rem; flex:1; }
+  .s23-ex-title { font-size:clamp(.7rem,.9vw,.78rem); color:var(--primary); font-weight:700; margin-bottom:.35rem; letter-spacing:.02em; }
+  .s23-ex ul { list-style:none; padding:0; margin:0; }
+  .s23-ex li { font-size:clamp(.76rem,1vw,.85rem); color:var(--card-text); line-height:1.58; padding:.12rem 0 .12rem 1rem; position:relative; }
+  .s23-ex li::before { content:"·"; position:absolute; left:.35rem; color:var(--accent); font-weight:700; }
+  .s23-ex li strong { color:var(--primary); font-weight:700; }
+  .s23-essence { font-size:clamp(.76rem,1vw,.84rem); color:var(--text-primary); font-weight:600; margin-bottom:.45rem; padding:.4rem .55rem; background:rgba(193,127,89,.08); border-radius:6px; line-height:1.5; }
+  .s23-reps { font-size:clamp(.7rem,.92vw,.78rem); color:var(--text-dim); line-height:1.55; }
+  .s23-reps strong { color:var(--primary); }
+  #s23-note { max-width:780px; margin:.9rem auto 0; font-size:clamp(.7rem,1vw,.8rem); color:var(--text-dim); line-height:1.55; text-align:center; opacity:0; transition:opacity .5s ease; }
+  @media(max-width:820px){ #s23-pillars{ flex-direction:column; } }
+</style>
+
+<div id="s23-wrap">
+  <div id="s23-title">三支柱总图：<span class="s23-axis">输入端 × 控制流 × 状态流</span></div>
+  <div id="s23-subtitle">Harness 的三个工程维度——正交坐标系，每条柱都给 Claude Code 的三个落地实例</div>
+  <div id="s23-pillars">
+
+    <div class="s23-pillar">
+      <div class="s23-head">
+        <div class="s23-icon">👁</div>
+        <div class="s23-name">Context Engineering</div>
+        <div class="s23-badge s23-b-in">输入端</div>
+      </div>
+      <div class="s23-tag">怎么在第一时间把对的资料喂给它</div>
+      <div class="s23-q">Agent 能"看见"什么？</div>
+      <div class="s23-ex">
+        <div class="s23-ex-title">Claude Code 三例</div>
+        <ul>
+          <li><strong>CLAUDE.md</strong>：项目目录级 RAG system prompt</li>
+          <li><strong>session compaction</strong>：长会话自动压缩上下文</li>
+          <li><strong>progress 文件</strong>：把进度落盘，跨 session 续传</li>
+        </ul>
+      </div>
+      <div class="s23-essence">本质：整理 agent 看见的信息</div>
+      <div class="s23-reps"><strong>代表机制</strong>：Context Management · Feature List · Progress Tracking · Subagents</div>
+    </div>
+
+    <div class="s23-pillar">
+      <div class="s23-head">
+        <div class="s23-icon">🔧</div>
+        <div class="s23-name">Architectural Constraints</div>
+        <div class="s23-badge s23-b-ctl">控制流</div>
+      </div>
+      <div class="s23-tag">它发疯的时候，你怎么硬生生按住它</div>
+      <div class="s23-q">Agent 能"做"什么？</div>
+      <div class="s23-ex">
+        <div class="s23-ex-title">Claude Code 三例</div>
+        <ul>
+          <li><strong>27 种 hook</strong>：在工具调用前后插入约束</li>
+          <li><strong>Permission Gate</strong>：危险操作必须人工确认</li>
+          <li><strong>Task tool / subagent</strong>：分治隔离，主 context 不污染</li>
+        </ul>
+      </div>
+      <div class="s23-essence">本质：设红线、拉电闸，约束 agent 能做什么</div>
+      <div class="s23-reps"><strong>代表机制</strong>：Agent Loop · Tool Use · Verification Loop · Generator-Evaluator</div>
+    </div>
+
+    <div class="s23-pillar">
+      <div class="s23-head">
+        <div class="s23-icon">♻</div>
+        <div class="s23-name">Garbage Collection</div>
+        <div class="s23-badge s23-b-gc">状态流</div>
+      </div>
+      <div class="s23-tag">内存快被撑爆时，怎么有策略地遗忘</div>
+      <div class="s23-q">Agent 能"跑多久"？</div>
+      <div class="s23-ex">
+        <div class="s23-ex-title">Claude Code 三例</div>
+        <ul>
+          <li><strong>token budget</strong>：防爆预算，超阈值强制收敛</li>
+          <li><strong>session compaction</strong>：回收过期上下文</li>
+          <li><strong>compaction → reset</strong>：Anthropic 2025→2026 路线</li>
+        </ul>
+      </div>
+      <div class="s23-essence">本质：容错与动态收敛，策略性遗忘</div>
+      <div class="s23-reps"><strong>代表机制</strong>：Context Management（辅）· Feature List（辅）· Subagents（辅）· Token Budget（第二节补）</div>
+    </div>
+
+  </div>
+  <div id="s23-note">
+    三支柱不是单一作者原创，是综合 <strong style="color:var(--primary);">Martin Fowler 系 / Anthropic / Phil Schmid</strong> 多来源抽象的<strong style="color:var(--primary);">工程维度框架</strong>——Claude Code 把三柱全部落成可见实现。
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s23-title');
+  var subtitle=document.getElementById('s23-subtitle');
+  var pillars=document.querySelectorAll('.s23-pillar');
+  var note=document.getElementById('s23-note');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  pillars.forEach(function(p,i){ setTimeout(function(){ p.classList.add('visible'); },700+i*200); });
+  setTimeout(function(){ note.style.opacity='1'; },1500);
+})();
+</script>

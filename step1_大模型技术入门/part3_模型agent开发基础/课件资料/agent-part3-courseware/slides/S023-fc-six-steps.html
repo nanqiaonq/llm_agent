@@ -1,0 +1,27 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;padding-top:4.2vh;padding-bottom:3.8vh;">
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">技术层 · 1.2</span></div>
+    <h2 class="page-title animate-ready delay-2" style="font-size:clamp(1.7rem,2.8vw,2.2rem);margin-bottom:1.8vh;">Function Calling 六步完整流程</h2>
+    <p class="page-subtitle animate-ready delay-3" style="font-size:0.92em;margin-bottom:2.2vh;">点击“下一步”查看每一步的执行者与关键动作</p>
+
+    <div class="animate-ready delay-4 role-chip-row" style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:1.8vh;">
+        <span id="role-user" style="padding:6px 12px;border-radius:99px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);font-size:0.75em;color:#15803d;">👤 用户</span>
+        <span id="role-app" style="padding:6px 12px;border-radius:99px;background:rgba(37,99,235,0.10);border:1px solid rgba(37,99,235,0.25);font-size:0.75em;color:#1d4ed8;">🖥️ App 代码</span>
+        <span id="role-llm" style="padding:6px 12px;border-radius:99px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.28);font-size:0.75em;color:#6d28d9;">🧠 LLM</span>
+    </div>
+
+    <div class="animate-ready delay-5 fc-step-grid" style="width:100%;max-width:1120px;gap:14px;">
+        <div class="fc-step" data-step="1" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:14px 10px;text-align:left;min-height:108px;"><div style="font-size:0.7em;color:#16a34a;font-weight:700;">1 用户输入</div><div style="font-size:0.74em;color:var(--text-secondary);line-height:1.5;margin-top:4px;">用户提出请求</div></div>
+        <div class="fc-step" data-step="2" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:14px 10px;text-align:left;min-height:108px;"><div style="font-size:0.7em;color:#7c3aed;font-weight:700;">2 LLM 分析</div><div style="font-size:0.74em;color:var(--text-secondary);line-height:1.5;margin-top:4px;">判断是否调用工具</div></div>
+        <div class="fc-step" data-step="3" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:14px 10px;text-align:left;min-height:108px;"><div style="font-size:0.7em;color:#7c3aed;font-weight:700;">3 生成指令</div><div style="font-size:0.74em;color:var(--text-secondary);line-height:1.5;margin-top:4px;">返回 JSON {name,args}</div></div>
+        <div class="fc-step" data-step="4" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:14px 10px;text-align:left;min-height:108px;"><div style="font-size:0.7em;color:#2563eb;font-weight:700;">4 代码执行</div><div style="font-size:0.74em;color:var(--text-secondary);line-height:1.5;margin-top:4px;">解析并调用函数</div></div>
+        <div class="fc-step" data-step="5" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:14px 10px;text-align:left;min-height:108px;"><div style="font-size:0.7em;color:#2563eb;font-weight:700;">5 结果回传</div><div style="font-size:0.74em;color:var(--text-secondary);line-height:1.5;margin-top:4px;">role:tool 回传 LLM</div></div>
+        <div class="fc-step" data-step="6" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:14px 10px;text-align:left;min-height:108px;"><div style="font-size:0.7em;color:#16a34a;font-weight:700;">6 最终回答</div><div style="font-size:0.74em;color:var(--text-secondary);line-height:1.5;margin-top:4px;">LLM 输出自然语言</div></div>
+    </div>
+
+    <div id="fc-step-desc" class="animate-ready delay-6" style="margin-top:2.1vh;padding:12px 20px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.24);border-radius:10px;max-width:980px;font-size:0.83em;color:var(--text-secondary);">当前步骤：点击下一步开始流程。</div>
+
+    <div class="animate-ready delay-7" style="margin-top:1.9vh;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;">
+        <button id="fc-next-btn" class="demo-btn" style="margin-top:0;padding:10px 20px;font-size:0.9rem;">▶ 下一步</button>
+        <a class="sim-link-btn" href="react_visualizer.html" target="_blank" rel="noopener">🚀 启动 ReAct 交互模拟器</a>
+    </div>
+</div>

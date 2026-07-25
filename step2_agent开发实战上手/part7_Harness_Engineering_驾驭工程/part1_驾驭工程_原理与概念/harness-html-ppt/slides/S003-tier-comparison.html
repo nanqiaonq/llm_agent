@@ -1,0 +1,69 @@
+<!-- S003 三层次能力对比 -->
+<div style="width:100%;max-width:900px;">
+  <div class="slide-header" style="text-align:center;margin-bottom:1.5rem;">
+    <div class="chapter-badge anim-fade-in" style="animation-delay:0.1s;opacity:0;">认知升维</div>
+    <h2 class="slide-title anim-fade-in" style="animation-delay:0.2s;opacity:0;">三层次能力对比</h2>
+    <p class="anim-fade-in" style="animation-delay:0.3s;opacity:0;color:var(--text-dim);font-size:0.9rem;">差异从来不在生成代码，在持续行动</p>
+  </div>
+
+  <div class="anim-slide-up" style="animation-delay:0.4s;opacity:0;">
+    <style>
+      .center { width: auto; display: table; margin-left: auto; margin-right: auto; }
+    </style>
+    <div class="center">
+      <table class="data-table" style="max-width:800px;">
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>ChatGPT（裸对话）</th>
+            <th>ChatGPT + Code Interpreter</th>
+            <th>Claude Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>能写代码吗</td>
+            <td>能</td>
+            <td>能</td>
+            <td>能</td>
+          </tr>
+          <tr>
+            <td>能真跑代码吗</td>
+            <td>否</td>
+            <td>能（沙箱内）</td>
+            <td>能（你本地）</td>
+          </tr>
+          <tr style="background:rgba(193,127,89,0.06);">
+            <td><strong>能读写你的文件系统吗</strong></td>
+            <td><strong>否</strong></td>
+            <td><strong>否</strong></td>
+            <td><strong>能（整个项目目录）</strong></td>
+          </tr>
+          <tr style="background:rgba(193,127,89,0.06);">
+            <td><strong>能跨工具编排吗</strong></td>
+            <td><strong>否</strong></td>
+            <td><strong>部分</strong></td>
+            <td><strong>能</strong></td>
+          </tr>
+          <tr style="background:rgba(193,127,89,0.06);">
+            <td><strong>能持续 30 分钟不失败吗</strong></td>
+            <td><strong>否</strong></td>
+            <td><strong>否</strong></td>
+            <td><strong>能（机制保护）</strong></td>
+          </tr>
+          <tr style="background:rgba(193,127,89,0.06);">
+            <td><strong>任务失败时会自己补救吗</strong></td>
+            <td><strong>否</strong></td>
+            <td><strong>部分</strong></td>
+            <td><strong>能</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="anim-fade-in" style="animation-delay:0.8s;opacity:0;margin-top: 1.8rem;text-align:center;font-size:0.85rem;color:var(--card-text);line-height:1.6;max-width:700px;margin-left:auto;margin-right:auto;">
+    <strong style="color:var(--accent);">关键反差</strong>：前两行三列几乎没有差距（都能写代码），但从第 3 行开始三列几乎跨了三个时代。<br>
+    而三列用的模型——都是当前最前沿的旗舰。造成落差的是模型<strong>外面</strong>那一层：harness。
+  </div>
+</div>

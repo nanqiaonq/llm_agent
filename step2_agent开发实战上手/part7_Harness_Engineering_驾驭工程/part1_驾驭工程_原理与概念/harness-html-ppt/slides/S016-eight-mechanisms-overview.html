@@ -1,0 +1,81 @@
+<!-- S016 Eight Mechanisms Overview -->
+<style>
+  #s16-wrap { width:100%; max-width:880px; margin:0 auto; }
+  #s16-title { font-family:var(--font-heading); font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:700; color:var(--primary); text-align:center; opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s16-subtitle { text-align:center; font-size:clamp(.72rem,1vw,.85rem); color:var(--text-dim); margin-top:.3rem; opacity:0; transition:opacity .5s ease; }
+  #s16-grid { display:grid; grid-template-columns:1fr 1fr; gap: 1.7rem; margin-top: 1.8rem; }
+  .s16-card { background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:10px; padding: 1rem 1.2rem; opacity:0; transform:translateY(10px); transition:opacity .4s ease, transform .4s ease, border-color .3s ease; }
+  .s16-card.visible { opacity:1; transform:translateY(0); }
+  .s16-card:hover { border-color:var(--accent); }
+  .s16-head { display:flex; align-items:center; gap:.35rem; margin-bottom:.2rem; }
+  .s16-num { width:1.3rem; height:1.3rem; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:.65rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .s16-name { font-family:var(--font-heading); font-size:clamp(.88rem, 1.3vw, 1.05rem); font-weight:700; color:var(--primary); }
+  .s16-fix { font-size:clamp(.68rem, .95vw, .78rem); color:var(--accent); margin-left:auto; white-space:nowrap; }
+  .s16-def { font-size:clamp(.82rem, 1.15vw, .95rem); color:var(--card-text); line-height:1.7; }
+  .s16-def strong { font-weight:700; color:var(--text-primary); }
+  .s16-source { font-size:clamp(.68rem, .95vw, .78rem); color:var(--text-dim); margin-top:.25rem; border-top:1px dashed var(--card-border); padding-top:.2rem; }
+  #s16-note { max-width:720px; margin:.8rem auto 0; font-size:clamp(.7rem,1vw,.82rem); color:var(--text-dim); line-height:1.5; text-align:center; opacity:0; transition:opacity .5s ease; }
+</style>
+
+<div id="s16-wrap">
+  <div id="s16-title">八大机制总览</div>
+  <div id="s16-subtitle">每个机制 = 一句话定义 + 官方出处 + 解哪条故障 + 生活化类比</div>
+  <div id="s16-grid">
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">1</div><div class="s16-name">Agent Loop 四相循环</div><span class="s16-fix">救 ①</span></div>
+      <div class="s16-def"><strong>Gather → Action → Verify → Iterate</strong>，带 <strong>max_iterations</strong> 硬刹车</div>
+      <div class="s16-source">Claude Agent SDK 2025-09-29</div>
+    </div>
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">2</div><div class="s16-name">Tool Use 工具编排</div><span class="s16-fix">救 ④</span></div>
+      <div class="s16-def"><strong>schema 契约</strong>让工具失败可被<strong>结构化回传</strong>，不是空字符串</div>
+      <div class="s16-source">Claude Agent SDK + MCP 2025-11-25</div>
+    </div>
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">3</div><div class="s16-name">Progress Tracking 进度追踪</div><span class="s16-fix">救 ⑤</span></div>
+      <div class="s16-def"><strong>claude-progress.txt</strong> + <strong>git commit</strong> 跨 session 续传</div>
+      <div class="s16-source">Anthropic 2025-11-26</div>
+    </div>
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">4</div><div class="s16-name">Context Management 上下文管理</div><span class="s16-fix">救 ②③</span></div>
+      <div class="s16-def"><strong>监控 token</strong> + <strong>阈值压缩/重置</strong>，保持前缀稳定命中 cache</div>
+      <div class="s16-source">Agent SDK Compaction 文档</div>
+    </div>
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">5</div><div class="s16-name">Feature List 任务拆解</div><span class="s16-fix">救 ②源头</span></div>
+      <div class="s16-def"><strong>JSON 清单</strong> + <strong>单次只做一件</strong>，从源头切细 context</div>
+      <div class="s16-source">Anthropic 2025-11-26</div>
+    </div>
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">6</div><div class="s16-name">Verification Loop 验证闭环</div><span class="s16-fix">救 ④下游</span></div>
+      <div class="s16-def"><strong>Playwright / pytest 真机验证</strong>，不只看 LLM 自评</div>
+      <div class="s16-source">Anthropic 2025-11-26</div>
+    </div>
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">7</div><div class="s16-name">Subagents 子代理分治</div><span class="s16-fix">救 ②另一解</span></div>
+      <div class="s16-def"><strong>独立 context</strong> 隔离子任务，主 agent <strong>不被中间过程污染</strong></div>
+      <div class="s16-source">Claude Agent SDK 2025-09-29</div>
+    </div>
+    <div class="s16-card">
+      <div class="s16-head"><div class="s16-num">8</div><div class="s16-name">Generator-Evaluator 生成-评估对抗</div><span class="s16-fix">救 ⑦</span></div>
+      <div class="s16-def"><strong>Planner + Generator + Evaluator</strong> 三角色分离，<strong>GAN 启发</strong></div>
+      <div class="s16-source">Anthropic 2026-03-24 / 作者 Rajasekaran</div>
+    </div>
+  </div>
+  <div id="s16-note">
+    ⑥缺权限闸 和 ⑧成本失控在第一节课仅部分覆盖，<strong style="color:var(--primary);">主解由第二节课的 Permission Gate + Token Budget 交付</strong>。
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s16-title');
+  var subtitle=document.getElementById('s16-subtitle');
+  var cards=document.querySelectorAll('.s16-card');
+  var note=document.getElementById('s16-note');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  cards.forEach(function(c,i){ setTimeout(function(){ c.classList.add('visible'); },600+i*150); });
+  setTimeout(function(){ note.style.opacity='1'; },2000);
+})();
+</script>

@@ -1,0 +1,114 @@
+<!-- S010 naive agent 失效现场 -->
+<div style="width:100%;max-width:1000px;">
+  <div class="slide-header" style="text-align:center;margin-bottom:1rem;">
+    <div class="chapter-badge anim-fade-in" style="animation-delay:0.1s;opacity:0;">失效现场</div>
+    <h2 class="slide-title anim-fade-in" style="animation-delay:0.2s;opacity:0;font-size:clamp(1.4rem,3vw,2rem);">naive agent：教科书式的朴素实现</h2>
+  </div>
+
+  <div style="display:flex;gap: 1.7rem;align-items:flex-start;">
+    <div class="code-block anim-slide-up" style="animation-delay:0.3s;opacity:0;flex:1.2;position:relative;">
+      <div style="position:absolute;top:0.5rem;right:0.8rem;font-size:0.65rem;color:#6b8a7a;">91 行 · 8 个故障点</div>
+      <pre style="margin:0;white-space:pre-wrap;word-break:break-all;"><code><span class="comment"># naive_agent_demo.py — 教学示意，保留所有缺陷</span>
+<span class="comment"># 目的：演示没有 Harness 保护的 tool-calling 循环如何失效</span>
+
+import os, json, subprocess
+from openai import OpenAI
+
+MODEL = os.getenv("OPENAI_MODEL", "gpt-5")
+SAFE_MAX_ITER = 3  <span class="comment"># 课堂安全限制</span>
+client = OpenAI()
+
+tools = [...]  <span class="comment"># read_file / write_file / run_pytest</span>
+
+def read_file(path):
+<span class="fault-line" data-fault="4">    # 故障④：FileNotFoundError 直接往上抛，被主循环 except 吞掉
+    with open(path) as f: return f.read()</span>
+
+def write_file(path, content):
+<span class="fault-line" data-fault="6">    # 故障⑥：没有权限闸，agent 可直接覆盖任何文件
+    with open(path, "w") as f: f.write(content)
+    return "done"</span>
+
+def run_pytest():
+    result = subprocess.run(["pytest"], capture_output=True, text=True)
+<span class="fault-line" data-fault="4">    # 故障④：returncode 被丢弃，agent 看不到失败信号
+    return result.stdout</span>
+
+def naive_agent(task):
+    messages = [
+<span class="fault-line" data-fault="3">        # 故障③：system prompt 嵌入变化计数器，每轮破坏前缀
+        {"role": "system", "content": "你是编程助手。[session_iter=0]"},</span>
+        {"role": "user", "content": task}
+    ]
+<span class="fault-line" data-fault="1">    # 故障①：真正的 naive agent 这里是 while True
+    for iteration in range(SAFE_MAX_ITER):</span>
+<span class="fault-line" data-fault="3">        messages[0]["content"] = f"你是编程助手。[session_iter={iteration}]"</span>
+        response = client.chat.completions.create(
+            model=MODEL, messages=messages, tools=tools
+        )
+        msg = response.choices[0].message
+<span class="fault-line" data-fault="2">        messages.append(msg)  # 故障②：messages 无限膨胀</span>
+
+        if msg.tool_calls:
+            for tc in msg.tool_calls:
+                fn_name = tc.function.name
+                fn_args = json.loads(tc.function.arguments)
+                try:
+                    if fn_name == "read_file": result = read_file(**fn_args)
+                    elif fn_name == "write_file": result = write_file(**fn_args)
+                    elif fn_name == "run_pytest": result = run_pytest()
+                except Exception:
+<span class="fault-line" data-fault="4">                    result = ""  # 故障④：异常被吞成空字符串</span>
+                messages.append({"role": "tool", "tool_call_id": tc.id, "content": result})
+        else:
+<span class="fault-line" data-fault="7">            break  # 故障⑦：agent 自己说完成就退出，无独立评审</span>
+<span class="fault-line" data-fault="5">    # 故障⑤：退出即丢失，下次重启从零开始</span>
+<span class="fault-line" data-fault="8">    # 故障⑧：没有任何 cost budget</span>
+
+naive_agent("读取 test_calculator.py，修复失败测试，运行 pytest")
+</code></pre>
+    </div>
+
+    <div style="flex:0.8;display:flex;flex-direction:column;gap:0.5rem;">
+      <div class="anim-slide-right" style="animation-delay:0.5s;opacity:0;">
+        <div style="font-family:var(--font-heading);font-size:0.85rem;font-weight:600;color:var(--primary);margin-bottom:0.3rem;">点击代码行查看故障详情</div>
+        <div id="fault-detail-panel" style="background:var(--card-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--card-border);border-radius:var(--card-radius);padding:1rem;font-size:0.8rem;color:var(--card-text);line-height:1.6;min-height:120px;">
+          <div style="color:var(--text-dim);font-style:italic;">将鼠标悬停在左侧标红的代码行上，查看对应的故障模式说明。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var faults = {
+    '1': { name: '① 循环失控', desc: 'while True 或无终止条件验证，模型以为任务没完就一直跑。后果：消耗 API 额度、无限占用资源。' },
+    '2': { name: '② Context 溢出', desc: 'messages.append 无限积累，轮次越多 prompt 越长。后果：超 context window 直接报错；token 费用失控。' },
+    '3': { name: '③ Cache Miss', desc: 'system prompt 或 messages 前缀在循环内被改动。后果：每轮都无法命中 prompt cache，延迟翻倍 + 费用翻倍。' },
+    '4': { name: '④ Tool 错误吞', desc: 'except Exception: result = "" 或 subprocess returncode 被丢。后果：agent 以为成功但实际失败，继续在错误基础上操作。' },
+    '5': { name: '⑤ 状态丢失', desc: '没有 progress 文件，session 一关全丢。后果：长任务无法跨天续传，kill 进程后完全从零开始。' },
+    '6': { name: '⑥ 缺权限闸', desc: '无 Permission Gate，rm -rf / sudo / git push --force 能直接跑。后果：数据毁损、生产事故。' },
+    '7': { name: '⑦ 缺自动化评审', desc: 'agent 自己说"做完了"但没有独立角色把关。后果：你发现问题时产物已交付。' },
+    '8': { name: '⑧ 成本失控', desc: '无 token budget，循环跑多久消耗多少成本。后果：一个长任务可能耗尽你一个月的 API 预算。' }
+  };
+
+  var panel = document.getElementById('fault-detail-panel');
+  var lines = document.querySelectorAll('.fault-line');
+
+  lines.forEach(function(line) {
+    line.addEventListener('mouseenter', function() {
+      var fid = this.getAttribute('data-fault');
+      var f = faults[fid];
+      if (f && panel) {
+        panel.innerHTML = '<div style="font-family:var(--font-heading);font-weight:700;color:var(--accent);margin-bottom:0.4rem;">' + f.name + '</div><div>' + f.desc + '</div>';
+      }
+    });
+    line.addEventListener('mouseleave', function() {
+      if (panel) {
+        panel.innerHTML = '<div style="color:var(--text-dim);font-style:italic;">将鼠标悬停在左侧标红的代码行上，查看对应的故障模式说明。</div>';
+      }
+    });
+  });
+})();
+</script>

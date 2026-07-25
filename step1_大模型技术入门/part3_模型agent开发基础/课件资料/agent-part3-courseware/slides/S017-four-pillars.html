@@ -1,0 +1,151 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s017-stage {
+            width: 100%;
+            max-width: 1120px;
+            min-height: 520px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .s017-node {
+            position: absolute;
+            width: 260px;
+            min-height: 128px;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--card-shadow);
+            padding: 18px 18px 16px;
+            text-align: left;
+            transition: transform 0.28s ease, box-shadow 0.28s ease;
+            animation: s017-float 5.4s ease-in-out infinite;
+        }
+
+        .s017-node:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 28px rgba(37, 99, 235, 0.16);
+        }
+
+        .s017-n1 { left: calc(50% - 440px); top: calc(50% - 190px); animation-delay: 0s; }
+        .s017-n2 { left: calc(50% + 180px); top: calc(50% - 190px); animation-delay: 0.9s; }
+        .s017-n3 { left: calc(50% - 440px); top: calc(50% + 62px); animation-delay: 1.5s; }
+        .s017-n4 { left: calc(50% + 180px); top: calc(50% + 62px); animation-delay: 2.1s; }
+
+        .s017-emoji {
+            font-size: 1.8em;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .s017-title {
+            font-size: 1.08em;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .s017-body {
+            font-size: 0.86em;
+            color: var(--text-secondary);
+            line-height: 1.62;
+        }
+
+        .s017-center {
+            position: absolute;
+            left: 42%;
+            top: 35%;
+            transform: translate(-50%, -50%);
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(37, 99, 235, 0.28);
+            box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.28);
+            animation: s017-pulse 2.4s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        .s017-center-icon {
+            font-size: 3.2em;
+            line-height: 1;
+        }
+
+        .s017-center-text {
+            margin-top: 2px;
+            font-size: 0.88em;
+            font-weight: 700;
+            color: #475569;
+            letter-spacing: 0.03em;
+        }
+
+
+        @keyframes s017-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes s017-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.16), 0 12px 24px rgba(37,99,235,0.12); }
+            50% { box-shadow: 0 0 0 12px rgba(124, 58, 237, 0.06), 0 16px 30px rgba(37,99,235,0.14); }
+        }
+
+        @media (max-width: 1180px) {
+            .s017-stage {
+                min-height: 520px;
+            }
+            .s017-node {
+                width: 236px;
+                min-height: 122px;
+                padding: 16px;
+            }
+            .s017-n1 { left: calc(50% - 404px); top: calc(50% - 186px); }
+            .s017-n2 { left: calc(50% + 168px); top: calc(50% - 186px); }
+            .s017-n3 { left: calc(50% - 404px); top: calc(50% + 64px); }
+            .s017-n4 { left: calc(50% + 168px); top: calc(50% + 64px); }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">第四章 · 4.1</span></div>
+    <h2 class="page-title animate-ready delay-2">Agent 四大核心特征</h2>
+    <p class="page-subtitle animate-ready delay-3" style="margin-bottom:1.8vh;">从“被动回答”升级到“主动完成任务”的能力拼图</p>
+
+    <div class="s017-stage animate-ready delay-4">
+        <div class="s017-center animate-ready delay-4">
+            <div class="s017-center-icon">🤖</div>
+            <div class="s017-center-text">AI Agent</div>
+        </div>
+
+        <div class="s017-node s017-n1 animate-ready delay-5" style="border-color:rgba(37,99,235,0.38);">
+            <div class="s017-emoji">🎯</div>
+            <div class="s017-title" style="color:#2563eb;">自主性 Autonomy</div>
+            <div class="s017-body">独立拆解任务并选择执行路径，从“被指挥”到“自驱动”。</div>
+        </div>
+
+        <div class="s017-node s017-n2 animate-ready delay-6" style="border-color:rgba(124,58,237,0.38);">
+            <div class="s017-emoji">👁️</div>
+            <div class="s017-title" style="color:#7c3aed;">感知能力 Perception</div>
+            <div class="s017-body">主动读取实时数据、文件与 API，从“读文本”到“感知世界”。</div>
+        </div>
+
+        <div class="s017-node s017-n3 animate-ready delay-7" style="border-color:rgba(8,145,178,0.38);">
+            <div class="s017-emoji">🧠</div>
+            <div class="s017-title" style="color:#0891b2;">推理规划 Reasoning</div>
+            <div class="s017-body">持续推理并动态重规划，让决策更稳健、可解释。</div>
+        </div>
+
+        <div class="s017-node s017-n4 animate-ready delay-8" style="border-color:rgba(22,163,74,0.38);">
+            <div class="s017-emoji">⚡</div>
+            <div class="s017-title" style="color:#16a34a;">行动执行 Action</div>
+            <div class="s017-body">调用 HTTP/SQL/文件工具执行真实操作，完成闭环任务。</div>
+        </div>
+    </div>
+
+    <div class="animate-ready delay-8" style="margin-top:1.2vh;padding:11px 22px;background:rgba(37,99,235,0.09);border:1px solid rgba(37,99,235,0.26);border-radius:10px;max-width:980px;font-size:0.86em;color:var(--text-secondary);">
+        四大能力协同工作，Agent 才能稳定完成复杂目标的闭环。
+    </div>
+</div>

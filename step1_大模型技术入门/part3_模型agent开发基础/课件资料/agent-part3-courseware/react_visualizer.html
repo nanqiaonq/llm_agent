@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReAct 模式交互模拟器</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/MotionPathPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/TextPlugin.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0f0f1a; --panel: #1a1a2e; --card: #1e293b;
+  --blue: #42affa; --purple: #a78bfa; --green: #22c55e;
+  --yellow: #fbbf24; --red: #ef4444; --orange: #f97316;
+  --text: #e2e8f0; --text-dim: #94a3b8; --border: #334155;
+}
+html, body { height: 100%; font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; background: var(--bg); color: var(--text); overflow: hidden; }
+
+/* ── Header ── */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-bottom: 1px solid var(--border); height: 56px; }
+.header h1 { font-size: 18px; font-weight: 700; background: linear-gradient(90deg, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.mode-switcher { display: flex; gap: 4px; background: var(--bg); border-radius: 8px; padding: 3px; }
+.mode-btn { padding: 6px 16px; border: none; border-radius: 6px; font-size: 13px; font-family: inherit; cursor: pointer; transition: all .25s; background: transparent; color: var(--text-dim); }
+.mode-btn.active { background: var(--blue); color: #fff; box-shadow: 0 0 12px rgba(66,175,250,.4); }
+.mode-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,.06); }
+
+/* ── Main Layout ── */
+.main { display: flex; height: calc(100vh - 56px - 56px); }
+.left-panel { width: 320px; min-width: 320px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+.center-stage { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── Messages Panel ── */
+.panel-header { padding: 14px 16px; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.panel-header .count { background: var(--blue); color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; min-width: 22px; text-align: center; }
+.messages-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.messages-list::-webkit-scrollbar { width: 5px; }
+.messages-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.msg-card { padding: 10px 12px; background: var(--card); border-radius: 8px; border-left: 3px solid var(--border); opacity: 0; transform: translateX(-20px); font-size: 12px; line-height: 1.6; }
+.msg-card.visible { opacity: 1; transform: translateX(0); }
+.msg-card .msg-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.msg-card .role-badge { font-size: 10px; padding: 1px 7px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+.msg-card .round-tag { font-size: 10px; color: var(--text-dim); margin-left: auto; }
+.msg-card .msg-content { color: var(--text-dim); white-space: pre-wrap; word-break: break-all; }
+.msg-card[data-role="system"] { border-left-color: var(--purple); }
+.msg-card[data-role="system"] .role-badge { background: rgba(167,139,250,.2); color: var(--purple); }
+.msg-card[data-role="user"] { border-left-color: var(--green); }
+.msg-card[data-role="user"] .role-badge { background: rgba(34,197,94,.2); color: var(--green); }
+.msg-card[data-role="assistant"] { border-left-color: var(--blue); }
+.msg-card[data-role="assistant"] .role-badge { background: rgba(66,175,250,.2); color: var(--blue); }
+.msg-card[data-role="tool"] { border-left-color: var(--yellow); }
+.msg-card[data-role="tool"] .role-badge { background: rgba(251,191,36,.2); color: var(--yellow); }
+
+/* ── Center: SVG + Detail ── */
+.svg-area { flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.detail-area { height: 220px; min-height: 220px; border-top: 1px solid var(--border); padding: 16px 24px; overflow-y: auto; background: var(--panel); }
+.detail-card { background: var(--card); border-radius: 10px; padding: 16px 20px; min-height: 100%; }
+.detail-card .detail-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.detail-card .detail-body { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+.detail-card .detail-body code { background: rgba(66,175,250,.12); color: var(--blue); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+.detail-card .detail-body .tool-block { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); border-radius: 6px; padding: 10px 14px; margin-top: 8px; font-family: inherit; }
+.detail-card .detail-body .obs-block { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2); border-radius: 6px; padding: 10px 14px; margin-top: 8px; }
+.detail-card .detail-body .final-block { background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.25); border-radius: 6px; padding: 10px 14px; margin-top: 8px; }
+
+/* ── FC Warning Banner ── */
+.fc-warning { display: none; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); border-radius: 8px; padding: 12px 16px; margin: 12px 24px; font-size: 13px; color: var(--red); text-align: center; }
+.fc-warning.show { display: block; }
+
+/* ── Safety Gauge ── */
+.gauge-wrap { position: absolute; top: 12px; right: 16px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); }
+.gauge-bar { width: 80px; height: 8px; background: var(--card); border-radius: 4px; overflow: hidden; }
+.gauge-fill { height: 100%; background: var(--green); border-radius: 4px; transition: width .4s, background .4s; }
+.gauge-fill.warn { background: var(--yellow); }
+.gauge-fill.danger { background: var(--red); }
+
+/* ── Bottom Bar ── */
+.bottom-bar { height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 24px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-top: 1px solid var(--border); }
+.ctrl-btn { padding: 8px 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); font-size: 13px; font-family: inherit; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 6px; }
+.ctrl-btn:hover { border-color: var(--blue); background: rgba(66,175,250,.1); }
+.ctrl-btn:disabled { opacity: .35; cursor: not-allowed; border-color: var(--border); background: var(--card); }
+.ctrl-btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ctrl-btn.primary:hover { box-shadow: 0 0 16px rgba(66,175,250,.4); }
+.ctrl-btn.primary:disabled { background: var(--border); border-color: var(--border); box-shadow: none; }
+.progress-wrap { flex: 1; max-width: 300px; display: flex; align-items: center; gap: 10px; }
+.progress-bar { flex: 1; height: 6px; background: var(--card); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 3px; transition: width .35s; width: 0%; }
+.progress-text { font-size: 11px; color: var(--text-dim); min-width: 40px; text-align: right; }
+
+/* ── SVG Styles ── */
+.flow-svg .node-rect { rx: 12; fill: var(--card); stroke: var(--border); stroke-width: 1.5; transition: fill .3s, stroke .3s; }
+.flow-svg .node-rect.active { stroke-width: 2.5; }
+.flow-svg .node-label { fill: var(--text); font-size: 13px; font-family: inherit; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.flow-svg .node-icon { font-size: 18px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.flow-svg .edge { fill: none; stroke: var(--border); stroke-width: 1.5; }
+.flow-svg .edge.active { stroke: var(--blue); stroke-width: 2.5; }
+.flow-svg .edge-label { fill: var(--text-dim); font-size: 11px; font-family: inherit; }
+.flow-svg .diamond { fill: var(--card); stroke: var(--border); stroke-width: 1.5; }
+.flow-svg .diamond.active { stroke: var(--yellow); stroke-width: 2.5; }
+.flow-svg .particle { fill: var(--blue); filter: url(#glow); }
+.flow-svg .loop-arrow { fill: none; stroke: var(--border); stroke-width: 1.2; stroke-dasharray: 5 3; }
+.flow-svg .loop-arrow.active { stroke: var(--purple); stroke-dasharray: none; stroke-width: 2; }
+.flow-svg .loop-arrow.disabled { stroke: var(--red); opacity: .3; }
+#nodeToolB { transition: opacity .3s; }
+#nodeToolB.hidden { opacity: 0; pointer-events: none; }
+#edgeDiamondToolB, #edgeToolBObserve { transition: opacity .3s; }
+#edgeDiamondToolB.hidden, #edgeToolBObserve.hidden { opacity: 0; }
+.parallel-badge { display: inline-block; background: rgba(249,115,22,.2); color: var(--orange); font-size: 10px; padding: 1px 6px; border-radius: 4px; margin-left: 6px; font-weight: 600; }
+.flow-svg .particleB { fill: var(--orange); filter: url(#glow); }
+
+/* ── Typewriter cursor ── */
+.typewriter-cursor { display: inline-block; width: 2px; height: 1em; background: var(--blue); margin-left: 2px; animation: blink .6s step-end infinite; vertical-align: text-bottom; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .main { flex-direction: column; }
+  .left-panel { width: 100%; min-width: 0; height: 200px; min-height: 200px; border-right: none; border-bottom: 1px solid var(--border); }
+  .messages-list { flex-direction: row; overflow-x: auto; overflow-y: hidden; }
+  .msg-card { min-width: 200px; }
+}
+</style>
+</head>
+<body>
+<!-- Header -->
+<div class="header">
+  <h1>🔄 ReAct 模式交互模拟器</h1>
+  <div class="mode-switcher">
+    <button class="mode-btn" data-mode="fc" onclick="switchMode('fc')">单轮 FC</button>
+    <button class="mode-btn active" data-mode="react" onclick="switchMode('react')">串行 ReAct</button>
+    <button class="mode-btn" data-mode="parallel" onclick="switchMode('parallel')">并行 ReAct</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <!-- Left: Messages Panel -->
+  <div class="left-panel">
+    <div class="panel-header">📨 Messages[] 数组 <span class="count" id="msgCount">0</span></div>
+    <div class="messages-list" id="messagesList"></div>
+  </div>
+
+  <!-- Center -->
+  <div class="center-stage">
+    <div class="svg-area">
+      <div class="gauge-wrap">
+        <span>安全阀</span>
+        <div class="gauge-bar"><div class="gauge-fill" id="gaugeFill" style="width:0%"></div></div>
+        <span id="gaugeText">0 / 5</span>
+      </div>
+      <!-- SVG Flow Diagram -->
+      <svg class="flow-svg" id="flowSvg" viewBox="0 -35 700 395" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
+        <defs>
+          <filter id="glow"><feGaussianBlur stdDeviation="4" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="nodeGlow"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-opacity=".5"/></filter>
+          <marker id="arrowHead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--border)"/></marker>
+          <marker id="arrowActive" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--blue)"/></marker>
+          <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="var(--purple)"/></marker>
+        </defs>
+
+        <!-- Nodes -->
+        <!-- User Input -->
+        <g id="nodeUser" transform="translate(60,160)">
+          <rect class="node-rect" x="-50" y="-28" width="100" height="56"/>
+          <text class="node-icon" y="-6">👤</text>
+          <text class="node-label" y="16" font-size="11">User Input</text>
+        </g>
+        <!-- LLM Think -->
+        <g id="nodeThink" transform="translate(230,160)">
+          <rect class="node-rect" x="-55" y="-28" width="110" height="56"/>
+          <text class="node-icon" y="-6">🧠</text>
+          <text class="node-label" y="16" font-size="11">LLM Think</text>
+        </g>
+        <!-- Decision Diamond -->
+        <g id="nodeDiamond" transform="translate(400,160)">
+          <polygon class="diamond" points="0,-35 55,0 0,35 -55,0"/>
+          <text class="node-label" y="-4" font-size="10">tool_calls</text>
+          <text class="node-label" y="10" font-size="10">?</text>
+        </g>
+        <!-- Tool Call -->
+        <g id="nodeTool" transform="translate(400,50)">
+          <rect class="node-rect" x="-50" y="-25" width="100" height="50"/>
+          <text class="node-icon" y="-10">🔧</text>
+          <text class="node-label" id="toolLabel" y="5" font-size="10">Tool Call</text>
+          <text class="node-label" id="toolSubLabel" y="17" font-size="9" fill="var(--yellow)"></text>
+        </g>
+        <!-- Tool Call B (parallel only) -->
+        <g id="nodeToolB" class="hidden" transform="translate(540,-5)">
+          <rect class="node-rect" x="-50" y="-25" width="100" height="50"/>
+          <text class="node-icon" y="-10">🔧</text>
+          <text class="node-label" id="toolBLabel" y="5" font-size="10">Tool ②</text>
+          <text class="node-label" id="toolBSubLabel" y="17" font-size="9" fill="var(--yellow)"></text>
+        </g>
+        <!-- Observe -->
+        <g id="nodeObserve" transform="translate(230,50)">
+          <rect class="node-rect" x="-50" y="-25" width="100" height="50"/>
+          <text class="node-icon" y="-4">📋</text>
+          <text class="node-label" y="14" font-size="11">Observe</text>
+        </g>
+        <!-- Final Answer -->
+        <g id="nodeFinal" transform="translate(590,160)">
+          <rect class="node-rect" x="-55" y="-28" width="110" height="56" rx="24"/>
+          <text class="node-icon" y="-6">✅</text>
+          <text class="node-label" y="16" font-size="11">Final Answer</text>
+        </g>
+
+        <!-- Edges -->
+        <!-- User → Think -->
+        <path id="edgeUserThink" class="edge" d="M110,160 L170,160" marker-end="url(#arrowHead)"/>
+        <!-- Think → Diamond -->
+        <path id="edgeThinkDiamond" class="edge" d="M285,160 L342,160" marker-end="url(#arrowHead)"/>
+        <!-- Diamond → Tool (YES, up) -->
+        <path id="edgeDiamondTool" class="edge" d="M400,125 L400,78" marker-end="url(#arrowHead)"/>
+        <text class="edge-label" x="412" y="100" fill="var(--green)" font-size="11" font-weight="600">YES</text>
+        <!-- Tool → Observe (left) -->
+        <path id="edgeToolObserve" class="edge" d="M348,50 L282,50" marker-end="url(#arrowHead)"/>
+        <!-- Observe → Think (loop back down) -->
+        <path id="edgeObserveThink" class="loop-arrow" d="M230,75 L230,130" marker-end="url(#arrowHead)"/>
+        <text class="edge-label" x="238" y="108" fill="var(--purple)" font-size="10">loop</text>
+        <!-- Diamond → Final (NO, right) -->
+        <path id="edgeDiamondFinal" class="edge" d="M455,160 L530,160" marker-end="url(#arrowHead)"/>
+        <text class="edge-label" x="470" y="152" fill="var(--red)" font-size="11" font-weight="600">NO</text>
+        <!-- Diamond → Tool B (parallel only) -->
+        <path id="edgeDiamondToolB" class="edge hidden" d="M425,128 L540,22" marker-end="url(#arrowHead)"/>
+        <!-- Tool B → Observe (parallel only, curved to avoid Tool ①) -->
+        <path id="edgeToolBObserve" class="edge hidden" d="M490,-5 C400,-40 300,-20 280,42" marker-end="url(#arrowHead)"/>
+
+        <!-- Iteration counter in center -->
+        <text id="iterText" x="330" y="320" fill="var(--text-dim)" font-size="12" text-anchor="middle" font-family="inherit">Round: 0</text>
+
+        <!-- Particle -->
+        <circle id="particle" class="particle" cx="60" cy="160" r="6" opacity="0"/>
+        <circle id="particleB" class="particleB" cx="60" cy="160" r="6" opacity="0"/>
+      </svg>
+    </div>
+
+    <div class="fc-warning" id="fcWarning">⚠️ 单轮管线无法继续——第一次工具调用后就终止了！ReAct 模式下，循环会继续执行直到所有子任务完成。</div>
+
+    <!-- Detail Area -->
+    <div class="detail-area">
+      <div class="detail-card" id="detailCard">
+        <div class="detail-title" id="detailTitle">👋 欢迎</div>
+        <div class="detail-body" id="detailBody">点击下方「下一步 ▶」按钮，开始逐步模拟 <b>串行 ReAct</b> 循环。<br><br>用户问题：<code>查北京和上海的天气，然后计算温差</code><br><br>观察 4 轮串行循环如何逐步完成复合任务。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Bar -->
+<div class="bottom-bar">
+  <button class="ctrl-btn" id="btnReset" onclick="resetAll()">🔄 重置</button>
+  <button class="ctrl-btn" id="btnPrev" onclick="prevStep()" disabled>◀ 上一步</button>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-text" id="progressText">0 / 0</span>
+  </div>
+  <button class="ctrl-btn primary" id="btnNext" onclick="nextStep()">下一步 ▶</button>
+  <button class="ctrl-btn" id="btnAuto" onclick="toggleAutoPlay()">自动播放 ▶▶</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// 1. Scenario Data
+// ══════════════════════════════════════════════
+const REACT_SCENARIO = {
+  question: "查北京和上海的天气，然后计算温差",
+  system: "你是一个天气助手，可以调用工具查询天气和进行数学计算。",
+  rounds: [
+    {
+      thought: "用户想知道北京和上海的天气，还要计算温差。我需要先查北京的天气。",
+      actions: [{ tool: "get_weather", args: '{"city": "北京"}', id: "call_1" }],
+      observations: [{ id: "call_1", content: '{"city": "北京", "temperature": 33, "condition": "晴", "humidity": "45%"}' }],
+      hasToolCall: true, parallel: false
+    },
+    {
+      thought: "已经拿到北京 33°C。接下来查上海的天气。",
+      actions: [{ tool: "get_weather", args: '{"city": "上海"}', id: "call_2" }],
+      observations: [{ id: "call_2", content: '{"city": "上海", "temperature": 28, "condition": "多云", "humidity": "72%"}' }],
+      hasToolCall: true, parallel: false
+    },
+    {
+      thought: "北京 33°C，上海 28°C。现在需要计算温差：33 - 28。",
+      actions: [{ tool: "calculate", args: '{"expression": "33 - 28"}', id: "call_3" }],
+      observations: [{ id: "call_3", content: '{"result": 5}' }],
+      hasToolCall: true, parallel: false
+    },
+    {
+      thought: "所有信息已齐全。北京 33°C，上海 28°C，温差 5°C。可以给出最终回答了。",
+      actions: null, observations: null,
+      hasToolCall: false,
+      finalAnswer: "查询结果如下：\n🌤 北京：33°C（晴，湿度 45%）\n⛅ 上海：28°C（多云，湿度 72%）\n🌡 温差：33 - 28 = 5°C\n\n北京比上海高 5 度，注意防暑！"
+    }
+  ]
+};
+
+const FC_SCENARIO = {
+  question: REACT_SCENARIO.question,
+  system: REACT_SCENARIO.system,
+  rounds: [
+    {
+      thought: "用户想查天气和计算温差，我先调用 get_weather 查北京。",
+      actions: [{ tool: "get_weather", args: '{"city": "北京"}', id: "call_1" }],
+      observations: [{ id: "call_1", content: '{"city": "北京", "temperature": 33, "condition": "晴", "humidity": "45%"}' }],
+      hasToolCall: true, parallel: false
+    },
+    {
+      thought: "单轮 FC 模式下，循环不会继续。我只能基于已有信息回答。",
+      actions: null, observations: null, hasToolCall: false,
+      finalAnswer: "北京现在 33°C，晴天。\n\n⚠️ 抱歉，我无法继续查询上海天气和计算温差——单轮 Function Calling 在第一次工具返回后就终止了循环。"
+    }
+  ]
+};
+
+const PARALLEL_SCENARIO = {
+  question: "查北京和上海的天气，然后计算温差",
+  system: "你是一个天气助手，可以调用工具查询天气和进行数学计算。",
+  rounds: [
+    {
+      thought: "北京和上海的天气查询互不依赖，我可以在一次响应中同时请求两个 get_weather 调用。",
+      actions: [
+        { tool: "get_weather", args: '{"city": "北京"}', id: "call_1" },
+        { tool: "get_weather", args: '{"city": "上海"}', id: "call_2" }
+      ],
+      observations: [
+        { id: "call_1", content: '{"city": "北京", "temperature": 33, "condition": "晴", "humidity": "45%"}' },
+        { id: "call_2", content: '{"city": "上海", "temperature": 28, "condition": "多云", "humidity": "72%"}' }
+      ],
+      hasToolCall: true, parallel: true
+    },
+    {
+      thought: "两个城市的温度已拿到：北京 33°C，上海 28°C。现在计算温差。",
+      actions: [{ tool: "calculate", args: '{"expression": "33 - 28"}', id: "call_3" }],
+      observations: [{ id: "call_3", content: '{"result": 5}' }],
+      hasToolCall: true, parallel: false
+    },
+    {
+      thought: "所有信息齐全。北京 33°C，上海 28°C，温差 5°C。给出最终回答。",
+      actions: null, observations: null,
+      hasToolCall: false,
+      finalAnswer: "查询结果如下：\n🌤 北京：33°C（晴，湿度 45%）\n⛅ 上海：28°C（多云，湿度 72%）\n🌡 温差：33 - 28 = 5°C\n\n北京比上海高 5 度，注意防暑！\n\n💡 通过并行调用，我们只用了 3 轮就完成了任务（串行需要 4 轮）。"
+    }
+  ]
+};
+
+// ══════════════════════════════════════════════
+// 2. State
+// ══════════════════════════════════════════════
+const state = {
+  mode: 'react',
+  stepIndex: -1,       // global flat step index
+  messages: [],
+  isPlaying: false,
+  autoTimer: null,
+  steps: [],           // flattened step descriptors
+  animating: false
+};
+
+// Build flat steps from scenario
+function buildSteps(scenario) {
+  const steps = [];
+  steps.push({ type: 'init', round: -1 });
+  scenario.rounds.forEach((r, ri) => {
+    steps.push({ type: 'think', round: ri });
+    if (r.hasToolCall) {
+      steps.push({ type: 'decide-yes', round: ri });
+      if (r.parallel && r.actions && r.actions.length > 1) {
+        steps.push({ type: 'parallel-action', round: ri });
+        steps.push({ type: 'parallel-observe', round: ri });
+      } else {
+        steps.push({ type: 'action', round: ri });
+        steps.push({ type: 'observe', round: ri });
+      }
+    } else {
+      steps.push({ type: 'decide-no', round: ri });
+      steps.push({ type: 'final', round: ri });
+    }
+  });
+  return steps;
+}
+
+function getScenario() {
+  if (state.mode === 'react') return REACT_SCENARIO;
+  if (state.mode === 'parallel') return PARALLEL_SCENARIO;
+  return FC_SCENARIO;
+}
+
+function totalSteps() { return state.steps.length; }
+
+// ══════════════════════════════════════════════
+// 3. DOM Helpers
+// ══════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const msgList = () => $('messagesList');
+const nodeIds = ['nodeUser','nodeThink','nodeDiamond','nodeTool','nodeToolB','nodeObserve','nodeFinal'];
+const edgeIds = ['edgeUserThink','edgeThinkDiamond','edgeDiamondTool','edgeDiamondToolB','edgeToolObserve','edgeToolBObserve','edgeObserveThink','edgeDiamondFinal'];
+
+function clearAllHighlights() {
+  nodeIds.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    const rect = el.querySelector('.node-rect') || el.querySelector('.diamond');
+    if (rect) { rect.classList.remove('active'); rect.style.stroke = ''; rect.style.filter = ''; }
+  });
+  edgeIds.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.classList.remove('active');
+    el.setAttribute('marker-end', 'url(#arrowHead)');
+  });
+  const loop = $('edgeObserveThink');
+  if (loop) { loop.classList.remove('active','disabled'); }
+}
+
+function highlightNode(nodeId, color) {
+  const el = $(nodeId);
+  if (!el) return;
+  const rect = el.querySelector('.node-rect') || el.querySelector('.diamond');
+  if (!rect) return;
+  rect.classList.add('active');
+  rect.style.stroke = color;
+  rect.style.filter = 'url(#nodeGlow)';
+  // pulse animation
+  gsap.fromTo(rect, { scale: 1, transformOrigin: 'center center' },
+    { scale: 1.06, duration: 0.3, yoyo: true, repeat: 1, ease: 'power2.inOut' });
+}
+
+function highlightEdge(edgeId, color) {
+  const el = $(edgeId);
+  if (!el) return;
+  el.classList.add('active');
+  el.style.stroke = color;
+  if (color === 'var(--purple)' || color === '#a78bfa') {
+    el.setAttribute('marker-end', 'url(#arrowPurple)');
+  } else {
+    el.setAttribute('marker-end', 'url(#arrowActive)');
+  }
+}
+
+// ══════════════════════════════════════════════
+// 4. Messages Panel
+// ══════════════════════════════════════════════
+function addMessage(role, content, round) {
+  const msg = { role, content, round };
+  state.messages.push(msg);
+  renderNewMessage(msg, state.messages.length - 1);
+  $('msgCount').textContent = state.messages.length;
+}
+
+function renderNewMessage(msg, index) {
+  const card = document.createElement('div');
+  card.className = 'msg-card';
+  card.dataset.role = msg.role;
+  const roundLabel = msg.round >= 0 ? `R${msg.round + 1}` : '';
+  const preview = msg.content.length > 80 ? msg.content.slice(0, 80) + '…' : msg.content;
+  card.innerHTML = `
+    <div class="msg-header">
+      <span class="role-badge">${msg.role}</span>
+      <span class="round-tag">${roundLabel}</span>
+    </div>
+    <div class="msg-content">${escHtml(preview)}</div>`;
+  msgList().appendChild(card);
+  // animate in
+  gsap.fromTo(card, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out',
+    onComplete: () => card.classList.add('visible') });
+  // scroll to bottom
+  msgList().scrollTop = msgList().scrollHeight;
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function clearMessages() {
+  state.messages = [];
+  msgList().innerHTML = '';
+  $('msgCount').textContent = '0';
+}
+
+// ══════════════════════════════════════════════
+// 5. Detail Card
+// ══════════════════════════════════════════════
+function setDetail(icon, title, bodyHtml) {
+  $('detailTitle').innerHTML = `${icon} ${title}`;
+  $('detailBody').innerHTML = bodyHtml;
+}
+
+function typewriterDetail(icon, title, text, callback) {
+  $('detailTitle').innerHTML = `${icon} ${title}`;
+  const body = $('detailBody');
+  body.innerHTML = '<span id="twTarget"></span><span class="typewriter-cursor"></span>';
+  gsap.to('#twTarget', {
+    duration: text.length * 0.03,
+    text: { value: text, delimiter: '' },
+    ease: 'none',
+    onComplete: () => {
+      const cursor = body.querySelector('.typewriter-cursor');
+      if (cursor) cursor.remove();
+      if (callback) callback();
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
+// 6. Gauge & Progress
+// ══════════════════════════════════════════════
+function updateGauge(iteration, max) {
+  const pct = (iteration / max) * 100;
+  const fill = $('gaugeFill');
+  fill.style.width = pct + '%';
+  fill.className = 'gauge-fill' + (pct > 80 ? ' danger' : pct > 50 ? ' warn' : '');
+  $('gaugeText').textContent = `${iteration} / ${max}`;
+  $('iterText').textContent = `Round: ${iteration}`;
+}
+
+function updateProgress() {
+  const total = totalSteps();
+  const current = state.stepIndex + 1;
+  const pct = total > 0 ? (current / total) * 100 : 0;
+  $('progressFill').style.width = pct + '%';
+  $('progressText').textContent = `${current} / ${total}`;
+  $('btnPrev').disabled = state.stepIndex <= 0;
+  $('btnNext').disabled = state.stepIndex >= total - 1;
+}
+
+// ══════════════════════════════════════════════
+// 7. Particle Animation
+// ══════════════════════════════════════════════
+const particlePositions = {
+  user:    { cx: 60,  cy: 160 },
+  think:   { cx: 230, cy: 160 },
+  diamond: { cx: 400, cy: 160 },
+  tool:    { cx: 400, cy: 50  },
+  toolB:   { cx: 540, cy: -5  },
+  observe: { cx: 230, cy: 50  },
+  final:   { cx: 590, cy: 160 }
+};
+
+function moveParticle(toKey, duration, onDone) {
+  const p = $('particle');
+  const pos = particlePositions[toKey];
+  gsap.to(p, { attr: { cx: pos.cx, cy: pos.cy }, duration: duration || 0.5,
+    ease: 'power2.inOut', onComplete: onDone });
+}
+
+function moveParticleB(toKey, duration, onDone) {
+  const p = $('particleB');
+  const pos = particlePositions[toKey];
+  gsap.to(p, { attr: { cx: pos.cx, cy: pos.cy }, duration: duration || 0.5,
+    ease: 'power2.inOut', onComplete: onDone });
+}
+
+function showParticle() { gsap.to($('particle'), { opacity: 1, duration: 0.2 }); }
+function hideParticle() { gsap.to($('particle'), { opacity: 0, duration: 0.2 }); }
+function showParticleB() { gsap.to($('particleB'), { opacity: 1, duration: 0.2 }); }
+function hideParticleB() { gsap.to($('particleB'), { opacity: 0, duration: 0.2 }); }
+
+function flashDiamond(color, callback) {
+  const diamond = $('nodeDiamond').querySelector('.diamond');
+  gsap.timeline()
+    .to(diamond, { stroke: color, strokeWidth: 3, duration: 0.15 })
+    .to(diamond, { stroke: color, strokeWidth: 4, duration: 0.15, yoyo: true, repeat: 3 })
+    .to(diamond, { strokeWidth: 2.5, duration: 0.1, onComplete: callback });
+}
+
+// ══════════════════════════════════════════════
+// 7b. Dynamic Tool Labels & Visibility
+// ══════════════════════════════════════════════
+function getArgHint(argsStr) {
+  try {
+    const obj = JSON.parse(argsStr);
+    const vals = Object.values(obj);
+    return vals.length > 0 ? String(vals[0]) : '';
+  } catch(e) { return ''; }
+}
+
+function updateToolLabels(actions) {
+  if (!actions || actions.length === 0) return;
+  const a0 = actions[0];
+  $('toolLabel').textContent = a0.tool;
+  $('toolSubLabel').textContent = getArgHint(a0.args);
+  if (actions.length > 1) {
+    const a1 = actions[1];
+    $('toolBLabel').textContent = a1.tool;
+    $('toolBSubLabel').textContent = getArgHint(a1.args);
+  }
+}
+
+function resetToolLabels() {
+  $('toolLabel').textContent = 'Tool Call';
+  $('toolSubLabel').textContent = '';
+  $('toolBLabel').textContent = 'Tool ②';
+  $('toolBSubLabel').textContent = '';
+}
+
+function setToolBVisible(visible) {
+  $('nodeToolB').classList.toggle('hidden', !visible);
+  $('edgeDiamondToolB').classList.toggle('hidden', !visible);
+  $('edgeToolBObserve').classList.toggle('hidden', !visible);
+}
+
+// ══════════════════════════════════════════════
+// 8. Step Execution Engine
+// ══════════════════════════════════════════════
+function executeStep(index) {
+  if (index < 0 || index >= totalSteps()) return Promise.resolve();
+  const step = state.steps[index];
+  const scenario = getScenario();
+  const round = step.round >= 0 ? scenario.rounds[step.round] : null;
+  const maxRounds = scenario.rounds.length;
+
+  return new Promise(resolve => {
+    state.animating = true;
+    clearAllHighlights();
+
+    switch (step.type) {
+      case 'init': {
+        showParticle();
+        highlightNode('nodeUser', 'var(--green)');
+        highlightEdge('edgeUserThink', 'var(--blue)');
+        moveParticle('user', 0.01);
+        addMessage('system', scenario.system, -1);
+        addMessage('user', scenario.question, 0);
+        setDetail('👤', '用户输入',
+          `用户提出了一个<b>复合任务</b>：<code>${escHtml(scenario.question)}</code><br><br>` +
+          `系统将 <code>system</code> 和 <code>user</code> 消息加入 messages[] 数组。<br>` +
+          `接下来 LLM 开始第一轮推理……`);
+        updateGauge(0, maxRounds);
+        setTimeout(() => { state.animating = false; resolve(); }, 500);
+        break;
+      }
+      case 'think': {
+        highlightNode('nodeThink', 'var(--blue)');
+        highlightEdge('edgeUserThink', 'var(--blue)');
+        moveParticle('think', 0.5);
+        updateGauge(step.round + 1, maxRounds);
+        const thoughtContent = `[Round ${step.round + 1}] ${round.thought}`;
+        addMessage('assistant', thoughtContent, step.round);
+        typewriterDetail('🧠', `Think — Round ${step.round + 1}`, round.thought, () => {
+          state.animating = false; resolve();
+        });
+        break;
+      }
+      case 'decide-yes': {
+        highlightNode('nodeDiamond', 'var(--yellow)');
+        highlightEdge('edgeThinkDiamond', 'var(--blue)');
+        const isParallelRound = round.parallel && round.actions && round.actions.length > 1;
+        if (isParallelRound) { setToolBVisible(true); }
+        moveParticle('diamond', 0.4, () => {
+          flashDiamond('var(--green)', () => {
+            highlightEdge('edgeDiamondTool', 'var(--green)');
+            if (isParallelRound) {
+              highlightEdge('edgeDiamondToolB', 'var(--green)');
+              setDetail('💎', '决策：tool_calls? → YES（并行）',
+                `LLM 返回的消息中包含 <code>tool_calls</code> 字段，且数组长度为 <b>${round.actions.length}</b>。<br><br>` +
+                `<code>tool_calls: [${round.actions.map(a => a.tool+'()').join(', ')}]</code><br><br>` +
+                `→ 两个独立查询将<b>并行执行</b>，粒子分裂为两路。`);
+            } else {
+              setDetail('💎', '决策：tool_calls? → YES',
+                `LLM 返回的消息中包含 <code>tool_calls</code> 字段。<br><br>` +
+                `<code>if response.tool_calls:</code> 条件为 <b>True</b><br>` +
+                `→ 进入工具调用分支，继续循环。`);
+            }
+            state.animating = false; resolve();
+          });
+        });
+        break;
+      }
+      case 'action': {
+        updateToolLabels(round.actions);
+        highlightNode('nodeTool', 'var(--yellow)');
+        highlightEdge('edgeDiamondTool', 'var(--green)');
+        moveParticle('tool', 0.4);
+        const a = round.actions[0];
+        setDetail('🔧', `Action — ${a.tool}()`,
+          `调用工具 <code>${a.tool}</code>：<div class="tool-block"><b>函数名：</b>${a.tool}<br><b>参数：</b>${escHtml(a.args)}</div>`);
+        setTimeout(() => { state.animating = false; resolve(); }, 600);
+        break;
+      }
+      case 'observe': {
+        highlightNode('nodeObserve', 'var(--green)');
+        highlightEdge('edgeToolObserve', 'var(--blue)');
+        const loopEdge = $('edgeObserveThink');
+        loopEdge.classList.add('active');
+        loopEdge.style.stroke = 'var(--purple)';
+        moveParticle('observe', 0.4, () => {
+          const obsContent = round.observations[0].content;
+          addMessage('tool', obsContent, step.round);
+          setDetail('📋', `Observation — Round ${step.round + 1}`,
+            `工具返回结果：<div class="obs-block">${escHtml(obsContent)}</div><br>` +
+            `结果已追加到 messages[] 数组（role: <code>tool</code>）。<br>` +
+            `LLM 下一轮将看到<b>完整历史</b>，包括这条新消息。<br>` +
+            `<span style="color:var(--purple)">↩ 循环回到 Think 节点……</span>`);
+          setTimeout(() => { resetToolLabels(); moveParticle('think', 0.6); }, 300);
+          state.animating = false; resolve();
+        });
+        break;
+      }
+      case 'parallel-action': {
+        updateToolLabels(round.actions);
+        highlightNode('nodeTool', 'var(--yellow)');
+        highlightNode('nodeToolB', 'var(--yellow)');
+        highlightEdge('edgeDiamondTool', 'var(--green)');
+        highlightEdge('edgeDiamondToolB', 'var(--green)');
+        moveParticle('tool', 0.4);
+        // Start particleB from diamond position, then move to toolB
+        const pB = $('particleB');
+        gsap.set(pB, { attr: { cx: 400, cy: 160 } });
+        showParticleB();
+        moveParticleB('toolB', 0.4);
+        const acts = round.actions;
+        const toolHtml = acts.map((a, i) =>
+          `<div class="tool-block"><b>Tool Call #${i+1}</b> (id: <code>${a.id}</code>)<br><b>函数名：</b>${a.tool}<br><b>参数：</b>${escHtml(a.args)}</div>`
+        ).join('');
+        setDetail('🔧', `Parallel Action — ${acts.length} 个并行调用`,
+          `LLM 判断这 ${acts.length} 个查询互不依赖，在<b>一次 response</b> 中返回了 ${acts.length} 个 <code>tool_calls</code>。<br>` +
+          `<code>tool_calls</code> 是一个<b>数组</b>，长度 > 1 就意味着并行调用。<br>` +
+          `每个 tool_call 都有唯一的 <code>tool_call_id</code>，用于匹配返回结果。` +
+          toolHtml);
+        setTimeout(() => { state.animating = false; resolve(); }, 600);
+        break;
+      }
+      case 'parallel-observe': {
+        highlightNode('nodeObserve', 'var(--green)');
+        highlightEdge('edgeToolObserve', 'var(--blue)');
+        highlightEdge('edgeToolBObserve', 'var(--blue)');
+        const loopEdgeP = $('edgeObserveThink');
+        loopEdgeP.classList.add('active');
+        loopEdgeP.style.stroke = 'var(--purple)';
+        moveParticle('observe', 0.4);
+        moveParticleB('observe', 0.4, () => {
+          hideParticleB();
+          const obs = round.observations;
+          obs.forEach(o => addMessage('tool', o.content, step.round));
+          const obsHtml = obs.map((o, i) =>
+            `<div class="obs-block"><b>tool_call_id:</b> <code>${o.id}</code><br>${escHtml(o.content)}</div>`
+          ).join('');
+          setDetail('📋', `Parallel Observe — ${obs.length} 条结果同时返回`,
+            `${obs.length} 个工具<b>同时返回</b>结果，每条 tool 消息通过 <code>tool_call_id</code> 与请求配对：` +
+            obsHtml + `<br>` +
+            `messages[] 一次追加了 <b>${obs.length}</b> 条 tool 消息。<br>` +
+            `<span style="color:var(--purple)">↩ 循环回到 Think 节点……</span>`);
+          setTimeout(() => { resetToolLabels(); setToolBVisible(false); moveParticle('think', 0.6); }, 300);
+          state.animating = false; resolve();
+        });
+        break;
+      }
+      case 'decide-no': {
+        highlightNode('nodeDiamond', 'var(--yellow)');
+        highlightEdge('edgeThinkDiamond', 'var(--blue)');
+        moveParticle('diamond', 0.4, () => {
+          flashDiamond('var(--red)', () => {
+            highlightEdge('edgeDiamondFinal', 'var(--red)');
+            if (state.mode === 'react' || state.mode === 'parallel') {
+              setDetail('💎', '决策：tool_calls? → NO',
+                `LLM 返回的消息中<b>没有</b> <code>tool_calls</code> 字段。<br><br>` +
+                `<code>if not response.tool_calls:</code> 条件为 <b>True</b><br>` +
+                `→ <span style="color:var(--red)">跳出 while 循环</span>，输出最终回答。`);
+            } else {
+              setDetail('💎', '决策：循环终止',
+                `单轮 FC 模式下，第一次工具返回后<b>不再继续循环</b>。<br><br>` +
+                `LLM 只能基于已有的 1 次工具结果生成回答，<span style="color:var(--red)">无法完成剩余子任务</span>。`);
+            }
+            state.animating = false; resolve();
+          });
+        });
+        break;
+      }
+      case 'final': {
+        highlightNode('nodeFinal', 'var(--purple)');
+        highlightEdge('edgeDiamondFinal', 'var(--blue)');
+        moveParticle('final', 0.5);
+        const answer = round.finalAnswer;
+        addMessage('assistant', answer, step.round);
+        setDetail('✅', '最终回答',
+          `<div class="final-block">${escHtml(answer).replace(/\n/g, '<br>')}</div><br>` +
+          (state.mode === 'react'
+            ? `经过 <b>${step.round + 1} 轮</b> Think→Action→Observe 循环，messages[] 共积累了 <b>${state.messages.length}</b> 条消息。<br>LLM 每轮都能看到完整对话历史，这就是 ReAct 的核心优势。`
+            : state.mode === 'parallel'
+            ? `通过<b>并行工具调用</b>，仅用 <b>${step.round + 1} 轮</b>就完成了任务（串行需要 4 轮）。<br>messages[] 共 <b>${state.messages.length}</b> 条消息。<br><b>关键洞察：</b>ReAct 循环轮次 ≠ 工具调用次数，一轮可以并行调多个工具。`
+            : `单轮 FC 只执行了 <b>1 轮</b>工具调用，messages[] 仅有 <b>${state.messages.length}</b> 条消息。`));
+        if (state.mode === 'fc') {
+          $('fcWarning').classList.add('show');
+          const loopEdge = $('edgeObserveThink');
+          loopEdge.classList.add('disabled');
+        }
+        setTimeout(() => { state.animating = false; resolve(); }, 600);
+        break;
+      }
+      default:
+        state.animating = false; resolve();
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
+// 9. Controls: next / prev / reset / auto
+// ══════════════════════════════════════════════
+async function nextStep() {
+  if (state.animating) return;
+  if (state.stepIndex >= totalSteps() - 1) return;
+  state.stepIndex++;
+  updateProgress();
+  await executeStep(state.stepIndex);
+  updateProgress();
+}
+
+function prevStep() {
+  if (state.animating || state.stepIndex <= 0) return;
+  // Rebuild state up to stepIndex - 1
+  const target = state.stepIndex - 1;
+  rebuildToStep(target);
+}
+
+async function rebuildToStep(target) {
+  state.animating = true;
+  // Reset visual state
+  clearAllHighlights();
+  clearMessages();
+  hideParticle();
+  hideParticleB();
+  setToolBVisible(false);
+  resetToolLabels();
+  $('fcWarning').classList.remove('show');
+  updateGauge(0, getScenario().rounds.length);
+
+  state.stepIndex = -1;
+  // Silently replay all steps up to target
+  for (let i = 0; i <= target; i++) {
+    state.stepIndex = i;
+    const step = state.steps[i];
+    const scenario = getScenario();
+    const round = step.round >= 0 ? scenario.rounds[step.round] : null;
+
+    // Replay messages without animation
+    switch (step.type) {
+      case 'init':
+        state.messages.push({ role: 'system', content: scenario.system, round: -1 });
+        state.messages.push({ role: 'user', content: scenario.question, round: 0 });
+        break;
+      case 'think':
+        state.messages.push({ role: 'assistant', content: `[Round ${step.round+1}] ${round.thought}`, round: step.round });
+        break;
+      case 'observe':
+        state.messages.push({ role: 'tool', content: round.observations[0].content, round: step.round });
+        break;
+      case 'parallel-observe':
+        round.observations.forEach(o => state.messages.push({ role: 'tool', content: o.content, round: step.round }));
+        break;
+      case 'final':
+        state.messages.push({ role: 'assistant', content: round.finalAnswer, round: step.round });
+        break;
+    }
+  }
+
+  // Render all messages instantly
+  msgList().innerHTML = '';
+  state.messages.forEach((msg, idx) => {
+    const card = document.createElement('div');
+    card.className = 'msg-card visible';
+    card.dataset.role = msg.role;
+    const roundLabel = msg.round >= 0 ? `R${msg.round + 1}` : '';
+    const preview = msg.content.length > 80 ? msg.content.slice(0, 80) + '…' : msg.content;
+    card.innerHTML = `<div class="msg-header"><span class="role-badge">${msg.role}</span><span class="round-tag">${roundLabel}</span></div><div class="msg-content">${escHtml(preview)}</div>`;
+    card.style.opacity = '1'; card.style.transform = 'translateX(0)';
+    msgList().appendChild(card);
+  });
+  $('msgCount').textContent = state.messages.length;
+
+  // Apply final visual state for the target step
+  const lastStep = state.steps[target];
+  const scenario = getScenario();
+  const lastRound = lastStep.round >= 0 ? scenario.rounds[lastStep.round] : null;
+
+  showParticle();
+  setToolBVisible(false);
+  resetToolLabels();
+  switch (lastStep.type) {
+    case 'init':
+      highlightNode('nodeUser', 'var(--green)');
+      moveParticle('user', 0.01);
+      updateGauge(0, scenario.rounds.length);
+      setDetail('👤', '用户输入', `复合任务：<code>${escHtml(scenario.question)}</code>`);
+      break;
+    case 'think':
+      highlightNode('nodeThink', 'var(--blue)');
+      moveParticle('think', 0.01);
+      updateGauge(lastStep.round + 1, scenario.rounds.length);
+      setDetail('🧠', `Think — Round ${lastStep.round+1}`, lastRound.thought);
+      break;
+    case 'decide-yes':
+      highlightNode('nodeDiamond', 'var(--yellow)');
+      moveParticle('diamond', 0.01);
+      if (lastRound.parallel && lastRound.actions && lastRound.actions.length > 1) {
+        setToolBVisible(true);
+      }
+      setDetail('💎', '决策：tool_calls? → YES', 'LLM 返回了 tool_calls → 继续循环');
+      break;
+    case 'action':
+      updateToolLabels(lastRound.actions);
+      highlightNode('nodeTool', 'var(--yellow)');
+      moveParticle('tool', 0.01);
+      setDetail('🔧', `Action — ${lastRound.actions[0].tool}()`, `参数：${escHtml(lastRound.actions[0].args)}`);
+      break;
+    case 'observe':
+      highlightNode('nodeObserve', 'var(--green)');
+      moveParticle('observe', 0.01);
+      setDetail('📋', `Observation — Round ${lastStep.round+1}`, `<div class="obs-block">${escHtml(lastRound.observations[0].content)}</div>`);
+      break;
+    case 'parallel-action':
+      setToolBVisible(true);
+      updateToolLabels(lastRound.actions);
+      highlightNode('nodeTool', 'var(--yellow)');
+      highlightNode('nodeToolB', 'var(--yellow)');
+      moveParticle('tool', 0.01);
+      setDetail('🔧', `Parallel Action — ${lastRound.actions.length} 个并行调用`, lastRound.actions.map(a => `${a.tool}(${a.args})`).join(' + '));
+      break;
+    case 'parallel-observe':
+      highlightNode('nodeObserve', 'var(--green)');
+      moveParticle('observe', 0.01);
+      setDetail('📋', `Parallel Observe — ${lastRound.observations.length} 条结果`, lastRound.observations.map(o => `<div class="obs-block">${escHtml(o.content)}</div>`).join(''));
+      break;
+    case 'decide-no':
+      highlightNode('nodeDiamond', 'var(--yellow)');
+      moveParticle('diamond', 0.01);
+      setDetail('💎', '决策：tool_calls? → NO', '跳出循环');
+      break;
+    case 'final':
+      highlightNode('nodeFinal', 'var(--purple)');
+      moveParticle('final', 0.01);
+      setDetail('✅', '最终回答', `<div class="final-block">${escHtml(lastRound.finalAnswer).replace(/\n/g,'<br>')}</div>`);
+      break;
+  }
+
+  updateProgress();
+  state.animating = false;
+}
+
+function resetAll() {
+  stopAutoPlay();
+  state.stepIndex = -1;
+  clearMessages();
+  clearAllHighlights();
+  hideParticle();
+  hideParticleB();
+  setToolBVisible(false);
+  resetToolLabels();
+  $('fcWarning').classList.remove('show');
+  updateGauge(0, getScenario().rounds.length);
+  updateProgress();
+  const modeLabel = state.mode === 'react' ? '串行 ReAct' : state.mode === 'parallel' ? '并行 ReAct' : '单轮 FC';
+  const modeHint = state.mode === 'react'
+    ? '观察 4 轮串行循环如何逐步完成复合任务。'
+    : state.mode === 'parallel'
+    ? '观察 LLM 如何通过并行工具调用将 4 轮缩减为 3 轮。'
+    : '观察单轮 FC 如何在 1 次工具调用后终止。';
+  setDetail('👋', '欢迎',
+    `点击「下一步 ▶」按钮，开始逐步模拟 <b>${modeLabel}</b> 循环。<br><br>` +
+    `用户问题：<code>${escHtml(getScenario().question)}</code><br><br>${modeHint}`);
+}
+
+function switchMode(mode) {
+  if (mode === state.mode) return;
+  state.mode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  setToolBVisible(false);
+  resetToolLabels();
+  state.steps = buildSteps(getScenario());
+  resetAll();
+}
+
+function toggleAutoPlay() {
+  if (state.isPlaying) {
+    stopAutoPlay();
+  } else {
+    startAutoPlay();
+  }
+}
+
+function startAutoPlay() {
+  state.isPlaying = true;
+  $('btnAuto').innerHTML = '⏸ 暂停';
+  $('btnAuto').style.borderColor = 'var(--yellow)';
+  autoTick();
+}
+
+function stopAutoPlay() {
+  state.isPlaying = false;
+  if (state.autoTimer) { clearTimeout(state.autoTimer); state.autoTimer = null; }
+  $('btnAuto').innerHTML = '自动播放 ▶▶';
+  $('btnAuto').style.borderColor = '';
+}
+
+async function autoTick() {
+  if (!state.isPlaying) return;
+  if (state.stepIndex >= totalSteps() - 1) { stopAutoPlay(); return; }
+  await nextStep();
+  if (state.isPlaying) {
+    state.autoTimer = setTimeout(autoTick, 1400);
+  }
+}
+
+// ══════════════════════════════════════════════
+// 10. Keyboard shortcuts
+// ══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStep(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevStep(); }
+  if (e.key === 'r' || e.key === 'R') { resetAll(); }
+  if (e.key === 'a' || e.key === 'A') { toggleAutoPlay(); }
+});
+
+// ══════════════════════════════════════════════
+// 11. Init
+// ══════════════════════════════════════════════
+gsap.registerPlugin(MotionPathPlugin, TextPlugin);
+state.steps = buildSteps(getScenario());
+updateProgress();
+updateGauge(0, getScenario().rounds.length);
+</script>
+</body>
+</html>

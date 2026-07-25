@@ -1,0 +1,954 @@
+/* =====================================================
+   Harness Engineering L4 · Architect Blueprint Theme
+   css/main.css — 全局样式（骨架层，禁硬编码颜色）
+   风格 C: 深蓝灰 + 琥珀 + 冷青双 accent
+   ===================================================== */
+
+/* --- Google Fonts 导入 --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* =====================================================
+   :root CSS 变量（从 style_manifest.json 零失真注入）
+   ===================================================== */
+:root {
+  /* --- 背景层 --- */
+  --bg-deep:        #1a2332;
+  --bg-mid:         #243142;
+  --bg-surface:     #2d3b50;
+  --bg-code:        #15202e;
+
+  /* --- 主色 --- */
+  --primary:        #5b8cb8;
+  --primary-rgb:    91, 140, 184;
+  --primary-dim:    #4a7299;
+  --secondary:      #7dd3c0;
+  --secondary-rgb:  125, 211, 192;
+
+  /* --- 双 accent（琥珀 + 冷青）--- */
+  --accent:         #d4a574;
+  --accent-amber:   #d4a574;
+  --accent-amber-strong: #c8924a;
+  --accent-teal:    #7dd3c0;
+  --accent-red:     #e57373;
+
+  /* --- 文字 --- */
+  --text-primary:   #e8ecf0;
+  --text-body:      #c5cdd8;
+  --text-subtle:    #8a96a8;
+  --text-dim:       #6b7689;
+
+  /* --- 卡片 --- */
+  --card-bg:        rgba(36, 49, 66, 0.85);
+  --card-bg-soft:   rgba(45, 59, 80, 0.55);
+  --card-border:    rgba(91, 140, 184, 0.22);
+  --card-border-strong: rgba(91, 140, 184, 0.40);
+  --card-shadow:    0 10px 40px rgba(0, 0, 0, 0.2);
+
+  /* --- 线条 / 分割线 --- */
+  --rule-line:       rgba(91, 140, 184, 0.22);
+  --rule-line-dashed: rgba(91, 140, 184, 0.35);
+
+  /* --- 交互态 --- */
+  --hover-bg:        rgba(212, 165, 116, 0.08);
+  --blueprint-grid:  rgba(91, 140, 184, 0.06);
+
+  /* --- 字体 --- */
+  --font-display:    'Sora', 'Inter', sans-serif;
+  --font-body:       'Inter', 'Noto Sans SC', sans-serif;
+  --font-zh:         'Noto Sans SC', sans-serif;
+  --font-mono:       'JetBrains Mono', 'IBM Plex Mono', monospace;
+
+  /* --- 动效（克制，motion_level=low）--- */
+  --transition-fast: 0.18s ease;
+  --transition-base: 0.28s ease;
+  --transition-slow: 0.38s ease;
+  --transition-reveal: 0.35s ease;
+}
+
+/* =====================================================
+   全局重置
+   ===================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-style: normal; /* 全正体，零斜体 */
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =====================================================
+   蓝图网格背景（24px × 24px 极淡，不抢眼）
+   ===================================================== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(var(--blueprint-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blueprint-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* =====================================================
+   主布局容器
+   ===================================================== */
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+/* =====================================================
+   进度条
+   ===================================================== */
+#progress-bar-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--rule-line);
+  z-index: 1000;
+}
+
+#progress-bar {
+  height: 100%;
+  background: var(--accent-amber);
+  width: 4%;
+  transition: width var(--transition-base);
+  min-width: 4%;
+  border-radius: 0 2px 2px 0;
+}
+
+/* =====================================================
+   页码指示器
+   ===================================================== */
+#page-indicator {
+  position: fixed;
+  bottom: 1rem;
+  right: 1.5rem;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+  backdrop-filter: blur(8px);
+}
+
+#page-indicator .sep {
+  color: var(--text-dim);
+  margin: 0 0.1rem;
+}
+
+#page-current {
+  color: var(--accent-amber);
+  font-weight: 600;
+}
+
+/* =====================================================
+   Slide 视口
+   ===================================================== */
+#slide-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 4rem 2.5rem 5rem;   /* 左 5rem 给工具栏让位（工具栏右沿 ~66px）*/
+  overflow: hidden;
+}
+
+/* =====================================================
+   左侧垂直胶囊工具栏（五件套）
+   ===================================================== */
+#toolbar {
+  position: fixed;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.7rem 0.45rem;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--card-shadow);
+}
+
+/* 工具栏按钮通用样式 */
+.tb-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  width: 2.6rem;
+  min-height: 2.8rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  padding: 0.3rem 0;
+  position: relative;
+}
+
+.tb-btn:hover {
+  background: var(--hover-bg);
+  color: var(--accent-amber);
+}
+
+.tb-btn.active {
+  background: rgba(212, 165, 116, 0.15);
+  color: var(--accent-amber);
+}
+
+.tb-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+.tb-btn .btn-key {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.tb-btn .btn-label {
+  font-family: var(--font-zh);
+  font-size: 0.52rem;
+  line-height: 1;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+/* 颜色选择器按钮特殊处理（不加文字标签）*/
+#color-picker-wrap {
+  position: relative;
+}
+
+#btn-color {
+  min-height: 2.4rem;
+}
+
+#color-dot-indicator {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid var(--card-border-strong);
+  background: var(--accent-amber);
+  transition: background var(--transition-fast);
+}
+
+/* 颜色选择器弹出面板 */
+#color-picker-popup {
+  position: absolute;
+  left: 3.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.3rem;
+  z-index: 600;
+  box-shadow: var(--card-shadow);
+}
+
+#color-picker-popup.open {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
+}
+
+.color-dot {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.color-dot:hover {
+  transform: scale(1.15);
+}
+
+.color-dot.selected {
+  border-color: var(--text-primary);
+}
+
+/* 分割线 */
+.tb-divider {
+  width: 60%;
+  height: 1px;
+  background: var(--rule-line);
+  margin: 0.1rem auto;
+}
+
+/* =====================================================
+   侧边目录菜单
+   ===================================================== */
+#menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 800;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+}
+
+#menu-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#side-menu {
+  position: fixed;
+  left: -22rem;
+  top: 0;
+  bottom: 0;
+  width: 20rem;
+  background: var(--bg-mid);
+  border-right: 1px solid var(--card-border);
+  z-index: 900;
+  overflow-y: auto;
+  transition: left var(--transition-base);
+  display: flex;
+  flex-direction: column;
+}
+
+#side-menu.open {
+  left: 0;
+}
+
+#menu-header {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--rule-line);
+  flex-shrink: 0;
+}
+
+#menu-header h3 {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+#menu-header p {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+#menu-list {
+  flex: 1;
+  padding: 0.75rem 0.75rem;
+  overflow-y: auto;
+}
+
+/* 目录章节标题 */
+.menu-chapter {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.9rem 0.5rem 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.menu-chapter:first-child {
+  padding-top: 0.25rem;
+  margin-top: 0;
+}
+
+/* 目录条目 */
+.menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  color: var(--text-body);
+}
+
+.menu-item:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.menu-item.active {
+  background: rgba(212, 165, 116, 0.12);
+  color: var(--accent-amber);
+}
+
+.menu-item-num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  min-width: 1.6rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.menu-item.active .menu-item-num {
+  color: var(--accent-amber);
+}
+
+.menu-item span:last-child {
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+/* =====================================================
+   Canvas 层（画笔拖尾 + 画板）
+   ===================================================== */
+#pen-trail-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+#pen-trail-canvas.pen-active {
+  pointer-events: all;
+  cursor: crosshair;
+}
+
+#draw-board-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  cursor: default;
+}
+
+/* draw-mode: 画板激活时 cursor */
+body.draw-mode #draw-board-canvas {
+  cursor: crosshair;
+}
+
+/* =====================================================
+   Slide 内容通用排版
+   ===================================================== */
+
+/* 大标题 */
+.slide-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+  font-style: normal;
+}
+
+/* 副标题 */
+.slide-subtitle {
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  color: var(--text-subtle);
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 章节标签 */
+.chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+}
+
+/* 内容区 */
+.slide-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+/* =====================================================
+   卡片组件
+   ===================================================== */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  position: relative;
+  backdrop-filter: blur(6px);
+}
+
+/* 工程图纸角标（右上角 L 型）*/
+.card::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--primary);
+  border-right: 1px solid var(--primary);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  margin-bottom: 0.5rem;
+  font-style: normal;
+}
+
+.card-body {
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.65;
+}
+
+/* =====================================================
+   源码引用块（file:line 标签样式）
+   ===================================================== */
+.source-ref {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.08);
+  border: 1px solid rgba(125, 211, 192, 0.2);
+  border-radius: 4px;
+  padding: 0.1rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 代码块 */
+pre, code {
+  font-family: var(--font-mono);
+}
+
+pre {
+  background: var(--bg-code);
+  border: 1px solid var(--rule-line);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text-body);
+}
+
+code {
+  background: rgba(91, 140, 184, 0.12);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: var(--accent-teal);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* =====================================================
+   大数字强调（琥珀 amber + JetBrains Mono 800）
+   ===================================================== */
+.big-number {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--accent-amber);
+  font-style: normal;
+  line-height: 1;
+}
+
+.big-number-unit {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  color: var(--text-body);
+  font-size: 0.65em;
+  vertical-align: middle;
+}
+
+/* =====================================================
+   警示 Pill / Badge
+   ===================================================== */
+.pill-warn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(229, 115, 115, 0.1);
+  border: 1px solid rgba(229, 115, 115, 0.35);
+  border-radius: 4px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--accent-red);
+  font-weight: 500;
+}
+
+.pill-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(125, 211, 192, 0.1);
+  border: 1px solid rgba(125, 211, 192, 0.3);
+  border-radius: 4px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--accent-teal);
+  font-weight: 500;
+}
+
+.pill-amber {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(212, 165, 116, 0.1);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  border-radius: 4px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--accent-amber);
+  font-weight: 500;
+}
+
+/* =====================================================
+   双色 dot（矩阵对比）
+   ===================================================== */
+.dot-amber {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--accent-amber);
+  vertical-align: middle;
+  margin-right: 0.3rem;
+}
+
+.dot-teal {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--accent-teal);
+  vertical-align: middle;
+  margin-right: 0.3rem;
+}
+
+/* =====================================================
+   表格样式
+   ===================================================== */
+.slide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.slide-table th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rule-line);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.slide-table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid rgba(91, 140, 184, 0.1);
+  color: var(--text-body);
+  line-height: 1.55;
+  vertical-align: top;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.slide-table tr:last-child td {
+  border-bottom: none;
+}
+
+.slide-table tr.row-hover:hover td,
+.slide-table tr.hoverable:hover td {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+/* =====================================================
+   入场动画（animate-ready 模式）
+   ===================================================== */
+.animate-ready {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+.animate-ready.animated {
+  opacity: 1;
+  transform: none;
+}
+
+/* Layer reveal（step-reveal 用）*/
+.reveal-layer {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--transition-reveal), transform var(--transition-reveal);
+  isolation: isolate;
+}
+
+.reveal-layer.lit {
+  opacity: 1;
+  transform: none;
+}
+
+/* =====================================================
+   分隔线
+   ===================================================== */
+hr.slide-rule {
+  border: none;
+  border-top: 1px solid var(--rule-line);
+  margin: 1.2rem 0;
+}
+
+hr.slide-rule-dashed {
+  border: none;
+  border-top: 1px dashed var(--rule-line-dashed);
+  margin: 1.2rem 0;
+}
+
+/* =====================================================
+   Tab 导航（S14 类型）
+   ===================================================== */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--rule-line);
+  margin-bottom: 1.2rem;
+}
+
+.tab-btn {
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  font-family: var(--font-body);
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn[aria-selected="true"] {
+  color: var(--accent-amber);
+  border-bottom-color: var(--accent-amber);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* =====================================================
+   高度断点响应式（必须全含 700/600/500）
+   ===================================================== */
+@media (max-height: 700px) {
+  .slide {
+    padding: 2rem 3rem 1.8rem;
+  }
+
+  .slide-title {
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+    margin-bottom: 0.35rem;
+  }
+
+  .slide-body {
+    margin-top: 1rem;
+  }
+
+  .card {
+    padding: 0.9rem 1.1rem;
+  }
+
+  #toolbar {
+    gap: 0.3rem;
+    padding: 0.5rem 0.4rem;
+  }
+
+  .tb-btn {
+    min-height: 2.5rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .slide {
+    padding: 1.5rem 2.5rem 1.5rem;
+  }
+
+  .slide-title {
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    margin-bottom: 0.25rem;
+  }
+
+  .slide-body {
+    margin-top: 0.8rem;
+  }
+
+  .card {
+    padding: 0.7rem 0.9rem;
+  }
+
+  #page-indicator {
+    bottom: 0.6rem;
+    right: 1rem;
+    font-size: 0.72rem;
+  }
+
+  .tb-btn .btn-label {
+    display: none;
+  }
+}
+
+@media (max-height: 500px) {
+  .slide {
+    padding: 1rem 2rem 1rem;
+  }
+
+  .slide-title {
+    font-size: 1.1rem;
+  }
+
+  .slide-body {
+    margin-top: 0.5rem;
+  }
+
+  #toolbar {
+    gap: 0.2rem;
+    padding: 0.4rem 0.35rem;
+    border-radius: 8px;
+  }
+
+  .tb-btn {
+    min-height: 2.1rem;
+    width: 2.2rem;
+  }
+
+  .tb-btn .btn-key,
+  .tb-btn .btn-label {
+    display: none;
+  }
+
+  #progress-bar-track {
+    height: 2px;
+  }
+}
+
+/* =====================================================
+   prefers-reduced-motion（无障碍 / 必须包含）
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-ready {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .reveal-layer {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* =====================================================
+   滚动条美化
+   ===================================================== */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--card-border-strong);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dim);
+}

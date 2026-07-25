@@ -1,0 +1,748 @@
+<style>
+/* ─── S29 · 四维评价交互演示器 · 灵魂页 ─── */
+
+/* 居中铁律 */
+.slide[data-slide-id="S29"] .s29d-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.6rem 2rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  gap: 0.7rem;
+}
+
+/* ── 头部 ── */
+.slide[data-slide-id="S29"] .s29d-header {
+  text-align: center;
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S29"] .s29d-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-amber);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.slide[data-slide-id="S29"] .s29d-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.2rem 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+.slide[data-slide-id="S29"] .s29d-title strong {
+  color: var(--accent-amber);
+}
+.slide[data-slide-id="S29"] .s29d-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+/* ── 主网格：左 SVG 55% / 右 panel 45% ── */
+.slide[data-slide-id="S29"] .s29d-grid {
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  gap: 1rem;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ─────────── 左半幕 三轴 SVG 舞台 ─────────── */
+.slide[data-slide-id="S29"] .s29d-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-mid);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 0.8rem 0.9rem 0.7rem;
+  min-width: 0;
+  overflow: hidden;
+}
+.slide[data-slide-id="S29"] .s29d-stage-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-subtle);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  margin-bottom: 0.3rem;
+}
+.slide[data-slide-id="S29"] .s29d-svg-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+.slide[data-slide-id="S29"] .s29d-svg-wrap svg {
+  width: 100%;
+  height: 100%;
+  max-height: 460px;
+}
+
+/* SVG 元素颜色 */
+.slide[data-slide-id="S29"] .s29d-tick-text {
+  fill: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+}
+
+/* 系统圆点（动画移动） */
+.slide[data-slide-id="S29"] .s29d-dot-primary,
+.slide[data-slide-id="S29"] .s29d-dot-compare {
+  transition: cx 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+              cy 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity 0.4s ease,
+              fill 0.4s ease;
+}
+.slide[data-slide-id="S29"] .s29d-dot-compare {
+  opacity: 0;
+}
+.slide[data-slide-id="S29"] .s29d-dot-compare.visible {
+  opacity: 1;
+}
+.slide[data-slide-id="S29"] .s29d-dot-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+  transition: x 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+              y 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity 0.4s ease,
+              fill 0.4s ease;
+}
+.slide[data-slide-id="S29"] .s29d-dot-label-compare {
+  opacity: 0;
+}
+.slide[data-slide-id="S29"] .s29d-dot-label-compare.visible {
+  opacity: 1;
+}
+
+/* 投影虚线 */
+.slide[data-slide-id="S29"] .s29d-proj {
+  stroke-dasharray: 3, 3;
+  stroke-width: 0.8;
+  opacity: 0.5;
+  transition: x1 0.6s ease, y1 0.6s ease,
+              x2 0.6s ease, y2 0.6s ease,
+              stroke 0.4s ease;
+}
+
+/* 对比连线（OFF 时隐藏） */
+.slide[data-slide-id="S29"] .s29d-compare-line {
+  stroke: var(--text-subtle);
+  stroke-dasharray: 5, 4;
+  stroke-width: 1.2;
+  opacity: 0;
+  transition: opacity 0.4s ease,
+              x1 0.5s ease, y1 0.5s ease,
+              x2 0.5s ease, y2 0.5s ease;
+}
+.slide[data-slide-id="S29"] .s29d-compare-line.visible {
+  opacity: 0.7;
+}
+.slide[data-slide-id="S29"] .s29d-compare-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  fill: var(--text-body);
+  opacity: 0;
+  transition: opacity 0.4s ease, x 0.5s ease, y 0.5s ease;
+}
+.slide[data-slide-id="S29"] .s29d-compare-tag.visible {
+  opacity: 1;
+}
+
+/* ─────────── 右半幕 实时面板 ─────────── */
+.slide[data-slide-id="S29"] .s29d-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+/* 系统切换按钮组 */
+.slide[data-slide-id="S29"] .s29d-system-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S29"] .s29d-sys-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.4rem 0.2rem;
+  background: rgba(45, 59, 80, 0.6);
+  border: 1.5px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  outline: none;
+}
+.slide[data-slide-id="S29"] .s29d-sys-btn:hover {
+  background: rgba(45, 59, 80, 0.85);
+  color: var(--text-body);
+}
+.slide[data-slide-id="S29"] .s29d-sys-btn:active { transform: scale(0.96); }
+.slide[data-slide-id="S29"] .s29d-sys-btn.active {
+  border-color: currentColor;
+  background: rgba(45, 59, 80, 0.95);
+  box-shadow: 0 0 0 1px currentColor inset;
+}
+.slide[data-slide-id="S29"] .s29d-sys-btn.compare-pick {
+  border-style: dashed;
+  border-color: currentColor;
+  background: rgba(45, 59, 80, 0.85);
+  box-shadow: 0 0 0 1px currentColor inset;
+}
+.slide[data-slide-id="S29"] .s29d-sys-emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+.slide[data-slide-id="S29"] .s29d-sys-name {
+  font-style: normal;
+  white-space: nowrap;
+}
+
+/* 三轴坐标卡片组 */
+.slide[data-slide-id="S29"] .s29d-axis-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S29"] .s29d-axis-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  background: rgba(36, 49, 66, 0.7);
+  border: 1px solid var(--card-border);
+  border-left: 3px solid var(--accent-amber);
+  border-radius: 6px;
+  transition: border-left-color 0.4s ease, opacity 0.3s ease;
+}
+.slide[data-slide-id="S29"] .s29d-axis-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.slide[data-slide-id="S29"] .s29d-axis-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.slide[data-slide-id="S29"] .s29d-axis-name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-body);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slide[data-slide-id="S29"] .s29d-axis-bar {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  background: rgba(91, 140, 184, 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.slide[data-slide-id="S29"] .s29d-axis-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: var(--accent-amber);
+  border-radius: 3px;
+  transition: width 0.55s ease-out, background 0.4s ease;
+}
+.slide[data-slide-id="S29"] .s29d-axis-val {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  flex-shrink: 0;
+  min-width: 2.5rem;
+  text-align: right;
+  transition: color 0.4s ease;
+}
+
+/* 取舍框架卡片 */
+.slide[data-slide-id="S29"] .s29d-tradeoff {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.6rem 0.7rem;
+  background: rgba(36, 49, 66, 0.7);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  min-height: 0;
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff.fading {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-title {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-sys {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+  transition: color 0.4s ease;
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem;
+  align-items: flex-start;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S29"] .s29d-tag-strong {
+  background: rgba(125, 211, 192, 0.2);
+  color: var(--secondary);
+  border: 1px solid rgba(125, 211, 192, 0.4);
+}
+.slide[data-slide-id="S29"] .s29d-tag-weak {
+  background: rgba(229, 115, 115, 0.18);
+  color: #f08080;
+  border: 1px solid rgba(229, 115, 115, 0.4);
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-text {
+  color: var(--text-body);
+  font-family: var(--font-zh);
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-summary {
+  margin-top: auto;
+  padding: 0.45rem 0.55rem;
+  background: rgba(212, 165, 116, 0.08);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  border-radius: 6px;
+  font-size: 0.74rem;
+  line-height: 1.55;
+  color: var(--accent-amber);
+  font-family: var(--font-zh);
+  flex-shrink: 0;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+.slide[data-slide-id="S29"] .s29d-tradeoff-summary strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* ── 控制条 ── */
+.slide[data-slide-id="S29"] .s29d-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  background: rgba(45, 59, 80, 0.55);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S29"] .s29d-control-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+}
+.slide[data-slide-id="S29"] .s29d-btn {
+  background: rgba(91, 140, 184, 0.12);
+  border: 1px solid rgba(91, 140, 184, 0.35);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  outline: none;
+}
+.slide[data-slide-id="S29"] .s29d-btn:hover { background: rgba(91, 140, 184, 0.25); }
+.slide[data-slide-id="S29"] .s29d-btn:active { transform: scale(0.96); }
+.slide[data-slide-id="S29"] .s29d-btn.primary {
+  background: rgba(212, 165, 116, 0.15);
+  border-color: rgba(212, 165, 116, 0.4);
+  color: var(--accent-amber);
+}
+
+/* 对比模式 toggle */
+.slide[data-slide-id="S29"] .s29d-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  background: rgba(91, 140, 184, 0.1);
+  border: 1px solid rgba(91, 140, 184, 0.3);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+  outline: none;
+}
+.slide[data-slide-id="S29"] .s29d-toggle.on {
+  background: rgba(212, 165, 116, 0.18);
+  border-color: rgba(212, 165, 116, 0.45);
+}
+.slide[data-slide-id="S29"] .s29d-toggle-knob {
+  width: 22px;
+  height: 12px;
+  background: rgba(125, 141, 164, 0.25);
+  border-radius: 7px;
+  position: relative;
+  transition: background 0.2s ease;
+}
+.slide[data-slide-id="S29"] .s29d-toggle-knob::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  background: var(--text-subtle);
+  border-radius: 50%;
+  transition: transform 0.22s ease, background 0.22s ease;
+}
+.slide[data-slide-id="S29"] .s29d-toggle.on .s29d-toggle-knob {
+  background: rgba(212, 165, 116, 0.35);
+}
+.slide[data-slide-id="S29"] .s29d-toggle.on .s29d-toggle-knob::after {
+  transform: translateX(10px);
+  background: var(--accent-amber);
+}
+.slide[data-slide-id="S29"] .s29d-toggle-text {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+.slide[data-slide-id="S29"] .s29d-toggle.on .s29d-toggle-text {
+  color: var(--accent-amber);
+}
+
+.slide[data-slide-id="S29"] .s29d-state-pill {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  padding: 0.13rem 0.5rem;
+  border-radius: 10px;
+  background: rgba(125, 141, 164, 0.15);
+  color: var(--text-subtle);
+  border: 1px solid rgba(125, 141, 164, 0.3);
+  margin-left: auto;
+}
+.slide[data-slide-id="S29"] .s29d-state-pill.compare {
+  background: rgba(212, 165, 116, 0.18);
+  color: var(--accent-amber);
+  border-color: rgba(212, 165, 116, 0.45);
+}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .slide[data-slide-id="S29"] .s29d-dot-primary,
+  .slide[data-slide-id="S29"] .s29d-dot-compare,
+  .slide[data-slide-id="S29"] .s29d-dot-label,
+  .slide[data-slide-id="S29"] .s29d-axis-bar-fill,
+  .slide[data-slide-id="S29"] .s29d-tradeoff,
+  .slide[data-slide-id="S29"] .s29d-compare-line,
+  .slide[data-slide-id="S29"] .s29d-compare-tag,
+  .slide[data-slide-id="S29"] .s29d-proj {
+    transition: none !important;
+  }
+}
+</style>
+
+<div class="slide" data-slide-id="S29">
+  <div class="s29d-wrap">
+
+    <!-- ── 头部 ── -->
+    <header class="s29d-header">
+      <span class="s29d-chapter-label">§3 · 四维评价 · 互动演示</span>
+      <h1 class="s29d-title">
+        点选不同 harness · <strong>看见三轴位置的真实变化</strong>
+      </h1>
+      <p class="s29d-subtitle">
+        5 系统 × 3 轴坐标 · 强选 / 部分放弃 / 一句权衡 · 对比模式可叠看
+      </p>
+    </header>
+
+    <!-- ── 主网格 ── -->
+    <div class="s29d-grid">
+
+      <!-- ─────────── 左半幕 SVG 三轴舞台 ─────────── -->
+      <div class="s29d-stage">
+        <span class="s29d-stage-label">三轴坐标系（X 动态化 GC / Y 架构约束 AC / Z 入口治理） · CE 单独评价</span>
+        <div class="s29d-svg-wrap">
+          <svg id="s29d-svg" viewBox="0 0 460 460"
+               preserveAspectRatio="xMidYMid meet"
+               xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="s29d-arr-x" markerWidth="6" markerHeight="6"
+                      refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#7dd3c0"/>
+              </marker>
+              <marker id="s29d-arr-y" markerWidth="6" markerHeight="6"
+                      refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#d4a574"/>
+              </marker>
+              <marker id="s29d-arr-z" markerWidth="6" markerHeight="6"
+                      refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#90c884"/>
+              </marker>
+            </defs>
+
+            <!-- 网格底纹（极淡） -->
+            <g opacity="0.10">
+              <line x1="80" y1="120" x2="380" y2="120" stroke="#5b8cb8" stroke-width="0.5"/>
+              <line x1="80" y1="200" x2="380" y2="200" stroke="#5b8cb8" stroke-width="0.5"/>
+              <line x1="80" y1="280" x2="380" y2="280" stroke="#5b8cb8" stroke-width="0.5"/>
+            </g>
+
+            <!-- ── X 轴：静态 → 动态（向右下投影） ── -->
+            <line x1="230" y1="280" x2="430" y2="380"
+                  stroke="#7dd3c0" stroke-width="1.8" opacity="0.85"
+                  marker-end="url(#s29d-arr-x)"/>
+            <text x="220" y="298" text-anchor="end" fill="#8a96a8"
+                  font-family="JetBrains Mono, monospace" font-size="11">静态</text>
+            <text x="220" y="312" text-anchor="end" fill="#6b7689"
+                  font-family="JetBrains Mono, monospace" font-size="9">Static</text>
+            <text x="438" y="382" text-anchor="start" fill="#7dd3c0"
+                  font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">动态</text>
+            <text x="438" y="396" text-anchor="start" fill="#7dd3c0"
+                  font-family="JetBrains Mono, monospace" font-size="9">Dynamic</text>
+            <text x="278" y="332" class="s29d-tick-text">0.5</text>
+
+            <!-- ── Y 轴：约束 → 信任（垂直向上） ── -->
+            <line x1="230" y1="430" x2="230" y2="40"
+                  stroke="#d4a574" stroke-width="1.8" opacity="0.85"
+                  marker-end="url(#s29d-arr-y)"/>
+            <text x="230" y="446" text-anchor="middle" fill="#8a96a8"
+                  font-family="JetBrains Mono, monospace" font-size="11">约束</text>
+            <text x="230" y="32" text-anchor="middle" fill="#d4a574"
+                  font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">信任</text>
+            <text x="230" y="20" text-anchor="middle" fill="#d4a574"
+                  font-family="JetBrains Mono, monospace" font-size="9">Trust</text>
+            <text x="240" y="200" class="s29d-tick-text">0.5</text>
+
+            <!-- ── Z 轴：集中 → 分治（向左上斜投影） ── -->
+            <line x1="230" y1="280" x2="60" y2="120"
+                  stroke="#90c884" stroke-width="1.8" opacity="0.85"
+                  marker-end="url(#s29d-arr-z)"/>
+            <text x="46" y="116" text-anchor="end" fill="#90c884"
+                  font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">分治</text>
+            <text x="46" y="130" text-anchor="end" fill="#90c884"
+                  font-family="JetBrains Mono, monospace" font-size="9">Distributed</text>
+            <text x="244" y="276" text-anchor="start" fill="#8a96a8"
+                  font-family="JetBrains Mono, monospace" font-size="11">集中</text>
+
+            <!-- 原点 -->
+            <circle cx="230" cy="280" r="3.5" fill="#2d3b50"
+                    stroke="#5b8cb8" stroke-width="1.2"/>
+
+            <!-- ── 投影虚线（X / Y / Z 三条） ── -->
+            <line id="s29d-proj-x"
+                  x1="230" y1="280" x2="230" y2="280"
+                  class="s29d-proj" stroke="#d4a574"/>
+            <line id="s29d-proj-y"
+                  x1="230" y1="280" x2="230" y2="280"
+                  class="s29d-proj" stroke="#d4a574"/>
+            <line id="s29d-proj-z"
+                  x1="230" y1="280" x2="230" y2="280"
+                  class="s29d-proj" stroke="#d4a574"/>
+
+            <!-- 对比连线（OFF 时隐藏） -->
+            <line id="s29d-compare-line"
+                  x1="230" y1="280" x2="230" y2="280"
+                  class="s29d-compare-line"/>
+            <text id="s29d-compare-tag"
+                  x="230" y="270" text-anchor="middle"
+                  class="s29d-compare-tag">距离</text>
+
+            <!-- 主系统点（cx/cy 由 hookFn 设置） -->
+            <circle id="s29d-dot-primary"
+                    class="s29d-dot-primary"
+                    cx="230" cy="280" r="8"
+                    fill="#d4a574" opacity="0.95"/>
+            <circle id="s29d-dot-primary-halo"
+                    class="s29d-dot-primary"
+                    cx="230" cy="280" r="14" fill="none"
+                    stroke="#d4a574" stroke-width="1" opacity="0.35"/>
+            <text id="s29d-dot-primary-label"
+                  x="246" y="278"
+                  class="s29d-dot-label"
+                  fill="#d4a574">Hermes</text>
+
+            <!-- 对比系统点（默认隐藏） -->
+            <circle id="s29d-dot-compare"
+                    class="s29d-dot-compare"
+                    cx="230" cy="280" r="8"
+                    fill="#7dd3c0"/>
+            <text id="s29d-dot-compare-label"
+                  x="246" y="278"
+                  class="s29d-dot-label s29d-dot-label-compare"
+                  fill="#7dd3c0">Claude Code</text>
+
+          </svg>
+        </div>
+      </div><!-- /stage -->
+
+      <!-- ─────────── 右半幕 实时面板 ─────────── -->
+      <div class="s29d-panel">
+
+        <!-- 系统切换按钮组 -->
+        <div class="s29d-system-row" id="s29d-system-row">
+          <button class="s29d-sys-btn active" type="button"
+                  data-system="hermes" style="color: #d4a574;">
+            <span class="s29d-sys-emoji">🟡</span>
+            <span class="s29d-sys-name">Hermes</span>
+          </button>
+          <button class="s29d-sys-btn" type="button"
+                  data-system="claudeCode" style="color: #7dd3c0;">
+            <span class="s29d-sys-emoji">🔵</span>
+            <span class="s29d-sys-name">Claude Code</span>
+          </button>
+          <button class="s29d-sys-btn" type="button"
+                  data-system="deepagents" style="color: #90c884;">
+            <span class="s29d-sys-emoji">🟢</span>
+            <span class="s29d-sys-name">DeepAgents</span>
+          </button>
+          <button class="s29d-sys-btn" type="button"
+                  data-system="openclaw" style="color: #a8b3c4;">
+            <span class="s29d-sys-emoji">⚪</span>
+            <span class="s29d-sys-name">OpenClaw</span>
+          </button>
+          <button class="s29d-sys-btn" type="button"
+                  data-system="cursor" style="color: #8a96a8;">
+            <span class="s29d-sys-emoji">🔘</span>
+            <span class="s29d-sys-name">Cursor</span>
+          </button>
+        </div>
+
+        <!-- 三轴坐标卡片 -->
+        <div class="s29d-axis-cards">
+          <div class="s29d-axis-card" id="s29d-axis-card-dyn">
+            <span class="s29d-axis-icon">🔄</span>
+            <div class="s29d-axis-mid">
+              <span class="s29d-axis-name">静态 ↔ 动态（X）</span>
+              <div class="s29d-axis-bar">
+                <div class="s29d-axis-bar-fill" id="s29d-bar-dyn"></div>
+              </div>
+            </div>
+            <span class="s29d-axis-val" id="s29d-val-dyn">0.85</span>
+          </div>
+          <div class="s29d-axis-card" id="s29d-axis-card-trust">
+            <span class="s29d-axis-icon">🛡️</span>
+            <div class="s29d-axis-mid">
+              <span class="s29d-axis-name">约束 ↔ 信任（Y）</span>
+              <div class="s29d-axis-bar">
+                <div class="s29d-axis-bar-fill" id="s29d-bar-trust"></div>
+              </div>
+            </div>
+            <span class="s29d-axis-val" id="s29d-val-trust">0.70</span>
+          </div>
+          <div class="s29d-axis-card" id="s29d-axis-card-dist">
+            <span class="s29d-axis-icon">🌐</span>
+            <div class="s29d-axis-mid">
+              <span class="s29d-axis-name">集中 ↔ 分治（Z）</span>
+              <div class="s29d-axis-bar">
+                <div class="s29d-axis-bar-fill" id="s29d-bar-dist"></div>
+              </div>
+            </div>
+            <span class="s29d-axis-val" id="s29d-val-dist">0.75</span>
+          </div>
+          <!-- 第 4 维 CE：单独评价（不在三轴坐标系上）-->
+          <div class="s29d-axis-card" id="s29d-axis-card-ce" style="border-top: 1px dashed var(--rule-line-dashed); margin-top: 0.3rem; padding-top: 0.55rem;">
+            <span class="s29d-axis-icon">📚</span>
+            <div class="s29d-axis-mid">
+              <span class="s29d-axis-name">上下文工程 CE <small style="font-size:0.62rem;color:var(--text-dim);font-weight:400;">(第 4 维 · 不在 3D 轴上)</small></span>
+              <div class="s29d-axis-bar">
+                <div class="s29d-axis-bar-fill" id="s29d-bar-ce"></div>
+              </div>
+            </div>
+            <span class="s29d-axis-val" id="s29d-val-ce">0.80</span>
+          </div>
+        </div>
+
+        <!-- 取舍框架卡片 -->
+        <div class="s29d-tradeoff" id="s29d-tradeoff">
+          <div class="s29d-tradeoff-header">
+            <span class="s29d-tradeoff-title">强选 / 部分放弃 / 一句权衡</span>
+            <span class="s29d-tradeoff-sys" id="s29d-tradeoff-sys">Hermes Agent</span>
+          </div>
+          <div class="s29d-tradeoff-row">
+            <span class="s29d-tradeoff-tag s29d-tag-strong">✅ 强选</span>
+            <span class="s29d-tradeoff-text" id="s29d-strong">动态化（19 平台一致 + Nudge 自学）</span>
+          </div>
+          <div class="s29d-tradeoff-row">
+            <span class="s29d-tradeoff-tag s29d-tag-weak">⚠️ 部分放弃</span>
+            <span class="s29d-tradeoff-text" id="s29d-sacrifice">约束（仅 Docker user-space + 无 worktree）</span>
+          </div>
+          <div class="s29d-tradeoff-summary" id="s29d-summary">
+            📌 <strong>一句话权衡：</strong>
+            <span id="s29d-tradeoff-text">Hermes 选择了强动态，代价是执行环境和入口权限更依赖信任与后续治理。</span>
+          </div>
+        </div>
+
+        <!-- 控制条 -->
+        <div class="s29d-controls">
+          <button class="s29d-btn primary" type="button" id="s29d-btn-reset">🔄 重置到 Hermes</button>
+          <span class="s29d-control-label">对比模式</span>
+          <div class="s29d-toggle" id="s29d-toggle-compare" role="button" tabindex="0"
+               aria-pressed="false" aria-label="对比模式开关">
+            <span class="s29d-toggle-knob"></span>
+            <span class="s29d-toggle-text" id="s29d-toggle-text">OFF</span>
+          </div>
+          <span class="s29d-state-pill" id="s29d-state-pill">单视图</span>
+        </div>
+
+      </div><!-- /panel -->
+
+    </div><!-- /grid -->
+
+  </div><!-- /wrap -->
+</div>

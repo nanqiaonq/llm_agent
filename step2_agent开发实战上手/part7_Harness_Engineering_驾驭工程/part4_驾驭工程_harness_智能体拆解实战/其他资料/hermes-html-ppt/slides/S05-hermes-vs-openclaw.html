@@ -1,0 +1,661 @@
+<style>
+/* ── S05 Hermes vs OpenClaw · 同源不同路 ───────────────────── */
+
+/* CSS 变量局部重声明（覆盖/补充，方便自包含）*/
+.s05-slide {
+  --s05-bg:           var(--bg-deep);          /* 1 */
+  --s05-card-bg:      var(--card-bg);          /* 2 */
+  --s05-border:       var(--card-border);      /* 3 */
+  --s05-border-strong: var(--card-border-strong); /* 4 */
+  --s05-text:         var(--text-primary);     /* 5 */
+  --s05-text-body:    var(--text-body);        /* 6 */
+  --s05-text-subtle:  var(--text-subtle);      /* 7 */
+  --s05-divider:      var(--rule-line);        /* 8 */
+  --s05-cyan:         var(--secondary);        /* 9  = #7dd3c0 */
+  --s05-amber:        var(--accent-amber);     /* 10 = #d4a574 */
+  --s05-amber-strong: var(--accent-amber-strong); /* 11 */
+  --s05-surface:      var(--bg-surface);       /* 12 */
+  --s05-hover-bg:     var(--hover-bg);         /* 13 */
+}
+
+/* ── 外层包裹 ── */
+.s05-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.6rem 2rem 1.2rem 7rem;
+  box-sizing: border-box;
+  background: var(--s05-bg);
+  font-family: var(--font-body);
+  color: var(--s05-text);
+  overflow-y: auto;
+}
+
+.s05-wrap {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  overflow-wrap: anywhere;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+/* ── 标题 ── */
+.s05-title {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--s05-text);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.s05-title span.vs-sep {
+  color: var(--s05-cyan);
+  margin: 0 0.35em;
+}
+
+/* ── 双卡 Grid ── */
+.s05-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+/* ── 分隔线 ── */
+.s05-divider {
+  width: 2px;
+  background: var(--s05-divider);
+  margin: 0 1.2rem;
+  transform-origin: top center;
+  align-self: stretch;
+  min-height: 200px;
+}
+
+/* ── 单卡 ── */
+.s05-card {
+  background: var(--s05-card-bg);
+  border: 1.5px solid var(--s05-border);
+  border-radius: 12px;
+  padding: 1.4rem 1.6rem;
+  transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.s05-card:focus-visible {
+  outline: 2px solid var(--s05-amber);
+  outline-offset: 2px;
+}
+
+/* 左卡 cyan 激活态 */
+.s05-card--openclaw.cyan-active {
+  border-color: var(--s05-cyan);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(125, 211, 192, 0.18);
+}
+
+/* 右卡 amber 激活态 */
+.s05-card--hermes.amber-active {
+  border-color: var(--s05-amber);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(212, 165, 116, 0.18);
+}
+
+/* ── 卡片内部元素 ── */
+.s05-card-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.s05-card--openclaw .s05-card-name  { color: var(--s05-cyan); }
+.s05-card--hermes   .s05-card-name  { color: var(--s05-amber); }
+
+.s05-card-slogan {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--s05-text);
+  background: var(--s05-surface);
+  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  line-height: 1.4;
+}
+
+.s05-card-positioning {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--s05-text-body);
+}
+
+.s05-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.s05-card-meta-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--s05-text-subtle);
+  line-height: 1.4;
+}
+
+.s05-card-meta-label {
+  font-weight: 600;
+  flex-shrink: 0;
+  color: var(--s05-text-subtle);
+}
+
+.s05-card-meta-val {
+  color: var(--s05-text-body);
+}
+
+.s05-card--openclaw .s05-stars { color: var(--s05-cyan); }
+.s05-card--hermes   .s05-stars { color: var(--s05-amber); }
+
+/* ── 5 维对比区域 ── */
+.s05-axes {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.s05-axes-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--s05-text-subtle);
+  margin-bottom: 0.15rem;
+}
+
+/* ── 5 维可折叠行 ── */
+.s05-row {
+  background: var(--s05-card-bg);
+  border: 1px solid var(--s05-border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.s05-row:hover,
+.s05-row:focus-visible {
+  border-color: var(--s05-border-strong);
+  outline: none;
+}
+
+.s05-row:focus-visible {
+  outline: 2px solid var(--s05-amber);
+  outline-offset: 2px;
+}
+
+/* 行头部：始终可见 — 维度名 + 简短一行对比 */
+.s05-row-header {
+  display: grid;
+  grid-template-columns: 0.7fr 1.6fr 1.6fr 18px;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.95rem;
+  user-select: none;
+}
+
+.s05-row-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--s05-amber);
+  letter-spacing: 0.02em;
+}
+
+.s05-row-summary {
+  font-size: 0.78rem;
+  color: var(--s05-text-body);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s05-row-summary--openclaw {
+  color: var(--s05-cyan);
+}
+
+.s05-row-summary--hermes {
+  color: var(--s05-amber);
+}
+
+.s05-row-summary code {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: var(--s05-surface);
+  padding: 0.02em 0.32em;
+  border-radius: 3px;
+}
+
+.s05-row-summary--openclaw code { color: var(--s05-cyan); }
+.s05-row-summary--hermes   code { color: var(--s05-amber); }
+
+.s05-row-toggle {
+  font-size: 0.7rem;
+  color: var(--s05-amber);
+  transition: transform 0.22s ease;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.s05-row.expanded .s05-row-toggle {
+  transform: rotate(90deg);
+}
+
+/* 行展开内容 */
+.s05-row-content {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.32s ease, opacity 0.26s ease;
+}
+
+.s05-row.expanded .s05-row-content {
+  max-height: 200px;
+  opacity: 1;
+}
+
+.s05-row-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--s05-border);
+  padding: 0.65rem 0.95rem;
+  background: var(--s05-surface);
+}
+
+.s05-row-detail-col {
+  padding: 0 0.7rem;
+  border-right: 1px solid var(--s05-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.s05-row-detail-col:first-child { padding-left: 0; }
+.s05-row-detail-col:last-child  { border-right: none; padding-right: 0; }
+
+.s05-row-detail-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.18rem;
+}
+
+.s05-row-detail-col--openclaw .s05-row-detail-label { color: var(--s05-cyan); }
+.s05-row-detail-col--hermes   .s05-row-detail-label { color: var(--s05-amber); }
+
+.s05-row-detail-text {
+  font-size: 0.82rem;
+  color: var(--s05-text-body);
+  line-height: 1.5;
+}
+
+.s05-row-detail-text code {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  background: var(--s05-card-bg);
+  padding: 0.04em 0.38em;
+  border-radius: 4px;
+}
+
+.s05-row-detail-col--openclaw code { color: var(--s05-cyan); }
+.s05-row-detail-col--hermes   code { color: var(--s05-amber); }
+
+.s05-row-detail-text em {
+  font-style: normal;
+  color: var(--s05-amber-strong);
+  font-weight: 600;
+}
+
+/* ── 底部总结 callout ── */
+.s05-summary {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  border: 2px solid var(--s05-amber);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  background: var(--s05-hover-bg);
+  text-align: center;
+}
+
+.s05-summary-text {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--s05-text);
+  line-height: 1.5;
+}
+
+.s05-summary-text em {
+  color: var(--s05-cyan);
+  font-style: normal;
+}
+
+.s05-summary-text strong {
+  color: var(--s05-amber);
+}
+
+/* ── 进入第 1 章钩子 ── */
+.s05-hook {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  background: var(--s05-card-bg);
+  border: 1px solid var(--s05-border);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.s05-hook-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.s05-hook-text {
+  font-size: 0.88rem;
+  color: var(--s05-text-body);
+  line-height: 1.45;
+}
+
+.s05-hook-text strong {
+  color: var(--s05-amber);
+}
+
+.s05-hook-f5 {
+  font-weight: 700;
+  color: var(--s05-amber);
+  font-family: var(--font-mono);
+}
+
+/* pulse 动画 */
+.s05-hook.pulse-active {
+  animation: s05-hook-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes s05-hook-pulse {
+  0%, 100% { border-color: var(--s05-border); }
+  50%       { border-color: var(--s05-amber); box-shadow: 0 0 12px rgba(212, 165, 116, 0.22); }
+}
+
+/* ── 响应式：≤900px 双卡改上下堆叠 ── */
+@media (max-width: 900px) {
+  .s05-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .s05-divider {
+    width: 100%;
+    height: 2px;
+    min-height: 2px;
+    margin: 0;
+    transform-origin: left center;
+  }
+
+  .s05-row-header {
+    grid-template-columns: 1fr 18px;
+  }
+
+  .s05-row-summary--openclaw,
+  .s05-row-summary--hermes {
+    grid-column: 1 / 2;
+  }
+
+  .s05-row-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .s05-row-detail-col {
+    border-right: none;
+    border-bottom: 1px solid var(--s05-border);
+    padding: 0.4rem 0;
+  }
+
+  .s05-row-detail-col:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ── prefers-reduced-motion：禁所有动画 ── */
+@media (prefers-reduced-motion: reduce) {
+  .s05-card,
+  .s05-row,
+  .s05-row-content,
+  .s05-row-toggle,
+  .s05-hook { transition: none !important; animation: none !important; }
+}
+
+  /* ←FM-A4-2: 低高屏响应式降级 */
+  @media (max-height: 700px) {
+    .s05-wrap { padding: 1.6rem 2rem 1.2rem 6rem; }
+    .s05-wrap h1, .s05-wrap .s05-headline { font-size: 1.4rem; }
+    .s05-wrap .s05-tagline, .s05-wrap .s05-subtitle { font-size: 0.85rem; }
+  }
+  @media (max-height: 600px) {
+    .s05-wrap { padding: 0.8rem 1.2rem 0.6rem; }
+    .s05-wrap h1, .s05-wrap .s05-headline { font-size: 1.2rem; }
+    .s05-wrap .s05-tagline, .s05-wrap .s05-subtitle { font-size: 0.78rem; }
+  }
+
+</style>
+
+<div class="slide s05-slide" data-slide-id="S05">
+  <div class="s05-wrap">
+
+    <!-- 标题 -->
+    <h1 class="s05-title" id="s05-title">
+      Hermes<span class="vs-sep">vs</span>OpenClaw
+      <br><span style="font-size:1.1rem; font-weight:500; color:var(--text-subtle);">同源不同路</span>
+    </h1>
+
+    <!-- 双卡 -->
+    <div class="s05-cards-grid" id="s05-cards-grid">
+
+      <!-- 左卡：OpenClaw -->
+      <div class="s05-card s05-card--openclaw" id="s05-card-left" tabindex="0">
+        <div class="s05-card-name">OpenClaw</div>
+        <div class="s05-card-slogan">"Your own personal AI assistant"</div>
+        <div class="s05-card-positioning">更好的聊天机器人</div>
+        <div class="s05-card-meta">
+          <div class="s05-card-meta-row">
+            <span class="s05-card-meta-label">Stars</span>
+            <span class="s05-card-meta-val s05-stars">346K+</span>
+            <span class="s05-card-meta-val" style="color:var(--text-subtle);">(GitHub 历史最快)</span>
+          </div>
+          <div class="s05-card-meta-row">
+            <span class="s05-card-meta-label">路线</span>
+            <span class="s05-card-meta-val">传统 prompt-response 增强</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间分隔线 -->
+      <div class="s05-divider" id="s05-divider"></div>
+
+      <!-- 右卡：Hermes Agent -->
+      <div class="s05-card s05-card--hermes" id="s05-card-right" tabindex="0">
+        <div class="s05-card-name">Hermes Agent</div>
+        <div class="s05-card-slogan">"The agent that grows with you"</div>
+        <div class="s05-card-positioning">可自我成长的 Agent 系统</div>
+        <div class="s05-card-meta">
+          <div class="s05-card-meta-row">
+            <span class="s05-card-meta-label">Stars</span>
+            <span class="s05-card-meta-val s05-stars">137K+</span>
+            <span class="s05-card-meta-val" style="color:var(--text-subtle);">(NousResearch / MIT)</span>
+          </div>
+          <div class="s05-card-meta-row">
+            <span class="s05-card-meta-label">路线</span>
+            <span class="s05-card-meta-val">Harness Engineering 范式实践者</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 维核心对比（节选自 lesson.md 表 0-3）·点击展开看完整对比 -->
+    <div class="s05-axes" id="s05-axes">
+      <div class="s05-axes-label">5 维核心对比 · 节选自表 0-3（截至 2026-05）· 点击行展开</div>
+
+      <!-- 行 1：Skill 生产 -->
+      <div class="s05-row" id="s05-axis-0" tabindex="0" role="button" aria-expanded="false">
+        <div class="s05-row-header">
+          <span class="s05-row-name">Skill 生产</span>
+          <span class="s05-row-summary s05-row-summary--openclaw">手写 <code>SKILL.md</code> + <code>Git</code> + <code>ClawHub</code> 市场</span>
+          <span class="s05-row-summary s05-row-summary--hermes"><code>nudge</code> 自动产（计数器→fork→落盘）</span>
+          <span class="s05-row-toggle">▶</span>
+        </div>
+        <div class="s05-row-content">
+          <div class="s05-row-detail">
+            <div class="s05-row-detail-col s05-row-detail-col--openclaw">
+              <div class="s05-row-detail-label">OpenClaw 路线</div>
+              <div class="s05-row-detail-text">工程师手写 <code>SKILL.md</code> + <code>Git</code> 版本化 + <code>ClawHub</code> 社区市场（agent 版的 npm registry，社区贡献越多 skill 库越丰富）</div>
+            </div>
+            <div class="s05-row-detail-col s05-row-detail-col--hermes">
+              <div class="s05-row-detail-label">Hermes 路线</div>
+              <div class="s05-row-detail-text"><code>nudge</code> 机制自动产生（计数器→fork→落盘到 <code>~/.hermes/skills/</code>），<em>无市场，agent 跑越久 skill 库越丰富</em>（2.x 节展开）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 行 2：技术栈 -->
+      <div class="s05-row" id="s05-axis-1" tabindex="0" role="button" aria-expanded="false">
+        <div class="s05-row-header">
+          <span class="s05-row-name">技术栈</span>
+          <span class="s05-row-summary s05-row-summary--openclaw"><code>TypeScript</code> + <code>Node.js 24</code> + <code>pnpm</code></span>
+          <span class="s05-row-summary s05-row-summary--hermes"><code>Python</code> + 自研 <code>AIAgent</code>（14201 行）</span>
+          <span class="s05-row-toggle">▶</span>
+        </div>
+        <div class="s05-row-content">
+          <div class="s05-row-detail">
+            <div class="s05-row-detail-col s05-row-detail-col--openclaw">
+              <div class="s05-row-detail-label">OpenClaw 路线</div>
+              <div class="s05-row-detail-text"><code>TypeScript</code> + <code>Node.js 24</code> + <code>pnpm</code> 工作区，前端友好生态</div>
+            </div>
+            <div class="s05-row-detail-col s05-row-detail-col--hermes">
+              <div class="s05-row-detail-label">Hermes 路线</div>
+              <div class="s05-row-detail-text"><code>Python</code> + 自研 <code>AIAgent</code>（14201 行 <code>run_agent.py</code> + <code>openai</code>/<code>anthropic</code> SDK 直调），<em>不依赖 LangChain/DeepAgents</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 行 3：学习闭环 -->
+      <div class="s05-row" id="s05-axis-2" tabindex="0" role="button" aria-expanded="false">
+        <div class="s05-row-header">
+          <span class="s05-row-name">学习闭环</span>
+          <span class="s05-row-summary s05-row-summary--openclaw">无（每次任务从零开始）</span>
+          <span class="s05-row-summary s05-row-summary--hermes"><em>有</em>（跑越久 skill 库越丰富）</span>
+          <span class="s05-row-toggle">▶</span>
+        </div>
+        <div class="s05-row-content">
+          <div class="s05-row-detail">
+            <div class="s05-row-detail-col s05-row-detail-col--openclaw">
+              <div class="s05-row-detail-label">OpenClaw 路线</div>
+              <div class="s05-row-detail-text">无自学习机制 — 每次任务从零开始，跑 100 次也不会更好。Skill 增长完全靠社区贡献和工程师手写</div>
+            </div>
+            <div class="s05-row-detail-col s05-row-detail-col--hermes">
+              <div class="s05-row-detail-label">Hermes 路线</div>
+              <div class="s05-row-detail-text"><em>有自学习闭环</em> — agent 自动从执行经验中沉淀新 skill，agent 跑越久 skill 库越丰富（代价：<em>ACTIVE 倾向</em>风险，2.5 节展开）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 行 4：平台覆盖 -->
+      <div class="s05-row" id="s05-axis-3" tabindex="0" role="button" aria-expanded="false">
+        <div class="s05-row-header">
+          <span class="s05-row-name">平台覆盖</span>
+          <span class="s05-row-summary s05-row-summary--openclaw">24+ 消息渠道（WA/TG/IM/Feishu/WeChat/...）</span>
+          <span class="s05-row-summary s05-row-summary--hermes"><em>19 platform</em> + <em>8 backend</em></span>
+          <span class="s05-row-toggle">▶</span>
+        </div>
+        <div class="s05-row-content">
+          <div class="s05-row-detail">
+            <div class="s05-row-detail-col s05-row-detail-col--openclaw">
+              <div class="s05-row-detail-label">OpenClaw 路线</div>
+              <div class="s05-row-detail-text">24+ 消息渠道（<code>WhatsApp</code> / <code>Telegram</code> / <code>iMessage</code> / <code>Feishu</code> / <code>WeChat</code> / <code>QQ</code> / ...），含 macOS / iOS / Android 三端原生 + Voice Wake + Live Canvas</div>
+            </div>
+            <div class="s05-row-detail-col s05-row-detail-col--hermes">
+              <div class="s05-row-detail-label">Hermes 路线</div>
+              <div class="s05-row-detail-text"><em>19 platform</em>（用户感知）+ <em>8 backend</em>，主要 CLI / 服务端，无原生客户端 — gateway 入口治理是 AC 维度的代价证据</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 行 5：社区生态 -->
+      <div class="s05-row" id="s05-axis-4" tabindex="0" role="button" aria-expanded="false">
+        <div class="s05-row-header">
+          <span class="s05-row-name">社区生态</span>
+          <span class="s05-row-summary s05-row-summary--openclaw">大厂 sponsor + <code>ClawHub</code> 市场</span>
+          <span class="s05-row-summary s05-row-summary--hermes">自维护无市场，<em>0 CVE</em> 截至 2026-04</span>
+          <span class="s05-row-toggle">▶</span>
+        </div>
+        <div class="s05-row-content">
+          <div class="s05-row-detail">
+            <div class="s05-row-detail-col s05-row-detail-col--openclaw">
+              <div class="s05-row-detail-label">OpenClaw 路线</div>
+              <div class="s05-row-detail-text"><code>OpenAI</code> / <code>GitHub</code> / <code>NVIDIA</code> / <code>Vercel</code> 大厂 sponsor + <code>ClawHub</code> 市场（agent 版 npm registry）— 含 <em>supply chain 风险</em>（市场 skill 可能植入恶意逻辑）</div>
+            </div>
+            <div class="s05-row-detail-col s05-row-detail-col--hermes">
+              <div class="s05-row-detail-label">Hermes 路线</div>
+              <div class="s05-row-detail-text">自维护无市场，<em>0 reported agent CVE</em>（截至 2026-04 月度收口；2026-05 月内未结算暂不引用）— 牺牲生态丰富度换取攻击面收敛</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部总结 callout -->
+    <div class="s05-summary" id="s05-summary">
+      <p class="s05-summary-text">
+        <em>OpenClaw</em> 押注"<strong>社区生态 + 大厂 sponsor</strong>"，
+        <strong>Hermes Agent</strong> 押注"<strong>自学习闭环 + 自维护安全</strong>"
+      </p>
+    </div>
+
+    <!-- 进入第 1 章钩子 -->
+    <div class="s05-hook" id="s05-hook">
+      <span class="s05-hook-icon">🎯</span>
+      <span class="s05-hook-text">
+        本课带走 <span class="s05-hook-f5">3 问 + 第 4 维 CE</span>：
+        <strong>能力怎么增长 / 风险怎么控制 / 入口怎么组织 + 上下文工程</strong>，
+        让你能评价任何 harness 的取舍位置 → 进入第 1 章
+      </span>
+    </div>
+
+  </div><!-- /.s05-wrap -->
+</div><!-- /.s05-slide -->

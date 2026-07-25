@@ -1,0 +1,284 @@
+<style>
+  /* ── S06 第一章过渡页 ─────────────────────────────── */
+  #s06-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+  }
+
+  /* Chapter 标签 */
+  .s06-chapter-label {
+    font-family: var(--font-mono);
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    margin-bottom: 1rem;
+
+    opacity: 0;
+    animation: s06-fade-in 0.4s ease forwards;
+    animation-delay: 0ms;
+  }
+
+  /* 主标题 */
+  .s06-main-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.15;
+    margin-bottom: 0;
+
+    opacity: 0;
+    transform: translateY(16px);
+    animation: s06-fade-up 0.5s ease forwards;
+    animation-delay: 400ms;
+  }
+
+  /* 装饰横线 */
+  .s06-deco-line {
+    display: block;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--accent-amber),
+      var(--accent-amber),
+      transparent
+    );
+    border-radius: 1px;
+    margin: 1.2rem auto;
+
+    animation: s06-grow 0.35s ease forwards;
+    animation-delay: 900ms;
+  }
+
+  /* 英文副标题 */
+  .s06-subtitle {
+    font-family: var(--font-mono);
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    font-weight: 400;
+    color: var(--text-subtle);
+    letter-spacing: 0.1em;
+    margin-bottom: 2rem;
+
+    opacity: 0;
+    animation: s06-fade-in 0.3s ease forwards;
+    animation-delay: 1200ms;
+  }
+
+  /* 引言块 */
+  .s06-quote-wrap {
+    max-width: 520px;
+    text-align: center;
+    margin-bottom: 2.8rem;
+
+    opacity: 0;
+    animation: s06-fade-in 0.4s ease forwards;
+    animation-delay: 1700ms;
+  }
+
+  .s06-quote-text {
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+    color: var(--text-body);
+    line-height: 1.7;
+    /* 中文绝对禁止 italic，全局 font-style:normal 已保证 */
+  }
+
+  .s06-quote-attr {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-subtle);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── 章节进度条 ─────────────────────────────────── */
+  .s06-progress {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .s06-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0;
+    animation: s06-fade-in 0.3s ease forwards;
+  }
+
+  /* 每个节点的延迟依次递增 */
+  .s06-step:nth-child(1) { animation-delay: 2300ms; }
+  .s06-step:nth-child(2) { animation-delay: 2500ms; }
+  .s06-step:nth-child(3) { animation-delay: 2700ms; }
+  .s06-step:nth-child(4) { animation-delay: 2900ms; }
+  .s06-step:nth-child(5) { animation-delay: 3100ms; }
+
+  .s06-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--card-bg, #2b3441);
+    border: 2px solid var(--text-subtle);
+    transition: background var(--transition-base), border-color var(--transition-base), transform var(--transition-base);
+  }
+
+  /* 当前章节：琥珀高亮 + 放大 + pulse */
+  .s06-dot.active {
+    background: var(--accent-amber);
+    border-color: var(--accent-amber);
+    transform: scale(1.25);
+    box-shadow: 0 0 0 0 rgba(212, 165, 116, 0.6);
+    animation:
+      s06-fade-in 0.3s ease forwards,
+      s06-pulse 0.8s ease-out 1 forwards;
+    animation-delay: 2300ms, 3300ms;
+  }
+
+  .s06-step-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .s06-step.current .s06-step-label {
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+
+  /* 连接线 */
+  .s06-step-line {
+    width: 48px;
+    height: 1px;
+    background: var(--rule-line);
+    flex-shrink: 0;
+    margin-bottom: 1.15rem; /* 与 dot 对齐 */
+    opacity: 0;
+    animation: s06-fade-in 0.3s ease forwards;
+  }
+
+  /* 连接线出现时序（随相邻节点出现） */
+  .s06-step-line:nth-of-type(1) { animation-delay: 2400ms; }
+  .s06-step-line:nth-of-type(2) { animation-delay: 2600ms; }
+  .s06-step-line:nth-of-type(3) { animation-delay: 2800ms; }
+  .s06-step-line:nth-of-type(4) { animation-delay: 3000ms; }
+
+  /* ── Keyframes ──────────────────────────────────── */
+  @keyframes s06-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes s06-fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes s06-grow {
+    from { width: 0; opacity: 0; }
+    to   { width: 80px; opacity: 1; }
+  }
+
+  @keyframes s06-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(212, 165, 116, 0.55); }
+    50%  { box-shadow: 0 0 0 10px rgba(212, 165, 116, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 165, 116, 0); }
+  }
+
+  /* ── prefers-reduced-motion ─────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .s06-chapter-label,
+    .s06-main-title,
+    .s06-deco-line,
+    .s06-subtitle,
+    .s06-quote-wrap,
+    .s06-step,
+    .s06-step-line,
+    .s06-dot.active {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      width: 80px; /* deco-line fallback */
+    }
+    .s06-deco-line {
+      width: 80px;
+    }
+  }
+</style>
+
+<div class="slide" id="S06" data-slide-id="S06">
+  <div id="s06-wrap">
+
+    <!-- Chapter 标签 -->
+    <span class="s06-chapter-label">Chapter 01</span>
+
+    <!-- 主标题 -->
+    <h1 class="s06-main-title">记忆系统</h1>
+
+    <!-- 装饰横线 -->
+    <span class="s06-deco-line"></span>
+
+    <!-- 英文副标题 -->
+    <span class="s06-subtitle">Memory System</span>
+
+    <!-- 引言 -->
+    <div class="s06-quote-wrap">
+      <p class="s06-quote-text">
+        "Agent 不是不想记，是没人帮它整理"
+      </p>
+      <span class="s06-quote-attr">— 引言</span>
+    </div>
+
+    <!-- 章节进度条：5 节点 -->
+    <div class="s06-progress" role="list" aria-label="章节进度">
+
+      <div class="s06-step current" role="listitem">
+        <div class="s06-dot active"></div>
+        <span class="s06-step-label">引言</span>
+      </div>
+
+      <div class="s06-step-line"></div>
+
+      <div class="s06-step" role="listitem">
+        <div class="s06-dot"></div>
+        <span class="s06-step-label">记忆</span>
+      </div>
+
+      <div class="s06-step-line"></div>
+
+      <div class="s06-step" role="listitem">
+        <div class="s06-dot"></div>
+        <span class="s06-step-label">Nudge</span>
+      </div>
+
+      <div class="s06-step-line"></div>
+
+      <div class="s06-step" role="listitem">
+        <div class="s06-dot"></div>
+        <span class="s06-step-label">F5</span>
+      </div>
+
+      <div class="s06-step-line"></div>
+
+      <div class="s06-step" role="listitem">
+        <div class="s06-dot"></div>
+        <span class="s06-step-label">收束</span>
+      </div>
+
+    </div><!-- /s06-progress -->
+
+  </div><!-- /s06-wrap -->
+</div>

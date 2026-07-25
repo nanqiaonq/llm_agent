@@ -1,0 +1,295 @@
+<!-- slide: S27-next-hook.html | page 27/28 -->
+<!-- chapter: 第4章：收束与收尾 -->
+<!-- interaction_level: 🟢 | pattern: Static + 双栏 footer -->
+<!-- assignee: slide-writer -->
+<style>
+/* ── S27 scoped styles ── */
+#s27 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#s27 .s27-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+#s27 .s27-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+#s27 .s27-subtitle {
+  font-size: 0.83rem;
+  color: var(--text-subtle);
+  margin-bottom: 1rem;
+}
+
+/* ── 双钩子卡片 ── */
+#s27 .s27-hooks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+#s27 .s27-hook-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  backdrop-filter: blur(6px);
+  position: relative;
+}
+
+#s27 .s27-hook-card::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border-top: 1px solid var(--primary);
+  border-right: 1px solid var(--primary);
+  opacity: 0.4;
+}
+
+#s27 .hook-num {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.1);
+  border: 1px solid rgba(125, 211, 192, 0.2);
+  border-radius: 3px;
+  padding: 0.1rem 0.4rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+#s27 .hook-title {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
+}
+
+#s27 .hook-detail {
+  font-size: 0.78rem;
+  color: var(--text-body);
+  line-height: 1.55;
+}
+
+#s27 .hook-detail code {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.08);
+  border: 1px solid rgba(125, 211, 192, 0.18);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+}
+
+/* ── 双栏 footer（课后作业 + 第五节预告）── */
+#s27 .s27-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+#s27 .s27-footer-col {
+  background: var(--card-bg-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  backdrop-filter: blur(6px);
+}
+
+/* 左栏 - 课后作业 - amber 边框 */
+#s27 .s27-footer-col.homework {
+  border-left: 3px solid var(--accent-amber);
+}
+
+/* 右栏 - 第五节预告 - teal 边框 */
+#s27 .s27-footer-col.preview {
+  border-left: 3px solid var(--accent-teal);
+}
+
+#s27 .footer-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+#s27 .footer-label.amber {
+  color: var(--accent-amber);
+}
+
+#s27 .footer-label.teal {
+  color: var(--accent-teal);
+}
+
+/* 课后作业列表 */
+#s27 .hw-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+#s27 .hw-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+#s27 .hw-list li::before {
+  content: '▸';
+  color: var(--accent-amber);
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+  font-size: 0.7rem;
+}
+
+#s27 .hw-list li code {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.08);
+  border: 1px solid rgba(125, 211, 192, 0.18);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+}
+
+/* 第五节预告列表 */
+#s27 .preview-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+#s27 .preview-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+#s27 .preview-list li::before {
+  content: '◆';
+  color: var(--accent-teal);
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+  font-size: 0.55rem;
+}
+
+#s27 .preview-list li code {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--accent-amber);
+  background: rgba(212, 165, 116, 0.08);
+  border: 1px solid rgba(212, 165, 116, 0.18);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+}
+
+/* 底部一行话 */
+#s27 .s27-closing {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  text-align: center;
+  margin-top: 0.6rem;
+  letter-spacing: 0.02em;
+}
+</style>
+
+<div id="s27" data-slide-id="S27">
+
+  <!-- Header -->
+  <div class="s27-chapter-label">第4章 · 收束与收尾</div>
+  <div class="s27-title">第五节悬念钩子 + 课后作业</div>
+  <div class="s27-subtitle">本节留下两个明显的钩子，在第五节展开</div>
+
+  <!-- 双钩子卡片 -->
+  <div class="s27-hooks">
+
+    <div class="s27-hook-card">
+      <div class="hook-num">HOOK 01</div>
+      <div class="hook-title">skill 库长期质量</div>
+      <div class="hook-detail">
+        <code>_SKILL_REVIEW_PROMPT</code> 鼓励 ACTIVE 倾向 → fork agent 倾向"产出"而非"沉默" → 长期跑会堆出大量低质 skill。
+        下节打开 <code>agent/curator.py</code> 的 4 个默认配置常量
+        （运行间隔 7 天 / 最小空闲 2 小时 / 过期 30 天 / 归档 90 天）+
+        <code>skill_provenance.py</code> 血统隔离（agent-created 可清 / 用户手写不动）。
+      </div>
+    </div>
+
+    <div class="s27-hook-card">
+      <div class="hook-num">HOOK 02</div>
+      <div class="hook-title">3 问尺的真正用途——四家横评</div>
+      <div class="hook-detail">
+        下节末尾把 Claude Code / Codex / DeepAgents / OpenClaw 四家放上同一张「3 问 + 四维评价」表做系列收束。
+        Claude Code：约束轴强，动态轴中等；Codex：集中轴强，分治弱；DeepAgents：居中；OpenClaw：约束+分治产品体验路径。
+        系列结束后能给自己的项目直接画「我需要的位置」。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 双栏 footer -->
+  <div class="s27-footer">
+
+    <!-- 左栏：课后作业 -->
+    <div class="s27-footer-col homework">
+      <div class="footer-label amber">课后作业</div>
+      <ul class="hw-list">
+        <li>在自己白板上回答 3 问：能力增长 / 风险控制 / 入口组织，各画一个 Hermes 位置</li>
+        <li>对照 Claude Code / Cursor / Codex CLI / 自研项目，用同一把 3 问尺画出取舍位置</li>
+        <li>读 <code>tools/delegate_tool.py:40-48</code>，解释 <code>DELEGATE_BLOCKED_TOOLS</code> 每一项为何被禁</li>
+      </ul>
+    </div>
+
+    <!-- 右栏：第五节预告 -->
+    <div class="s27-footer-col preview">
+      <div class="footer-label teal">第五节预告</div>
+      <ul class="preview-list">
+        <li><code>agent/curator.py</code> 4 个默认配置常量 + <code>skill_provenance.py</code> 血统隔离</li>
+        <li>GEPA + 四层记忆诚实边界——PDF 表述 vs 源码真相逐条对比</li>
+        <li>Claude Code / Codex / DeepAgents / OpenClaw 四家四维完整横评收束</li>
+        <li>下节课后你能给自己的 harness 直接选「四维位置」而非被能力清单淹没</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="s27-closing">能用 3 问 + 第 4 维 CE 答出 Hermes 取舍位置，今天这节课就真带走了 · 下节课见</div>
+
+</div>

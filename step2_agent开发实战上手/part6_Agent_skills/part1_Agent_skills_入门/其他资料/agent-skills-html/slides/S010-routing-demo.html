@@ -1,0 +1,91 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">核心交互</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            Agent 如何判断要不要调用 Skill
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:920px;margin-bottom:22px;">
+            切换不同请求，逐步看 Agent 怎样从“识别任务”一路走到“执行并整合输出”。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.25" style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:940px;margin-bottom:20px;">
+            <button class="route-request-btn btn btn-primary" data-request="tests">补单元测试</button>
+            <button class="route-request-btn btn" data-request="markdown" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">整理 Markdown</button>
+            <button class="route-request-btn btn" data-request="findskill" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">找 PDF Skill</button>
+        </div>
+
+        <div class="route-user-bubble animate-ready center-block content-left" data-delay="0.3" style="max-width:760px;padding:18px 22px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);margin-bottom:22px;">
+            <div style="font-size:0.82rem;color:var(--text-tertiary);margin-bottom:8px;">用户请求</div>
+            <div id="route-user-query" style="font-size:1.05rem;color:var(--text-primary);"></div>
+        </div>
+
+        <div class="animate-ready center-block" data-delay="0.35" style="display:grid;grid-template-columns:1.2fr 1fr;gap:22px;max-width:1160px;">
+            <div>
+                <div class="route-step-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:16px;">
+                    <div class="route-step-card" data-step="0">识别任务</div>
+                    <div class="route-step-card" data-step="1">判断能力边界</div>
+                    <div class="route-step-card" data-step="2">匹配 Skill</div>
+                    <div class="route-step-card" data-step="3">执行</div>
+                    <div class="route-step-card" data-step="4">整合输出</div>
+                </div>
+                <div class="card" style="min-height:220px;">
+                    <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">当前阶段解释</div>
+                    <div id="route-stage-title" style="font-size:1.05rem;font-weight:700;color:var(--text-primary);margin-bottom:10px;"></div>
+                    <p id="route-stage-desc" style="font-size:0.95rem;line-height:1.8;margin:0;"></p>
+                </div>
+            </div>
+            <div>
+                <div class="card" style="background:#1E293B;min-height:300px;">
+                    <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:12px;">简化 Payload / Reasoning</div>
+                    <pre id="route-json" style="margin:0;white-space:pre-wrap;word-break:break-word;font-size:0.8rem;line-height:1.65;color:#E2E8F0;font-family:'Monaco','Menlo',monospace;"></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="animate-ready center-block" data-delay="0.4" style="display:flex;align-items:center;justify-content:center;gap:12px;max-width:980px;margin-top:20px;">
+            <button class="btn btn-primary" id="route-next-btn">开始演示</button>
+            <button class="btn" id="route-reset-btn" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">重置</button>
+            <span id="route-status" style="font-size:0.88rem;color:var(--text-secondary);">准备就绪：点击开始，逐步观察 Agent 如何做能力判断。</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.route-step-card {
+    min-height: 92px;
+    padding: 14px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    transition: all 0.25s ease;
+}
+
+.route-step-card.active {
+    background: var(--teal-pale);
+    border-color: var(--teal);
+    color: var(--text-primary);
+}
+
+.route-step-card.done {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: white;
+}
+
+@media (max-width: 900px) {
+    .route-step-grid { grid-template-columns: 1fr !important; }
+}
+</style>

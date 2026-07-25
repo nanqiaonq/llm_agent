@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: my-postgres
+    environment:
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=myuser
+      - POSTGRES_DB=mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/data/db
+      - ./conf.d:/data/conf.d
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+    driver: local

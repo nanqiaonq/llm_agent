@@ -1,0 +1,19 @@
+{
+  "answer": "---\n\n## 完整重构方案\n\n### (a) 至少 2 处重复模式的具体位置\n\n**重复模式 1：if-elif 折扣计算逻辑在多个函数中重复**\n\n在 `calculate_discount` 函数（第 7-15 行）和 `process_order` 函数（第 27-38 行）中，存在完全相同的 if-elif 分支结构：\n\n```\nif customer_type == \"regular\":   discount = amount * 0.05;  final = amount - discount\nelif customer_type == \"vip\":     discount = amount * 0.15;  final = amount - discount\nelif customer_type == \"premium\": discount = amount * 0.25;  final = amount - discount\nelse:                            final = amount\n```\n\n这段逻辑在两个函数中逐字重复，只是变量名从 `price`/`final_price` 变成了 `total`/`final_total`。一旦需要修改折扣率、增加新的客户类型或调整折扣策略，就必须在两个地方同步修改，极易遗漏。\n\n**重复模式 2：折扣率作为硬编码魔数散落在各处**\n\n折扣率 `0.05`（regular）、`0.15`（vip）、`0.25`（premium）在两个函数中分别硬编码出现了 3 次，总共 6 次。这些魔法数字没有命名，没有集中管理，阅读代码时无法直观理解其含义，修改时容易只改了某处而遗漏另一处。\n\n---\n\n### (b) 重构代码示例（已验证通过）\n\n```python\n\"\"\"重构版本：消除代码重复\"\"\"\n\n# 集中管理折扣率配置\nDISCOUNT_RATES = {\n    \"regular\": 0.05,\n    \"vip\": 0.15,\n    \"premium\": 0.25,\n}\n\ndef apply_discount(amount, customer_type):\n    \"\"\"根据客户类型对金额应用折扣，返回折扣后的金额。\"\"\"\n    rate = DISCOUNT_RATES.get(customer_type, 0.0)\n    return amount * (1 - rate)\n\n\ndef calculate_discount(price, customer_type):\n    \"\"\"Calculate discount based on customer type.\"\"\"\n    return apply_discount(price, customer_type)\n\n\ndef process_order(items, customer_type):\n    \"\"\"Process order with discount.\"\"\"\n    total = sum(item[\"price\"] for item in items)\n    return apply_discount(total, customer_type)\n```\n\n---\n\n### (c) 为什么这样重构更好\n\n1. **消除重复，降低维护成本**：原本 2 处 if-elif 分支被合并为 `apply_discount` 一个公共函数，折扣计算逻辑只有一份。新增客户类型（如 `\"gold\"`）只需在 `DISCOUNT_RATES` 字典加一行，`calculate_discount` 和 `process_order` 都不需要改动。\n\n2. **配置与逻辑分离**：折扣率从散落的魔数提升为顶层字典常量 `DISCOUNT_RATES`，一目了然。修改折扣率时只需修改字典值，不会遗漏。\n\n3. **遵循 DRY（Don't Repeat Yourself）原则**：每个业务规则（什么客户类型对应什么折扣率）在系统中只出现一次，消除了\"一处改、多处忘改\"的隐患。\n\n4. **可读性提升**：`apply_discount(amount, customer_type)` 的语义清晰直白；`sum(item[\"price\"] for item in items)` 比手写循环更 Pythonic；`DISCOUNT_RATES.get(customer_type, 0.0)` 优雅处理了未知客户类型（返回 0 折扣），替代了冗长的 else 分支。\n\n5. **可测试性增强**：核心逻辑集中在 `apply_discount` 一个函数中，只需针对它写单元测试即可覆盖所有折扣场景，无需为每个上层函数重复测试。\n\n---\n\n### (d) run_python 验证结果摘要\n\n- **passed**: `true`\n- **exit_code**: `0`\n- **stderr**: 空（无任何错误输出）\n- **关键 stdout**：\n  - 断言 1（`calculate_discount` 等价性）：覆盖了 5 种价格 × 5 种客户类型 = 25 个测试组合，全部通过 ✅\n  - 断言 2（`process_order` 等价性）：覆盖了 4 组 items × 5 种客户类型 = 20 个测试组合，全部通过 ✅\n  - 断言 3（边界情况）：空列表返回 0、价格为 0 返回 0，全部通过 ✅\n  - 最终结论：**\"所有断言通过！重构验证成功！\"**\n\n重构后的代码与原函数在全部 47 个测试用例上输出完全一致（误差 < 1e-9），证明了重构的正确性。",
+  "steps": 9,
+  "tokens": 29139,
+  "errors": [],
+  "budget_report": {
+    "iterations": 9,
+    "tokens_input": 26052,
+    "tokens_output": 3087,
+    "cost_usd": 0.124461,
+    "max_usd": 0.5,
+    "remaining_usd": 0.375539,
+    "tripped": false
+  },
+  "blocked_tools": 0,
+  "mode": "full_harness",
+  "elapsed_seconds": 43.68,
+  "tokens_total": 29139
+}

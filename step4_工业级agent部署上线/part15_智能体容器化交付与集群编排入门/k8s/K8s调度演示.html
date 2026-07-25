@@ -1,0 +1,3144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>k8s 雷达视图 · 调度与流量演示</title>
+<style>
+:root{
+  --bg-0:#0a0f1d;
+  --bg-1:#0d1426;
+  --panel:#131a2e;
+  --panel-2:#1a2240;
+  --line:#1e2942;
+  --line-2:#2a3760;
+  --line-3:#3a4870;
+  --txt:#e2e8f0;
+  --txt-dim:#94a3b8;
+  --txt-mute:#64748b;
+  --cyan:#22d3ee;
+  --cyan-deep:#0891b2;
+  --violet:#a78bfa;
+  --violet-deep:#7c3aed;
+  --green:#22c55e;
+  --amber:#fbbf24;
+  --red:#ef4444;
+  --hot:#facc15;
+  --pink:#f472b6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg-0);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;overflow-x:hidden}
+body{
+  min-height:100vh;padding:20px;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(34,211,238,.05), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(167,139,250,.04), transparent 60%),
+    var(--bg-0);
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, #fff6 50%, transparent),
+    radial-gradient(1px 1px at 33% 68%, #fff4 50%, transparent),
+    radial-gradient(1px 1px at 56% 18%, #fff5 50%, transparent),
+    radial-gradient(1px 1px at 74% 82%, #fff4 50%, transparent),
+    radial-gradient(1px 1px at 88% 35%, #fff4 50%, transparent),
+    radial-gradient(1px 1px at 21% 88%, #fff4 50%, transparent);
+  opacity:.4;
+}
+
+/* ============ 标题 ============ */
+.heading{
+  position:relative;z-index:5;max-width:1400px;margin:0 auto 14px;text-align:center;
+}
+.heading .h-en{font-family:'JetBrains Mono','SF Mono',Consolas,monospace;font-size:1.4rem;font-weight:800;letter-spacing:.2em;color:#e0f2fe;text-shadow:0 0 14px rgba(34,211,238,.3);text-transform:lowercase}
+.heading .h-cn{font-size:.74rem;color:var(--txt-mute);letter-spacing:.4em;margin-top:6px}
+
+/* ============ 控制台 ============ */
+.console{
+  position:relative;z-index:50;max-width:1400px;margin:0 auto 18px;
+  background:linear-gradient(180deg, rgba(26,34,64,.8), rgba(19,26,46,.8));
+  backdrop-filter:blur(10px);
+  border:1px solid var(--line-2);border-radius:12px;
+  padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+.console::before{
+  content:'control console · 控制台';position:absolute;left:18px;top:-9px;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.22em;color:var(--cyan);
+  background:var(--bg-0);padding:1px 10px;border-radius:3px;font-weight:700;
+}
+.group{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(7,11,24,.6);border:1px solid var(--line);border-radius:8px;padding:6px 12px;
+}
+.group label{font-size:.7rem;color:var(--txt-dim);letter-spacing:.06em;font-weight:600}
+.group input{
+  width:46px;background:#03060f;border:1px solid var(--line-2);color:var(--cyan);
+  font-family:'JetBrains Mono',Consolas,monospace;font-weight:700;font-size:.9rem;
+  padding:4px 6px;border-radius:5px;text-align:center;outline:none;
+}
+.group input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(34,211,238,.25)}
+
+.btn{
+  position:relative;padding:9px 16px 9px 22px;cursor:pointer;
+  font-weight:600;font-size:.84rem;letter-spacing:.06em;
+  background:linear-gradient(180deg,#1a2240,#131a2e);
+  border:1px solid #2a3760;
+  border-radius:8px;
+  color:#e2e8f0;
+  transition:all .15s;
+  display:flex;align-items:center;gap:6px;
+  font-family:inherit;
+}
+.btn::before{
+  content:'';position:absolute;left:8px;top:8px;bottom:8px;
+  width:3px;border-radius:2px;
+  background:var(--gold);
+  transition:all .15s;
+}
+.btn small{display:block;font-size:.58rem;opacity:.7;letter-spacing:.12em;font-weight:400;margin-top:2px}
+.btn:hover:not(:disabled){
+  background:linear-gradient(180deg,#232c4a,#1a2240);
+  border-color:#3a4870;
+}
+.btn:hover:not(:disabled)::before{box-shadow:0 0 8px currentColor;background:var(--gold-soft, #fde047)}
+.btn:disabled{
+  background:#0d1426;border-color:#1f2942;color:#475569;
+  cursor:not-allowed;
+}
+.btn:disabled::before{background:#334155}
+.btn.danger::before{background:#ef4444}
+.btn.danger:hover:not(:disabled)::before{background:#fca5a5}
+.btn.success::before{background:#22c55e}
+.btn.success:hover:not(:disabled)::before{background:#86efac}
+.btn.ghost::before{background:#64748b}
+.sep{width:1px;height:30px;background:linear-gradient(180deg,transparent,var(--line-2),transparent)}
+
+/* ============ 主舞台 ============ */
+.stage{
+  position:relative;z-index:10;max-width:1400px;margin:0 auto;
+  display:grid;grid-template-columns:240px 1fr;gap:18px;align-items:start;
+}
+.world{
+  position:relative;
+  min-height:760px;
+}
+
+/* ============ SVG 连线层 ============ */
+#cables{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.wire-bg{fill:none;stroke:#1e2942;stroke-width:1;opacity:0;stroke-linecap:round;transition:all .3s}
+.wire-glow{fill:none;stroke-width:0;opacity:0;stroke-linecap:round;transition:all .3s}
+.wire-flow{fill:none;stroke-width:0;opacity:0;stroke-linecap:round;stroke-dasharray:10 8;transition:all .25s}
+.wire-bg.lit{opacity:.9;stroke-width:1.8}
+/* 已建立长连接 watch 的线: 暗紫色, 持续流动 (但比 lit 暗) */
+.wire-bg.watching{stroke:#6e5e9c;opacity:.45;stroke-width:1.4}
+.wire-flow.watching{stroke:#a78bfa;stroke-width:1.4;opacity:.35;animation:wireFlow 1.8s linear infinite}
+/* 链接断开 (节点宕机): 暗红色, 不流动 */
+.wire-bg.broken{stroke:#7c3a3a;opacity:.5;stroke-width:1.2;stroke-dasharray:4 4}
+.wire-glow.lit{stroke-width:6;opacity:.25;filter:blur(2px)}
+.wire-flow.lit{stroke-width:2.2;opacity:.95;animation:wireFlow 1.2s linear infinite}
+@keyframes wireFlow{from{stroke-dashoffset:0}to{stroke-dashoffset:-36}}
+
+/* ============ 实体机壳通用样式 ============ */
+.host{
+  position:absolute;
+  background:linear-gradient(180deg, #232c4a 0%, #161d34 100%);
+  border:1px solid #0a0e1a;border-radius:10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -2px 0 rgba(0,0,0,.5),
+    0 6px 16px rgba(0,0,0,.45);
+  /* host 类不再统一设 z-index, 各具体类按需设 */
+}
+/* 4 个螺丝 */
+.host::before, .host::after,
+.host > .sb, .host > .sa{
+  content:'';position:absolute;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #6e7896, #1a2236 70%);
+  box-shadow:inset 0 0 0 1px #00000080;pointer-events:none;
+}
+.host::before{top:4px;left:4px}
+.host::after{top:4px;right:4px}
+.host > .sb{bottom:4px;left:4px}
+.host > .sa{bottom:4px;right:4px}
+.host-tag{
+  position:absolute;top:-9px;left:14px;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;
+  background:var(--bg-0);padding:1px 8px;color:var(--cyan);
+  border:1px solid var(--cyan-deep);border-radius:3px;font-weight:700;
+}
+/* 实体机 IP 标记 (右上角) */
+.host-ip{
+  position:absolute;top:-9px;right:14px;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.06em;
+  background:var(--bg-0);padding:1px 8px;color:#86efac;
+  border:1px solid rgba(34,197,94,.4);border-radius:3px;font-weight:700;
+  z-index:36;
+}
+
+/* ============ master 实体机：方形机箱 ============ */
+.master-host{
+  width:96%;height:280px;
+  top:115px;left:50%;transform:translateX(-50%);
+  border-radius:14px;
+  background:linear-gradient(180deg, #2c3656 0%, #1a2240 60%, #131a2e 100%);
+  border:1px solid #0a0e1a;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 -3px 0 rgba(0,0,0,.6),
+    inset 2px 0 0 rgba(255,255,255,.03),
+    inset -2px 0 0 rgba(0,0,0,.4),
+    0 14px 40px rgba(0,0,0,.6);
+  /* 不设 z-index, 让 cables 能穿过外壳, 但内部 sat 卡片本身的 z 仍高 */
+}
+/* 机箱四角螺丝 */
+.master-host::before, .master-host::after,
+.master-host > .s-bl, .master-host > .s-br{
+  content:'';position:absolute;width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #6e7896, #1a2236 70%);
+  box-shadow:inset 0 0 0 1px #00000080, 0 1px 1px #00000080;
+  pointer-events:none;
+}
+.master-host::before{top:8px;left:8px}
+.master-host::after{top:8px;right:8px}
+.master-host > .s-bl{bottom:8px;left:8px}
+.master-host > .s-br{bottom:8px;right:8px}
+/* 机箱铭牌 (移到左上角, 跟 host-ip 右上角呼应) */
+.master-host > .host-tag{
+  top:-10px;left:14px;padding:2px 12px;letter-spacing:.16em;
+  background:linear-gradient(180deg, #1a2236, #0d1426);
+}
+/* 机箱内的散热栅 (顶部一条) */
+.master-host > .vents{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:120px;height:4px;border-radius:2px;
+  background:repeating-linear-gradient(90deg, #000 0 2px, #1a2236 2px 4px);
+  pointer-events:none;
+}
+/* 内部"控制面"虚框, 提示这 5 个进程的边界 */
+.master-host > .ring{
+  position:absolute;
+  top:20px;left:20px;right:20px;bottom:6px;  /* 底部 inset 缩到 6px, 给 sat-coredns/ccm 让出余量 */
+  border:1.5px dashed #4a5878;border-radius:10px;
+  pointer-events:none;
+}
+.master-host > .ring-tag{
+  position:absolute;top:18px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;
+  color:var(--cyan);background:var(--bg-0);padding:1px 10px;border-radius:3px;
+  border:1px solid var(--cyan-deep);
+}
+
+/* ============ 卫星组件 (控制面进程) ============
+   绝对定位于 master-host 内部
+*/
+.sat, .center-api{
+  position:absolute;
+  background:linear-gradient(180deg, rgba(36,46,80,.95), rgba(20,26,46,.95));
+  border:1px solid var(--line-2);border-radius:10px;
+  padding:8px 11px;
+  display:flex;align-items:center;gap:9px;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+  transition:all .4s;
+  z-index:35;
+}
+.sat{width:230px}  /* 给 cloud-controller-mgr 足够空间放下英文名 */
+.sat .en{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sat .info{flex:1;min-width:0}  /* 让 info 列吃满剩余宽度, 避免文字被压缩 */
+.sat::after{
+  content:'⌬ 进程';position:absolute;top:-8px;right:8px;white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.15em;
+  background:var(--bg-0);padding:1px 6px;color:var(--txt-mute);border:1px solid var(--line);border-radius:3px;
+}
+.sat .ic{
+  width:30px;height:30px;border-radius:6px;flex-shrink:0;
+  background:linear-gradient(135deg, #2a3454, #0d1326);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  box-shadow:inset 0 0 0 1px var(--line-2), inset 0 0 6px #00000099;
+}
+.sat .info{min-width:0}
+.sat .en{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.72rem;color:var(--txt);letter-spacing:.04em;line-height:1.1;text-transform:lowercase}
+.sat .cn{font-size:.58rem;color:var(--txt-mute);letter-spacing:.08em;margin-top:2px}
+.sat.lit{
+  border-color:var(--amber);
+  background:linear-gradient(180deg, rgba(74,52,16,.85), rgba(40,30,8,.85));
+  box-shadow:0 0 24px rgba(251,191,36,.5),inset 0 1px 0 rgba(254,240,138,.15);
+}
+.sat.lit .en{color:var(--hot)}
+.sat.traffic{
+  border-color:var(--cyan);
+  background:linear-gradient(180deg, rgba(10,40,55,.85), rgba(5,20,30,.85));
+  box-shadow:0 0 24px rgba(34,211,238,.5);
+}
+.sat.traffic .en{color:#a5f3fc}
+
+/* 4 个核心进程: 左右各 2 个 (上下排列), api server 居中 */
+.sat-etcd   { top:64px;  left:60px; }
+.sat-cm     { top:160px; left:60px; }
+.sat-sched  { top:64px;  right:60px; }
+/* 右下角放一个"... 其他组件" 占位提示, 表达"K8s 控制面还有 CoreDNS/CCM 等, 此处略" */
+.sat-more   { top:160px; right:60px; opacity:.5; border-style:dashed !important; cursor:default !important; }
+.sat-more:hover{transform:none !important;outline:none !important;filter:none !important}
+.sat-more::after{content:'─ 略 ─';color:var(--txt-mute);border-color:var(--line)}
+.sat-more .en{color:var(--txt-mute)}
+
+/* virtual-layer 已合并进 sat-svc-floating, 不再单独存在 */
+
+/* ============ Gateway 说明区 (master 和 worker 之间, 占右半) ============ */
+.gateway-hint{
+  position:absolute;top:410px;left:50%;right:8px;height:108px;
+  border:1px dashed rgba(34,211,238,.25);border-radius:10px;
+  background:linear-gradient(180deg, rgba(14,58,79,.18), rgba(8,37,48,.18));
+  padding:14px 16px 14px 18px;z-index:5;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .2s;
+}
+.gateway-hint:hover{
+  filter:brightness(1.15);
+  outline:1px solid rgba(250,204,21,.55);outline-offset:2px;
+  transform:scale(1.02);
+}
+.gateway-hint::before{
+  content:'gateway controller · 集群入口网关 (实际部署形态)';
+  position:absolute;top:-9px;left:14px;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.16em;
+  color:#67e8f9;background:var(--bg-0);padding:2px 10px;border-radius:3px;
+  border:1px dashed #0d6e8a;white-space:nowrap;
+}
+.gateway-hint .gh-icon{
+  width:42px;height:42px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg, rgba(14,58,79,.85), rgba(8,37,48,.85));
+  border:1px solid #0d6e8a;
+  display:flex;align-items:center;justify-content:center;color:#67e8f9;
+}
+.gateway-hint .gh-icon svg{width:60%;height:60%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.gateway-hint .gh-text{flex:1;min-width:0;line-height:1.5}
+.gateway-hint .gh-title{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:#a5f3fc;letter-spacing:.04em;text-transform:lowercase}
+.gateway-hint .gh-desc{font-size:.62rem;color:#7dd3fc;margin-top:4px;opacity:.9}
+.gateway-hint .gh-desc b{color:#fde047;font-weight:600}
+/* gateway-hint lit 状态 (流量经过时金色高亮) */
+.gateway-hint.lit{
+  border-color:var(--amber) !important;
+  background:linear-gradient(180deg, rgba(74,52,16,.5), rgba(40,30,8,.5)) !important;
+  box-shadow:0 0 24px rgba(251,191,36,.4);
+}
+.gateway-hint.lit .gh-icon{
+  background:linear-gradient(135deg, rgba(74,52,16,.9), rgba(40,30,8,.9)) !important;
+  border-color:var(--amber) !important;color:#fde047 !important;
+}
+.gateway-hint.lit .gh-title{color:var(--hot) !important}
+
+/* service 独立浮动在虚拟层中央 (虚拟层在左半, 跟 gateway-hint 同款横向布局) */
+.sat-svc-floating{
+  position:absolute;top:410px;left:8px;width:calc(50% - 16px);height:108px;
+  border:1.5px dashed rgba(34,211,238,.45);border-radius:10px;
+  background:linear-gradient(180deg, rgba(10,40,55,.45), rgba(5,20,30,.45));
+  padding:14px 16px 14px 18px;z-index:6;  /* z 比 virtual-layer 高 */
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 12px rgba(0,0,0,.4), 0 0 20px rgba(34,211,238,.12);
+}
+.sat-svc-floating:hover{filter:brightness(1.15);outline:1px solid rgba(250,204,21,.55);outline-offset:2px;transform:scale(1.02)}
+.sat-svc-floating::before{
+  content:'virtual resources · 虚拟资源 (不属于任何机器)';
+  position:absolute;top:-9px;left:14px;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.16em;
+  color:var(--cyan);background:var(--bg-0);padding:2px 10px;border-radius:3px;
+  border:1px dashed var(--cyan-deep);white-space:nowrap;
+}
+.sat-svc-floating .ic{
+  width:42px;height:42px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg, rgba(10,40,55,.85), rgba(5,20,30,.85));
+  border:1px solid rgba(34,211,238,.5);
+  display:flex;align-items:center;justify-content:center;color:#67e8f9;
+}
+.sat-svc-floating .ic svg{width:60%;height:60%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sat-svc-floating .info{flex:1;min-width:0;line-height:1.5}
+.sat-svc-floating .title{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:#a5f3fc;letter-spacing:.04em;text-transform:lowercase}
+.sat-svc-floating .desc{font-size:.62rem;color:#7dd3fc;margin-top:4px;opacity:.9}
+.sat-svc-floating .desc b{color:#fde047;font-weight:600}
+.sat-svc-floating .desc code{color:#86efac;background:rgba(34,197,94,.08);padding:0 4px;border-radius:2px;border:1px solid rgba(34,197,94,.2);font-family:'JetBrains Mono',monospace;font-size:.6rem}
+.sat-svc-floating.lit{
+  border-color:var(--amber) !important;
+  background:linear-gradient(180deg, rgba(74,52,16,.5), rgba(40,30,8,.5)) !important;
+  box-shadow:0 0 24px rgba(251,191,36,.4);
+}
+.sat-svc-floating.lit .ic{
+  background:linear-gradient(135deg, rgba(74,52,16,.9), rgba(40,30,8,.9)) !important;
+  border-color:var(--amber) !important;color:#fde047 !important;
+}
+.sat-svc-floating.lit .title{color:var(--hot) !important}
+
+/* ============ api server 中心 ============ */
+.center-api{
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse at 50% 30%, #3b3578 0%, #1e1b4b 70%, #0e0a2a 100%);
+  border:2px solid #6366f1;border-radius:12px;
+  padding:12px 18px;
+  flex-direction:column;align-items:center;gap:5px;
+  box-shadow:0 0 32px rgba(99,102,241,.35),inset 0 1px 0 rgba(167,139,250,.25);
+  z-index:40;
+  width:240px;
+}
+.center-api::after{
+  content:'⌬ 进程 · 枢纽';position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.15em;
+  background:var(--bg-0);padding:1px 8px;color:#a5b4fc;border:1px solid #4f46e5;border-radius:3px;
+}
+.center-api .ic-big{
+  width:38px;height:38px;border-radius:8px;flex-shrink:0;
+  background:radial-gradient(circle at 40% 30%, #c4b5fd, #6366f1 60%, #312e81);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  box-shadow:inset 0 0 10px #000, 0 0 14px rgba(99,102,241,.55);
+}
+.center-api .en{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.85rem;color:#e0e7ff;letter-spacing:.05em;text-transform:lowercase}
+.center-api .cn{font-size:.58rem;color:#a5b4fc;letter-spacing:.08em;margin-top:2px;text-align:center}
+.center-api .screen{
+  margin-top:4px;width:100%;background:#000;border:1px solid #1e1b4b;border-radius:3px;
+  padding:3px 7px;font-family:'JetBrains Mono',monospace;font-size:.54rem;
+  color:#86efac;letter-spacing:.04em;
+  box-shadow:inset 0 0 6px #00000099;
+}
+.center-api .screen .cur{display:inline-block;width:4px;height:8px;background:#86efac;margin-left:3px;animation:blink .9s steps(2) infinite}
+.center-api.lit{box-shadow:0 0 40px rgba(251,191,36,.55);border-color:var(--amber)}
+
+/* ============ 外圈：kubectl ============ */
+.kubectl{
+  width:200px;padding:8px 10px;
+  top:16px;left:16.7%;transform:translateX(-50%);  /* 3 等分: 16.7% / 50% / 83.3% */
+  display:flex;align-items:center;gap:8px;
+  z-index:35;
+}
+.kubectl .ic{
+  width:34px;height:34px;border-radius:6px;flex-shrink:0;
+  background:linear-gradient(135deg, #1d2944, #0a0e1a);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  box-shadow:inset 0 0 0 1px var(--line-2), inset 0 0 6px #00000099;
+}
+.kubectl .en{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.72rem;color:var(--cyan);letter-spacing:.04em;text-transform:lowercase;white-space:nowrap}
+.kubectl .cn{font-size:.55rem;color:var(--txt-mute);letter-spacing:.08em;margin-top:2px}
+.kubectl.lit{
+  border-color:var(--amber) !important;
+  background:linear-gradient(180deg, rgba(74,52,16,.92), rgba(40,30,8,.92)) !important;
+  box-shadow:0 0 24px rgba(251,191,36,.5),inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 0 rgba(0,0,0,.5),0 6px 16px rgba(0,0,0,.45);
+}
+.kubectl.lit .en{color:var(--hot) !important}
+.kubectl.lit .ic{color:#fde047 !important}
+
+/* ============ 外圈：internet 云 ============ */
+.internet{
+  width:200px;padding:8px 12px;
+  top:16px;left:83.3%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg, rgba(8,38,48,.6), rgba(5,20,30,.6));
+  border:1px solid #0d6e8a;
+  z-index:35;
+}
+.internet .globe{
+  width:32px;height:32px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#67e8f9;
+}
+.internet .en{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.72rem;color:#a5f3fc;letter-spacing:.04em;text-transform:lowercase;white-space:nowrap}
+.internet .cn{font-size:.55rem;color:#7dd3fc;letter-spacing:.08em;margin-top:2px;opacity:.85}
+.internet.lit{
+  border-color:var(--amber) !important;
+  background:linear-gradient(180deg, rgba(74,52,16,.92), rgba(40,30,8,.92)) !important;
+  box-shadow:0 0 24px rgba(251,191,36,.5);
+}
+.internet.lit .en{color:var(--hot) !important}
+.internet.lit .cn{color:#fde047 !important}
+.internet.lit .globe{color:#fde047 !important}
+
+/* ============ ingress 网关 ============ */
+.ingress{
+  width:240px;padding:8px 12px;
+  top:16px;right:80px;
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg, #0e3a4f, #082530);
+  border:1px solid #0d6e8a;
+  z-index:35;
+}
+/* 镜像仓库 (集群外部, 给 kubelet 拉镜像) */
+.registry{
+  width:240px;padding:8px 12px;
+  top:16px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg, rgba(10,30,55,.7), rgba(5,15,30,.7));
+  border:1px solid #1e40af;
+  z-index:35;
+}
+.registry .reg-ic{
+  width:32px;height:32px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#93c5fd;
+}
+.registry .en{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.72rem;color:#93c5fd;letter-spacing:.04em;text-transform:lowercase;white-space:nowrap}
+.registry .cn{font-size:.55rem;color:#60a5fa;letter-spacing:.06em;margin-top:2px;opacity:.85}
+.registry.lit{
+  border-color:var(--gold) !important;
+  background:linear-gradient(180deg, rgba(74,52,16,.92), rgba(40,30,8,.92)) !important;
+  box-shadow:0 0 24px rgba(250,204,21,.5);
+}
+.registry.lit .en{color:var(--gold) !important}
+.registry.lit .cn{color:#fde047 !important}
+.registry.lit .reg-ic{color:#fde047 !important}
+.registry:hover{filter:brightness(1.15);outline:1px solid rgba(147,197,253,.55);outline-offset:2px;transform:translateX(-50%) scale(1.04)}
+.ingress .bay{
+  width:36px;height:36px;border-radius:7px;flex-shrink:0;
+  background:radial-gradient(circle at 50% 50%, #67e8f9, #0891b2 60%, #083344);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  box-shadow:inset 0 0 8px #000, 0 0 12px rgba(34,211,238,.4);
+}
+.ingress .en{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.78rem;color:#a5f3fc;letter-spacing:.04em;text-transform:lowercase}
+.ingress .cn{font-size:.55rem;color:#7dd3fc;letter-spacing:.08em;margin-top:2px;opacity:.85;line-height:1.3}
+.ingress.lit{border-color:var(--hot);box-shadow:0 0 28px rgba(252,211,77,.45),inset 0 1px 0 rgba(255,255,255,.06)}
+.ingress.lit .en{color:#fef9c3}
+
+/* ============ 底部 worker nodes 一排 ============ */
+.workers-row{
+  /* master 底部 395 + 虚拟资源层 (410-518) + 间距 ≈ 535 起 */
+  position:absolute;top:535px;left:8px;right:8px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+}
+.node{
+  position:relative;
+  background:linear-gradient(180deg, #232c4a 0%, #161d34 100%);
+  border:1px solid #0a0e1a;border-radius:10px;padding:9px 9px 10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -2px 0 rgba(0,0,0,.5),0 6px 14px rgba(0,0,0,.5);
+  display:flex;flex-direction:column;gap:6px;min-height:170px;
+}
+.node::before, .node::after,
+.node > .nsb, .node > .nsa{
+  content:'';position:absolute;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #6e7896, #1a2236 70%);
+  box-shadow:inset 0 0 0 1px #00000080;pointer-events:none;
+}
+.node::before{top:4px;left:4px}
+.node::after{top:4px;right:4px}
+.node > .nsb{bottom:4px;left:4px}
+.node > .nsa{bottom:4px;right:4px}
+.node > .host-tag{top:-9px;left:14px;color:#cbd5e1;border-color:var(--line-2);font-size:.5rem}
+
+.node-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:7px;border-bottom:1px dashed var(--line-2);
+}
+.node-head .nh-label .en{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.74rem;color:#cbd5e1;letter-spacing:.05em;text-transform:lowercase}
+.node-head .nh-label .cn{font-size:.55rem;color:var(--txt-mute);letter-spacing:.08em;margin-top:2px}
+.fan{
+  width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, #2a3450 0%, #0d1426 80%);
+  position:relative;
+}
+.fan::before{
+  content:'';position:absolute;inset:2px;border-radius:50%;
+  background:conic-gradient(from 0deg, transparent 0 30deg, #4a5878 30deg 38deg, transparent 38deg 90deg, #4a5878 90deg 98deg, transparent 98deg 150deg, #4a5878 150deg 158deg, transparent 158deg 210deg, #4a5878 210deg 218deg, transparent 218deg 270deg, #4a5878 270deg 278deg, transparent 278deg 330deg, #4a5878 330deg 338deg, transparent 338deg 360deg);
+  animation:spin 2.4s linear infinite;
+}
+.fan::after{content:'';position:absolute;inset:7px;border-radius:50%;background:#0a0e1a}
+
+/* 节点内进程小卡 */
+.mods{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mp{
+  position:relative;
+  background:linear-gradient(180deg, rgba(36,46,80,.95), rgba(20,26,46,.95));
+  border:1px solid var(--line-2);border-radius:6px;padding:6px 7px;
+  display:flex;align-items:center;gap:6px;
+  transition:all .4s;
+  z-index:35;
+}
+.mp::after{
+  content:'⌬ 进程';position:absolute;top:-7px;right:6px;white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;font-size:.45rem;letter-spacing:.12em;
+  background:var(--bg-0);padding:0 5px;color:var(--txt-mute);
+  border:1px solid var(--line);border-radius:2px;
+}
+.mp .ic{width:20px;height:20px;border-radius:4px;background:linear-gradient(135deg,#2a3454,#0d1326);display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;box-shadow:inset 0 0 0 1px var(--line-2)}
+.mp .en{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.6rem;color:var(--txt);text-transform:lowercase;line-height:1}
+.mp .cn{font-size:.5rem;color:var(--txt-mute);margin-top:1px}
+.mp.lit{
+  border-color:var(--amber) !important;
+  background:linear-gradient(180deg, rgba(74,52,16,.92), rgba(40,30,8,.92)) !important;  /* 强制覆盖 .mp.main 的紫底, 让金光突出 */
+  box-shadow:0 0 18px rgba(251,191,36,.55);
+}
+.mp.lit .en{color:var(--hot) !important}
+.mp.lit .ic{color:#fde047 !important}
+.mp.lit .en{color:var(--hot)}
+.mp.traffic{border-color:var(--cyan);box-shadow:0 0 14px rgba(34,211,238,.4)}
+.mp.traffic .en{color:#a5f3fc}
+.mp.main{border-color:#4f46e5;background:linear-gradient(180deg, rgba(46,42,90,.7), rgba(28,22,60,.7))}
+.mp.main .en{color:#c4b5fd}
+
+/* worker-1 内的 ingress controller pod (特殊业务 pod) */
+.ingress-pod{
+  position:relative;cursor:pointer;
+  background:linear-gradient(180deg, rgba(14,58,79,.85), rgba(8,37,48,.85));
+  border:1px solid #0d6e8a;border-radius:6px;
+  padding:6px 8px;display:flex;align-items:center;gap:7px;
+  transition:all .25s;z-index:35;
+}
+.ingress-pod::after{
+  content:'⌬ pod · 入口';position:absolute;top:-7px;right:6px;
+  font-family:'JetBrains Mono',monospace;font-size:.45rem;letter-spacing:.1em;white-space:nowrap;
+  background:var(--bg-0);padding:0 5px;color:#67e8f9;
+  border:1px solid #0d6e8a;border-radius:2px;
+}
+.ingress-pod .ic{
+  width:22px;height:22px;border-radius:5px;flex-shrink:0;
+  background:radial-gradient(circle at 50% 50%,#67e8f9,#0891b2 60%,#083344);
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;
+  box-shadow:inset 0 0 4px #000;
+}
+.ingress-pod .info{flex:1;min-width:0}
+.ingress-pod .en{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.62rem;color:#a5f3fc;text-transform:lowercase;line-height:1}
+.ingress-pod .cn{font-size:.5rem;color:#7dd3fc;margin-top:1px}
+.ingress-pod .addr{font-size:.45rem;color:#86efac;background:rgba(34,197,94,.08);padding:0 4px;border-radius:2px;border:1px solid rgba(34,197,94,.2);display:inline-block;margin-top:2px}
+.ingress-pod:hover{filter:brightness(1.15);outline:1px solid rgba(250,204,21,.55);outline-offset:2px;transform:scale(1.04)}
+.ingress-pod.lit{
+  border-color:var(--gold) !important;
+  background:linear-gradient(180deg, rgba(74,52,16,.92), rgba(40,30,8,.92)) !important;
+  box-shadow:0 0 20px rgba(250,204,21,.55);
+}
+.ingress-pod.lit .en{color:var(--gold) !important}
+.ingress-pod.lit .cn{color:#fde047 !important}
+.ingress-pod.lit .ic{color:#fde047 !important}
+.ingress-pod.dead{background:linear-gradient(180deg,#2a0a0a,#170303);border-color:var(--red);opacity:.55}
+.ingress-pod.dead .en,.ingress-pod.dead .cn{color:#fca5a5}
+.mp.aux{opacity:.88}
+
+/* CNI 标记 (每个 worker 节点顶部一行) */
+.cni-tag{
+  font-family:'JetBrains Mono',monospace;font-size:.48rem;letter-spacing:.04em;
+  color:#67e8f9;background:rgba(34,211,238,.06);padding:2px 6px;border-radius:3px;
+  border:1px solid rgba(34,211,238,.22);text-align:center;line-height:1.2;
+}
+.mp .pri{
+  display:inline-block;font-size:.42rem;letter-spacing:.1em;color:#a78bfa;
+  background:rgba(167,139,250,.15);padding:0 4px;border-radius:3px;margin-left:3px;
+  border:1px solid rgba(167,139,250,.35);vertical-align:1px;
+}
+
+.runtime{grid-column:1/-1}
+
+/* pod 区 */
+.pod-bay{
+  flex:1;background:radial-gradient(ellipse at 50% 0%, #0a1326, #03060d);
+  border:1px solid var(--line);border-radius:6px;padding:6px;
+  display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;min-height:50px;
+  box-shadow:inset 0 3px 8px #00000099;
+  position:relative;
+}
+.pod-empty{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--txt-mute);font-size:.56rem;letter-spacing:.15em;pointer-events:none;
+  font-family:'JetBrains Mono',monospace;
+}
+.pod-bay.has-pod .pod-empty{display:none}
+
+.pod{
+  width:62px;min-height:48px;border-radius:5px;padding:5px 6px;
+  background:linear-gradient(180deg, #052e1a, #021a0e);
+  border:1px solid #15803d;
+  display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:0 2px 5px #00000080, inset 0 1px 0 rgba(134,239,172,.15);
+  transition:all .4s;position:relative;z-index:35;
+  animation:slideIn .35s ease;
+}
+.pod::before{content:'';position:absolute;top:3px;right:4px;width:4px;height:4px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green);animation:blink 1.4s infinite}
+.pod .pname{font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:800;color:#86efac;letter-spacing:.04em;line-height:1;text-transform:lowercase}
+.pod .pinfo{font-family:'JetBrains Mono',monospace;font-size:.44rem;color:#4ade80;letter-spacing:.05em;opacity:.7;margin-top:2px}
+.pod .bar{margin-top:auto;height:3px;border-radius:2px;background:#0a1f12;overflow:hidden;box-shadow:inset 0 0 2px #000}
+.pod .bar::after{content:'';display:block;height:100%;width:30%;background:linear-gradient(90deg,#22c55e,#86efac);animation:meter 2.4s ease-in-out infinite alternate}
+.pod.dead{background:linear-gradient(180deg,#2a0a0a,#170303);border-color:var(--red);animation:shake .4s ease 3}
+.pod.dead::before{background:var(--red);box-shadow:0 0 6px var(--red);animation:none}
+.pod.dead .pname,.pod.dead .pinfo{color:#fca5a5}
+.pod.dead .bar::after{background:linear-gradient(90deg,var(--red),#fca5a5);animation:none;width:8%}
+.pod.hit{
+  background:linear-gradient(180deg,#3a2e05,#1a1503) !important;border-color:var(--hot) !important;
+  transform:scale(1.12);
+  box-shadow:0 0 22px rgba(252,211,77,.7);
+}
+.pod.hit::before{background:var(--hot);box-shadow:0 0 6px var(--hot)}
+.pod.hit .pname,.pod.hit .pinfo{color:#fef08a}
+.pod.hit .bar::after{background:linear-gradient(90deg,var(--hot),#fff);width:95% !important;animation:none}
+/* HPA: 高 CPU 状态 - 红色 CPU 条 */
+.pod.hot{border-color:#ef4444;box-shadow:0 0 12px rgba(239,68,68,.35),inset 0 1px 0 rgba(252,165,165,.15)}
+.pod.hot .bar::after{background:linear-gradient(90deg,#ef4444,#f97316,#ef4444);width:92% !important;animation:meter 0.6s ease-in-out infinite alternate}
+.pod.hot .pname{color:#fca5a5}
+/* HPA: 优雅终止 */
+.pod.terminating{opacity:.4;filter:grayscale(.5);transition:all .5s}
+.pod.terminating .bar::after{background:#64748b;width:5% !important;animation:none}
+/* 滚动升级: v2 pod 视觉标记 (青色边框 + 小角标) */
+.pod.v2{border-color:#22d3ee;box-shadow:0 0 10px rgba(34,211,238,.25)}
+.pod.v2 .pname::after{content:' · v2';color:#67e8f9;font-weight:600;font-size:.5rem;letter-spacing:.06em}
+
+/* ============ 侧栏 ============ */
+.sidebar{display:flex;flex-direction:column;gap:14px;position:relative;z-index:100}  /* 自然流式, z-index 高于 world 内卡片, 让按钮 tooltip 不被遮挡 */
+.panel-mini{
+  background:linear-gradient(180deg, var(--panel-2), var(--panel));
+  border:1px solid var(--line-2);border-radius:10px;padding:13px;
+  box-shadow:0 6px 16px rgba(0,0,0,.4);
+}
+.panel-mini .title{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.22em;color:var(--cyan);
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;font-weight:700;text-transform:lowercase;
+}
+.panel-mini .title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan);animation:blink 1.5s infinite}
+.panel-mini .title .sub{margin-left:auto;font-size:.54rem;color:var(--txt-mute);letter-spacing:.1em}
+.row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:.72rem;border-bottom:1px dashed var(--line)}
+.row:last-child{border:none}
+.row .k{color:var(--txt-dim);font-size:.68rem}
+.row .v{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.74rem}
+.row .v.ok{color:var(--green)}
+.row .v.warn{color:var(--amber)}
+.row .v.red{color:var(--red)}
+.legend .lr{display:flex;align-items:center;gap:8px;font-size:.66rem;color:var(--txt-dim);padding:3px 0}
+.legend .sw{width:18px;height:3px;border-radius:2px}
+.legend .sw.ctrl{background:var(--violet);box-shadow:0 0 5px var(--violet)}
+.legend .sw.traf{background:var(--hot);box-shadow:0 0 5px var(--hot)}
+.legend .sw.dot{width:7px;height:7px;border-radius:50%}
+.legend .sw.dot.g{background:var(--green);box-shadow:0 0 5px var(--green)}
+.legend .sw.dot.r{background:var(--red);box-shadow:0 0 5px var(--red)}
+.legend .sw.dot.a{background:var(--amber);box-shadow:0 0 5px var(--amber)}
+
+/* ============ yaml 弹窗 ============ */
+.yaml-mask{position:fixed;inset:0;background:rgba(3,6,15,.78);backdrop-filter:blur(6px);z-index:999;display:none;align-items:center;justify-content:center}
+.yaml-mask.show{display:flex}
+.yaml-box{width:520px;max-width:92vw;background:linear-gradient(180deg,#232c4a,#161d34);border:1px solid var(--line-2);border-radius:12px;box-shadow:0 30px 60px rgba(0,0,0,.7);overflow:hidden}
+.yaml-head{padding:10px 16px;background:linear-gradient(180deg,#0d1426,#050810);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;color:var(--cyan)}
+.yaml-head .dot{width:9px;height:9px;border-radius:50%}
+.yaml-head .dot.r{background:var(--red)}
+.yaml-head .dot.y{background:var(--amber)}
+.yaml-head .dot.g{background:var(--green)}
+.yaml-head .fname{margin-left:auto;color:var(--txt-mute);font-size:.62rem}
+.yaml-body{padding:14px 18px;background:#02060c;font-family:'JetBrains Mono',Consolas,monospace;font-size:.76rem;line-height:1.65;color:#cbd5e1;max-height:55vh;overflow:auto;white-space:pre}
+.yaml-body .k{color:#a78bfa}.yaml-body .s{color:#86efac}.yaml-body .n{color:#fbbf24}.yaml-body .c{color:#475569;font-style:italic}
+/* diff 行高亮 (滚动升级 yaml 对比用) */
+.yaml-body .diff-del{display:block;background:rgba(239,68,68,.12);border-left:3px solid var(--red);padding-left:6px;margin-left:-9px}
+.yaml-body .diff-del::before{content:'- ';color:var(--red);font-weight:700}
+.yaml-body .diff-add{display:block;background:rgba(34,197,94,.15);border-left:3px solid var(--green);padding-left:6px;margin-left:-9px}
+.yaml-body .diff-add::before{content:'+ ';color:var(--green);font-weight:700}
+.yaml-foot{padding:11px 16px;background:linear-gradient(180deg,#0d1426,#050810);border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.yaml-foot .hint{margin-right:auto;font-size:.66rem;color:var(--txt-mute)}
+.yaml-foot .hint code{color:var(--cyan);background:#020608;padding:1px 6px;border-radius:3px;border:1px solid var(--line)}
+
+/* ============ 终端 ============ */
+.terminal{margin-top:16px;max-width:1400px;margin-left:auto;margin-right:auto;background:linear-gradient(180deg,#050810,#020409);border:1px solid var(--line-2);border-radius:10px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.terminal-head{display:flex;align-items:center;gap:8px;padding:8px 14px;background:linear-gradient(180deg,#0d1426,#050810);border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;color:var(--txt-mute)}
+.terminal-head .dot{width:9px;height:9px;border-radius:50%}
+.terminal-head .dot.r{background:var(--red)}
+.terminal-head .dot.y{background:var(--amber)}
+.terminal-head .dot.g{background:var(--green)}
+.terminal-head .right{margin-left:auto}
+.terminal-body{height:140px;overflow-y:auto;padding:8px 14px;font-family:'JetBrains Mono','Fira Code',Consolas,monospace;font-size:.72rem;line-height:1.6;color:#86efac}
+.terminal-body .ln{margin:0;display:flex;gap:8px;animation:fadeIn .25s forwards;white-space:pre-wrap}
+.terminal-body .ln .t{color:#475569;flex-shrink:0}
+.terminal-body .ln .pr{flex-shrink:0;width:14px;text-align:center}
+.terminal-body .ln .pr.info{color:var(--cyan)}
+.terminal-body .ln .pr.ok{color:var(--green)}
+.terminal-body .ln .pr.warn{color:var(--amber)}
+.terminal-body .ln .pr.err{color:var(--red)}
+.terminal-body .ln .pr.mute{color:#475569}
+.terminal-body .ln .hi{color:#67e8f9}
+.terminal-body .ln .msg.mute{color:#475569}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#1e293b;border-radius:3px}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+@keyframes meter{from{width:25%}to{width:85%}}
+
+/* 地址 / 端口标签 */
+.addr{
+  font-family:'JetBrains Mono','SF Mono',Consolas,monospace;
+  font-size:.5rem;color:#86efac;letter-spacing:.04em;
+  margin-top:3px;line-height:1.1;
+  background:rgba(34,197,94,.08);padding:1px 5px;border-radius:3px;
+  border:1px solid rgba(34,197,94,.2);display:inline-block;
+}
+.addr.req{color:#fde047;background:rgba(252,211,77,.08);border-color:rgba(252,211,77,.25)}
+.addr.virtual{color:#67e8f9;background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.25)}
+.addr.muted{color:#94a3b8;background:transparent;border-color:rgba(148,163,184,.2)}
+
+/* 额外信息标签 (EndpointSlice / iptables 等概念词) */
+.meta{
+  font-family:'JetBrains Mono','SF Mono',Consolas,monospace;
+  font-size:.46rem;letter-spacing:.04em;
+  color:#67e8f9;background:rgba(34,211,238,.08);
+  padding:1px 5px;border-radius:2px;
+  border:1px solid rgba(34,211,238,.25);
+  display:inline-block;margin-top:3px;line-height:1.3;
+}
+.meta.violet{color:#a78bfa;background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.25)}
+.meta.amber{color:#fbbf24;background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25)}
+/* kubelet → containerd 之间的 CRI 标记 */
+.cri-mark{
+  text-align:center;font-family:'JetBrains Mono',monospace;font-size:.5rem;
+  color:#67e8f9;letter-spacing:.08em;opacity:.75;
+  margin:-2px 0 -3px;line-height:1;
+}
+
+/* 左侧竖向控制台 */
+.ctrl-side{
+  position:sticky;top:30px;margin-top:40px;z-index:100;
+  background:linear-gradient(180deg, rgba(26,34,64,.85), rgba(19,26,46,.85));
+  border:1px solid var(--line-2);border-radius:12px;
+  padding:20px 12px 12px;
+  display:flex;flex-direction:column;gap:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  overflow:visible;  /* 关键: 保证 tooltip 能溢出 ctrl-side 容器 */
+}
+.ctrl-title{
+  position:absolute;top:-10px;left:14px;
+  font-size:.72rem;letter-spacing:.2em;
+  background:var(--bg-0);padding:2px 10px;color:var(--cyan);
+  border:1px solid var(--cyan-deep);border-radius:4px;font-weight:700;
+}
+.ctrl-side .group{
+  width:100%;justify-content:space-between;
+  padding:8px 12px;
+}
+.ctrl-side .group input{width:60px}
+.ctrl-side .btn{
+  width:100%;height:38px;justify-content:center;
+  font-size:.84rem;font-weight:700;letter-spacing:.08em;padding:0;
+}
+.ctrl-sep{height:1px;background:linear-gradient(90deg,transparent,var(--line-2),transparent);margin:4px 0}
+.step-row{display:flex;gap:6px}
+.step-row .btn{flex:1;padding:8px 6px 8px 14px;font-size:.75rem;white-space:nowrap;letter-spacing:.04em}
+.step-row .btn::before{left:6px}
+
+/* 组件可点击 (实体机外壳不参与 hover 放大, 避免破坏 translateX 居中) */
+.kubectl, .internet, .lb, .registry, .sat, .mp, .center-api, .pod { cursor:pointer; }
+.master-host, .node { cursor:default; }
+
+.kubectl:hover, .internet:hover, .lb:hover, .sat:hover, .mp:hover, .pod:hover {
+  filter: brightness(1.15);
+  outline:1px solid rgba(250,204,21,.55);
+  outline-offset:2px;
+}
+.kubectl:hover, .internet:hover, .lb:hover{transform: translateX(-50%) scale(1.04)}
+.sat:hover, .mp:hover, .pod:hover{transform: scale(1.06)}
+.center-api:hover{transform: translate(-50%,-50%) scale(1.06);filter:brightness(1.15);outline:1px solid rgba(250,204,21,.55);outline-offset:2px}
+
+/* 信息弹窗 */
+.info-mask{
+  position:fixed;inset:0;background:rgba(3,6,15,.78);backdrop-filter:blur(6px);
+  z-index:999;display:none;align-items:center;justify-content:center;
+}
+.info-mask.show{display:flex;animation:fadeIn .2s ease}
+.info-box{
+  width:560px;max-width:92vw;max-height:80vh;
+  background:linear-gradient(180deg,#232c4a,#161d34);
+  border:1px solid var(--line-2);border-radius:12px;
+  box-shadow:0 30px 60px rgba(0,0,0,.7);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.info-head{
+  padding:13px 18px;background:linear-gradient(180deg,#0d1426,#050810);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;
+}
+.info-head .info-title{
+  flex:1;font-family:'JetBrains Mono',monospace;font-size:.95rem;letter-spacing:.06em;
+  color:var(--gold);font-weight:700;
+}
+.info-close{
+  background:transparent;border:1px solid var(--line-2);color:var(--txt-dim);
+  width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.info-close:hover{border-color:var(--gold);color:var(--gold)}
+.info-body{padding:16px 20px;overflow-y:auto;color:var(--txt-dim);font-size:.84rem;line-height:1.7}
+.info-body .info-desc{margin:0 0 12px;color:var(--txt);font-size:.84rem;line-height:1.7}
+.info-body .info-simple{
+  margin:0 0 14px;padding:11px 14px;
+  color:#bfdbfe;font-size:.85rem;line-height:1.65;
+  background:linear-gradient(180deg, rgba(59,130,246,.1), rgba(30,64,175,.06));
+  border:1px solid rgba(96,165,250,.3);border-left:3px solid #60a5fa;border-radius:6px;
+}
+.info-body .info-simple::before{
+  content:'一句话理解 · ';font-weight:700;color:#93c5fd;font-size:.7rem;letter-spacing:.06em;
+  display:inline-block;padding-left:18px;background-repeat:no-repeat;background-position:0 50%;background-size:13px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M9 4h6M12 4v4M5 9l3 1M19 9l-3 1M4 13a4 4 0 014-4h8a4 4 0 014 4v3a3 3 0 01-3 3h-1l-2 2h-4l-2-2H7a3 3 0 01-3-3v-3z'/></svg>");
+}
+.info-body .info-simple b{color:#fde68a}
+.info-body h4{
+  margin:14px 0 6px;font-size:.72rem;letter-spacing:.18em;color:var(--cyan);
+  font-family:'JetBrains Mono',monospace;text-transform:uppercase;font-weight:700;
+}
+.info-body ul{margin:0;padding-left:20px}
+.info-body li{margin:2px 0}
+.info-body code{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#86efac;background:#020608;padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
+.info-body .info-notes{
+  margin-top:10px;padding:10px 12px;
+  background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.25);border-radius:6px;
+  color:#fde68a;font-size:.78rem;
+}
+.info-body .info-notes::before{content:'💡 ';opacity:.7}
+
+@media (max-width:1080px){.stage{grid-template-columns:1fr}}
+
+/* ============ 线条 SVG 图标统一样式 ============ */
+.icn{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+}
+.icn svg{
+  width:72%;height:72%;
+  fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+/* api server 中心图标更大 */
+.center-api .ic-big .icn svg{width:62%;height:62%;stroke-width:1.4}
+/* mp (kubelet/kube-proxy) 容器小, SVG 比例需要更高 */
+.mp .ic .icn svg{width:78%;height:78%;stroke-width:1.8}
+/* ingress-pod 容器也小 */
+.ingress-pod .ic .icn svg{width:78%;height:78%;stroke-width:1.7}
+.sat .ic, .mp .ic{color:#a5b4fc}                              /* sat / kubelet 等淡紫线 */
+.sat-etcd .ic{color:#86efac}                                  /* etcd 绿 */
+.sat-coredns .ic{color:#a5b4fc}                               /* coredns 淡紫 */
+.sat-ccm .ic{color:#7dd3fc}                                   /* CCM 青蓝 */
+.sat-svc .ic{color:#67e8f9}                                   /* service 青 */
+.sat-cm .ic{color:#fde047}                                    /* cm 黄 */
+.sat-sched .ic{color:#fca5a5}                                 /* scheduler 红 */
+.kubectl .ic{color:#67e8f9}
+.lb .lb-ic{color:#86efac}
+.registry .reg-ic{color:#93c5fd}
+.ingress-pod .ic{color:#67e8f9}
+.center-api .ic-big{color:#c4b5fd}
+/* hover 时图标主动跟着主题色 */
+.sat.lit .ic, .mp.lit .ic{color:#fde047}
+
+/* ============ 浮动手册按钮 ============ */
+.manual-fab{
+  position:relative;width:100%;
+  background:linear-gradient(135deg, #1a2240, #131a2e);
+  border:1px solid var(--cyan-deep);border-radius:10px;
+  padding:10px 14px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8rem;letter-spacing:.08em;
+  color:var(--cyan);
+  box-shadow:0 4px 14px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+  transition:all .18s;
+}
+.manual-fab:hover{
+  border-color:var(--cyan);
+  background:linear-gradient(135deg, #243057, #1a2240);
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px rgba(34,211,238,.3);
+}
+/* 自定义 tooltip (鼠标悬停后显示) */
+.manual-fab::after{
+  content:attr(data-tip);
+  position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);
+  white-space:nowrap;
+  background:linear-gradient(180deg,#1a2342,#101830);
+  color:#cbd5e1;font-size:.7rem;font-weight:400;letter-spacing:.04em;
+  padding:7px 12px;border-radius:6px;
+  border:1px solid var(--cyan-deep);
+  box-shadow:0 6px 18px rgba(0,0,0,.6);
+  opacity:0;pointer-events:none;transition:opacity .2s .15s, transform .2s .15s;
+  transform:translateY(-50%) translateX(-4px);
+}
+.manual-fab::before{
+  content:'';position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);
+  width:0;height:0;border:6px solid transparent;border-right-color:var(--cyan-deep);
+  opacity:0;pointer-events:none;transition:opacity .2s .15s;
+}
+.manual-fab:hover::after, .manual-fab:hover::before{
+  opacity:1;
+}
+.manual-fab:hover::after{ transform:translateY(-50%) translateX(0); }
+
+/* ============ 控制台功能按钮 tooltip (用 ::after, 避开 ::before 装饰条) ============ */
+.ctrl-side .btn[data-tip]{position:relative}
+.ctrl-side .btn[data-tip]::after{
+  content:attr(data-tip);
+  position:absolute;left:calc(100% + 14px);top:50%;
+  transform:translateY(-50%) translateX(-6px) scale(.96);
+  transform-origin:left center;
+  white-space:pre-wrap;width:250px;
+  background:linear-gradient(180deg, rgba(26,34,64,.95), rgba(19,26,46,.95));
+  backdrop-filter:blur(10px);
+  color:#cbd5e1;font-family:inherit;font-size:.68rem;font-weight:400;
+  letter-spacing:.03em;text-align:left;line-height:1.6;
+  padding:10px 14px;border-radius:8px;
+  border:1px solid var(--line-2);
+  box-shadow:
+    0 1px 0 rgba(167,139,250,.08) inset,
+    0 10px 28px rgba(0,0,0,.55),
+    0 2px 6px rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;
+  transition:opacity .2s .2s, transform .2s .2s;
+  z-index:9999;
+}
+.ctrl-side .btn[data-tip]:hover::after{
+  opacity:1;
+  transform:translateY(-50%) translateX(0) scale(1);
+}
+/* disabled 按钮也能触发 hover (button:disabled 默认 pointer-events:none, 强制开启) */
+.ctrl-side .btn[data-tip]:disabled{pointer-events:auto;cursor:not-allowed}
+/* 手册模态 (复用 info-mask 主题, 但宽一点) */
+.manual-mask{
+  position:fixed;inset:0;background:rgba(3,6,15,.82);backdrop-filter:blur(7px);
+  z-index:1000;display:none;align-items:center;justify-content:center;
+}
+.manual-mask.show{display:flex;animation:fadeIn .2s ease}
+.manual-box{
+  width:820px;max-width:94vw;max-height:85vh;
+  background:linear-gradient(180deg,#1a2342,#101830);
+  border:1px solid var(--cyan-deep);border-radius:14px;
+  box-shadow:0 30px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(167,139,250,.12);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.manual-head{
+  padding:14px 20px;
+  background:linear-gradient(180deg,#0e1530,#070a1a);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;
+}
+.manual-head .title{
+  flex:1;font-family:'JetBrains Mono',monospace;font-size:1rem;
+  color:var(--cyan);letter-spacing:.08em;font-weight:700;
+}
+.manual-head .subtitle{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--txt-mute);
+  letter-spacing:.18em;
+}
+.manual-close{
+  background:transparent;border:1px solid var(--line-2);color:var(--txt-dim);
+  width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.manual-close:hover{border-color:var(--cyan);color:var(--cyan)}
+.manual-body{
+  padding:18px 24px;overflow-y:auto;
+}
+.manual-group{margin-bottom:18px}
+.manual-group h3{
+  margin:0 0 8px;font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;color:var(--amber);letter-spacing:.18em;font-weight:700;
+  text-transform:uppercase;padding:5px 10px;
+  background:rgba(251,191,36,.06);border-left:3px solid var(--amber);border-radius:0 4px 4px 0;
+}
+.manual-group h3 svg.h3-ic{
+  width:14px;height:14px;vertical-align:-3px;margin-right:8px;
+  fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+/* info-simple 的图标位置 (用 svg 替换 🧠 emoji) */
+.info-body .info-simple-svg{
+  width:13px;height:13px;vertical-align:-2px;margin-right:6px;
+  fill:none;stroke:#93c5fd;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.manual-item{
+  margin:6px 0;border:1px solid var(--line-2);border-radius:8px;
+  background:rgba(13,20,38,.6);overflow:hidden;
+}
+.manual-item summary{
+  padding:10px 14px;cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono',monospace;font-size:.82rem;
+  font-weight:700;color:#e0e7ff;
+  transition:background .15s;
+}
+.manual-item summary::-webkit-details-marker{display:none}
+.manual-item summary::before{
+  content:'▸';color:var(--cyan);transition:transform .2s;font-size:.7rem;
+  width:10px;flex-shrink:0;
+}
+.manual-item[open] summary::before{transform:rotate(90deg)}
+.manual-item summary:hover{background:rgba(99,102,241,.08)}
+.manual-item summary .tag{
+  margin-left:auto;font-size:.55rem;letter-spacing:.1em;padding:2px 7px;border-radius:3px;
+  font-weight:600;
+}
+.manual-item summary .tag.deploy{background:rgba(99,102,241,.18);color:#c4b5fd;border:1px solid #4f46e5}
+.manual-item summary .tag.fault{background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid var(--red)}
+.manual-item summary .tag.traffic{background:rgba(34,211,238,.18);color:#a5f3fc;border:1px solid var(--cyan-deep)}
+.manual-item summary .tag.scale{background:rgba(167,139,250,.18);color:#c4b5fd;border:1px solid var(--violet-deep)}
+.manual-item summary .tag.service{background:rgba(34,197,94,.18);color:#86efac;border:1px solid #15803d}
+.manual-item .body{
+  padding:0 16px 12px;color:var(--txt-dim);font-size:.74rem;line-height:1.65;
+}
+.manual-item .body .desc{
+  color:#cbd5e1;background:rgba(15,23,42,.5);
+  border-left:2px solid var(--cyan-deep);padding:7px 10px;border-radius:3px;
+  margin-bottom:8px;font-size:.74rem;
+}
+.manual-item .body h4{
+  margin:10px 0 5px;font-size:.6rem;letter-spacing:.16em;color:var(--cyan);
+  font-family:'JetBrains Mono',monospace;text-transform:uppercase;font-weight:700;
+}
+.manual-item .body ul{margin:0;padding-left:18px}
+.manual-item .body ul li{margin:2px 0;font-size:.72rem}
+.manual-item .body code{
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#86efac;
+  background:#020608;padding:1px 5px;border-radius:3px;border:1px solid var(--line);
+}
+.manual-item .body .note{
+  margin-top:8px;padding:7px 10px;font-size:.7rem;
+  background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.25);border-radius:5px;
+  color:#fde68a;
+}
+.manual-item .body .note::before{content:'💡 ';opacity:.7}
+</style>
+</head>
+<body>
+
+<!-- 手册模态 -->
+<div class="manual-mask" id="manual-mask" onclick="closeManual()">
+  <div class="manual-box" onclick="event.stopPropagation()">
+    <div class="manual-head">
+      <span class="title">操作手册</span>
+      <span class="subtitle">k8s · operation manual</span>
+      <button class="manual-close" onclick="closeManual()">×</button>
+    </div>
+    <div class="manual-body">
+
+      <div class="manual-group">
+        <h3><svg class="h3-ic" viewBox="0 0 24 24"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 12v9M15 12v9M9 8h6"/></svg>组件速查 · 把集群当成一家餐厅</h3>
+        <div class="manual-item" style="cursor:default">
+          <div class="body" style="padding:12px 16px">
+            <div class="desc" style="margin-bottom:10px">把整个 k8s 集群类比成一家<b>连锁餐厅 (多间分厨房)</b>, 16 个组件各司其职。<b>点击图中任一组件可看完整介绍</b>。</div>
+            <table style="width:100%;border-collapse:collapse;font-size:.72rem">
+              <thead>
+                <tr style="color:#67e8f9;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase">
+                  <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--line-2);width:24%">K8s 组件</th>
+                  <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--line-2);width:50%">关键作用</th>
+                  <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--line-2)">餐厅角色</th>
+                </tr>
+              </thead>
+              <tbody style="color:#cbd5e1;line-height:1.5">
+                <tr><td colspan="3" style="padding:6px 8px;color:var(--amber);font-size:.6rem;letter-spacing:.16em;background:rgba(251,191,36,.05)">━━━ 集群外 (餐厅外援) ━━━</td></tr>
+                <tr><td style="padding:5px 8px"><code>kubectl</code></td><td style="padding:5px 8px">开发者 / 运维跟集群说话的 CLI 工具</td><td style="padding:5px 8px"><b>老板的 iPad 后台</b></td></tr>
+                <tr><td style="padding:5px 8px">browser</td><td style="padding:5px 8px">公网用户, 只认公开域名</td><td style="padding:5px 8px"><b>来吃饭的顾客</b></td></tr>
+                <tr><td style="padding:5px 8px">registry</td><td style="padding:5px 8px">存所有镜像, kubelet 拉镜像找它</td><td style="padding:5px 8px"><b>食材冷库</b></td></tr>
+                <tr><td colspan="3" style="padding:6px 8px;color:#a78bfa;font-size:.6rem;letter-spacing:.16em;background:rgba(167,139,250,.05)">━━━ 控制面 (餐厅总部) ━━━</td></tr>
+                <tr><td style="padding:5px 8px">api-server</td><td style="padding:5px 8px">集群唯一入口, 唯一能动 etcd</td><td style="padding:5px 8px"><b>订单系统 (POS)</b></td></tr>
+                <tr><td style="padding:5px 8px">etcd</td><td style="padding:5px 8px">所有资源状态的强一致数据库</td><td style="padding:5px 8px"><b>餐厅总账本</b></td></tr>
+                <tr><td style="padding:5px 8px">controller-mgr</td><td style="padding:5px 8px">几十个 controller, 期望 vs 实际 reconcile</td><td style="padding:5px 8px"><b>厨房经理团队</b></td></tr>
+                <tr><td style="padding:5px 8px">scheduler</td><td style="padding:5px 8px">给 pending pod 派工位 (筛选/打分/绑定)</td><td style="padding:5px 8px"><b>派单员</b></td></tr>
+                <tr><td style="padding:5px 8px">Service</td><td style="padding:5px 8px">虚拟 IP, 给一组 pod 起稳定名字</td><td style="padding:5px 8px"><b>取餐窗口号(虚拟)</b></td></tr>
+                <tr><td colspan="3" style="padding:6px 8px;color:#86efac;font-size:.6rem;letter-spacing:.16em;background:rgba(34,197,94,.05)">━━━ 工作面 (每间分厨房) ━━━</td></tr>
+                <tr><td style="padding:5px 8px">kubelet</td><td style="padding:5px 8px">节点上唯一系统进程, 起容器 + 心跳</td><td style="padding:5px 8px"><b>工位主厨</b></td></tr>
+                <tr><td style="padding:5px 8px">kube-proxy</td><td style="padding:5px 8px">写 iptables 规则, 不在数据路径</td><td style="padding:5px 8px"><b>窗口指示牌管理员</b></td></tr>
+                <tr><td style="padding:5px 8px">gateway pod</td><td style="padding:5px 8px">入口网关, TLS 终止 + L7 路由</td><td style="padding:5px 8px"><b>大堂经理</b></td></tr>
+                <tr><td style="padding:5px 8px">Pod</td><td style="padding:5px 8px">1-N 个容器, 共享 IP 和存储</td><td style="padding:5px 8px"><b>厨房工位 (含工具+食材)</b></td></tr>
+              </tbody>
+            </table>
+            <div class="note" style="margin-top:12px">所有 k8s 进程 (api/etcd/cm/sched/kubelet/proxy) <b>都不在顾客点菜的传菜路径上</b>。真正"端菜"的是 Linux 内核 netfilter + CNI, k8s 组件只是"配置员"。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="manual-group">
+        <h3><svg class="h3-ic" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4M3 7v10l9 4 9-4V7M3 7l9 4 9-4M12 11v10"/></svg>部署 / 调度</h3>
+
+        <details class="manual-item">
+          <summary>下发部署 <span class="tag deploy">14 步</span></summary>
+          <div class="body">
+            <div class="desc">演示完整的 Deployment 部署链路: 从开发者敲 <code>kubectl apply</code> 到所有 pod running, 14 步逐步播放。</div>
+            <h4>核心组件</h4>
+            <ul>
+              <li>kubectl → api server → etcd → controller mgr → scheduler → 各节点 kubelet → containerd → registry</li>
+            </ul>
+            <h4>日志步骤要点</h4>
+            <ul>
+              <li>① kubectl 发 HTTPS POST 到 api :6443, 携带 yaml 文本</li>
+              <li>② api 完成 认证 / 鉴权 / 准入控制, 把 Deployment 写入 etcd</li>
+              <li>③ Deployment Controller reconcile → 创建 ReplicaSet → 再创建 N 个 pending pod</li>
+              <li>④ scheduler 三阶段调度: <b>过滤 Filter</b> (剔不满足节点) → <b>打分 Score</b> (多维评估) → <b>绑定 Bind</b> (写 nodeName)</li>
+              <li>⑤ 各节点 kubelet watch 到分配 → 通过 CRI 调 containerd 起容器</li>
+              <li>⑥ containerd 向 registry 拉镜像 → 起 pod</li>
+            </ul>
+            <div class="note">支持「上一步 / 下一步 / 自动播放」步进控制, 配合 YAML 弹窗预览。</div>
+          </div>
+        </details>
+
+        <details class="manual-item">
+          <summary>滚动升级 (v1→v2) <span class="tag deploy">零中断</span></summary>
+          <div class="body">
+            <div class="desc">生产最常见操作: 改 image 版本后, k8s 用 maxSurge=1 / maxUnavailable=0 策略逐个替换 pod, 全程不中断业务。</div>
+            <h4>核心机制</h4>
+            <ul>
+              <li>Deployment Controller 自动创建新 ReplicaSet (rs-v2), 旧 rs-v1 保留供回滚</li>
+              <li>每轮: 起 1 个 v2 → 等 Ready 加入 EndpointSlice → 退 1 个 v1 (Service 立即摘除)</li>
+              <li>kubelet 给被退的 v1 pod 发 SIGTERM, 等 30s grace 优雅退出</li>
+            </ul>
+            <h4>日志要点</h4>
+            <ul>
+              <li><code>kubectl set image deployment/users-api api=users-api:v2.0</code> 触发</li>
+              <li>每轮分 A (起新) / B (退旧) 两阶段, 重复 N 次直至全部替换</li>
+              <li>旧 ReplicaSet 保留 (revisionHistoryLimit=10), 出问题 <code>kubectl rollout undo</code> 一键回滚</li>
+            </ul>
+            <div class="note">这是真实工作里 90% 的发布场景, 比 HPA 更日常。</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="manual-group">
+        <h3><svg class="h3-ic" viewBox="0 0 24 24"><path d="M12 3l9.5 16.5h-19L12 3zM12 10v5M12 17.5v.5"/></svg>故障自愈</h3>
+
+        <details class="manual-item">
+          <summary>pod 宕机 <span class="tag fault">本地自愈</span></summary>
+          <div class="body">
+            <div class="desc">单个 pod 在节点上异常退出 (OOMKilled / panic / liveness 失败), <b>由所在节点的 kubelet 本地原地重启容器</b>, 不经过 cm/scheduler/跨节点。沙箱 (pause 容器) 保留 → <b>Pod IP 不变</b>。</div>
+            <h4>核心机制</h4>
+            <ul>
+              <li>kubelet 通过 liveness/readiness probe 或容器退出事件检测到异常 → 本机 readiness 标 false</li>
+              <li>kubelet 上报 → cm EndpointSlice Controller 把该 endpoint 标 <code>ready=false</code> → <b>所有节点 kube-proxy 调 iptables 临时摘除该 endpoint</b>, 新流量绕开</li>
+              <li>kubelet 按 <code>pod.spec.restartPolicy=Always</code> 在本节点原地重启容器 (沙箱保留, IP 不变, restartCount +1)</li>
+              <li>readiness 恢复 → cm 改回 <code>ready=true</code> → 各节点 kube-proxy 把 endpoint 加回 NAT 规则</li>
+              <li>不涉及调度器, 比 节点宕机 快几个数量级</li>
+            </ul>
+            <div class="note">单 pod 故障恢复时间 ≈ 几秒, 节点故障要 5+ 分钟。<br><b>readiness probe 的真正价值: 容器还没准备好时, 整个集群通过 kube-proxy iptables 临时绕开它, 流量不打到正在重启的实例上。</b></div>
+          </div>
+        </details>
+
+        <details class="manual-item">
+          <summary>节点宕机 <span class="tag fault">跨节点重调度</span></summary>
+          <div class="body">
+            <div class="desc">整个 worker 节点失联 (电源/网络断), 该节点上的 pod 全部丢失, k8s 在其他健康节点上重建。</div>
+            <h4>关键时间线</h4>
+            <ul>
+              <li>T+0: 节点断电, kubelet/proxy 的 watch 长连接 TCP 中断</li>
+              <li>T+40s: api 持有的 NodeLease 过期 → cm 的 node-controller 标 NotReady</li>
+              <li>T+5min: pod-eviction-timeout 触发 → 驱逐该节点上的 pod</li>
+              <li>ReplicaSet 发现 running &lt; desired → 创建新 pending pod</li>
+              <li>scheduler 重新调度 (Filter 排除 NotReady 节点)</li>
+              <li>健康节点 kubelet watch 到新 binding → 拉起替补 pod</li>
+            </ul>
+            <h4>对外部访问的影响</h4>
+            <ul>
+              <li>gateway controller (3 副本 + podAntiAffinity 散在 3 节点) 在该节点的副本也丢了</li>
+              <li>但生产环境前面的云负载均衡 (本 demo 已省略) 通过 ~5s 健康检查会把故障节点剔除, 流量自动切到剩余 2 个 gateway → <b>外部用户无感知</b></li>
+            </ul>
+            <div class="note">k8s 自愈 ≠ 业务连续。真正保业务连续的是 <b>多副本 + LB 健康检查</b> 这两层。</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="manual-group">
+        <h3><svg class="h3-ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="9" ry="4"/><path d="M3 12h18M12 3v18"/></svg>流量演示</h3>
+
+        <details class="manual-item">
+          <summary>用户访问 <span class="tag traffic">外部 → 内部</span></summary>
+          <div class="body">
+            <div class="desc">外部用户 → 业务 pod 的完整数据路径, 两次内核 DNAT。<b>这种"集群外 → 集群内"的流量, 业内俗称「南北向」</b>(穿过集群边界)。</div>
+            <h4>完整链路 (6 步)</h4>
+            <ul>
+              <li>① 浏览器 → 公网 DNS 解析 example.com → 节点 IP → HTTPS 请求 (生产环境前面通常有云负载均衡, 本课 k3s 直接打节点 IP, 故省略 LB 节点)</li>
+              <li>② 包到达 worker 节点的 NodePort (例如 10.0.0.1X:30443), 由节点内核接管</li>
+              <li>③ 包到节点 → 内核 netfilter <b>第一次 DNAT</b>: 节点 IP:30443 → gateway pod IP:443</li>
+              <li>④ gateway 完成 TLS 终止, 按 HTTPRoute 转发到 Service ClusterIP 10.96.x.x:80</li>
+              <li>⑤ 内核 netfilter <b>第二次 DNAT</b>: ClusterIP → 真实 pod IP (kube-proxy 不在数据路径, 只写规则)</li>
+              <li>⑥ 包经 CNI (Calico) 跨节点路由, 抵达目标 pod</li>
+            </ul>
+            <div class="note">所有 K8s 进程都不在数据路径上, 真正搬运字节的是 Linux 内核 + CNI。</div>
+          </div>
+        </details>
+
+      </div>
+
+      <div class="manual-group">
+        <h3><svg class="h3-ic" viewBox="0 0 24 24"><path d="M3 17l4-4 3 3 5-7 6 6M16 9h5v5"/></svg>自动伸缩</h3>
+
+        <details class="manual-item">
+          <summary>HPA 伸缩 <span class="tag scale">扩容 + 缩容</span></summary>
+          <div class="body">
+            <div class="desc">HPA (HorizontalPodAutoscaler) 不是独立进程, 是 kube-controller-manager 内置的一个 controller。演示完整周期: 流量↑→扩容→稳定→流量↓→缩容。</div>
+            <h4>扩容阶段</h4>
+            <ul>
+              <li>已有 pod CPU 飙升 → 红色 CPU 仪表 (&gt; 70% 阈值)</li>
+              <li>各节点 kubelet 的 cAdvisor 上报指标 (简化: 直接到 cm; 实际经 metrics-server)</li>
+              <li>cm 里 HPA 计算: <code>desired = ceil(N × cur% / target%)</code></li>
+              <li>PATCH Deployment.replicas → 走标准调度流程 → 新 pod 起来分担流量 → CPU 回落</li>
+            </ul>
+            <h4>缩容阶段</h4>
+            <ul>
+              <li>CPU 长时间低位 → HPA 决定缩容</li>
+              <li>等 <code>stabilizationWindow=300s</code> 防抖 (此处加速)</li>
+              <li>PATCH replicas 下调 → kubelet SIGTERM + 30s grace 优雅终止</li>
+            </ul>
+            <div class="note">HPA 默认看 CPU/内存, 高级场景可用自定义指标 (Prometheus Adapter)。</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="manual-group">
+        <h3><svg class="h3-ic" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="10" rx="3"/><path d="M8 13h-2M7 11v4M16 13h.01M18 12h.01M17 14h.01"/></svg>控制操作</h3>
+
+        <details class="manual-item">
+          <summary>步进控制 · 上一步 / 下一步 / 自动播放 / 重置</summary>
+          <div class="body">
+            <div class="desc">仅在「下发部署」期间可用, 用于精细控制 14 步的播放节奏。</div>
+            <ul>
+              <li><b>下一步</b>: 推进到下一阶段, 触发对应动画 + 日志</li>
+              <li><b>上一步</b>: 回滚到上一阶段 (基于状态快照, pod / 指标 / 日志全还原)</li>
+              <li><b>自动播放</b>: 每 2.2s 自动推进, 末尾自动停止</li>
+              <li><b>重置</b>: 清空 pod / 日志 / 指标, 回到初始态</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="stage">
+  <aside class="sidebar">
+    <button class="manual-fab" onclick="openManual()" data-tip="查看每个按钮的作用 / 演示流程 / 日志要点">
+      <svg viewBox="0 0 24 24" width="15" height="15" style="vertical-align:-3px;margin-right:8px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round">
+        <path d="M3 4.5l9-1.5v17l-9-1.5V4.5z"/>
+        <path d="M21 4.5l-9-1.5v17l9-1.5V4.5z"/>
+      </svg>演示说明</button>
+    <div class="ctrl-side">
+      <div class="ctrl-title">控制台</div>
+      <div class="group">
+        <label>pod 副本数</label>
+        <input type="number" id="replica-input" value="6" min="1" max="15">
+      </div>
+      <button class="btn" id="btn-deploy" onclick="startDeploy()" data-tip="14 步逐步演示 Deployment 部署完整链路: kubectl → api → etcd → cm → scheduler → kubelet → containerd → registry → pod running">下发部署</button>
+      <div class="step-row">
+        <button class="btn ghost" id="btn-prev" onclick="prevStep()" disabled data-tip="回退到上一步, 还原 pod / 日志 / 指标 / 连线状态">上一步</button>
+        <button class="btn ghost" id="btn-next" onclick="nextStep()" disabled data-tip="推进到下一步, 触发对应动画 + 日志">下一步</button>
+      </div>
+      <div class="step-row">
+        <button class="btn" id="btn-auto" onclick="toggleAutoPlay()" disabled data-tip="每 2.2 秒自动推进一步, 末尾自动停止">自动播放</button>
+        <button class="btn ghost" id="btn-reset" onclick="resetAll()" data-tip="清空所有 pod / 日志 / 指标, 回到初始态">重置</button>
+      </div>
+      <div class="ctrl-sep"></div>
+      <div class="group">
+        <label>用户并发请求数</label>
+        <input type="number" id="req-input" value="30" min="1" max="100">
+      </div>
+      <button class="btn success" id="btn-traffic" onclick="simulateTraffic()" disabled data-tip="演示「外部 → 内部」流量 (业内叫南北向): 浏览器 → 节点 IP:NodePort → gateway pod → service ClusterIP → 业务 pod (两次内核 DNAT)">用户访问</button>
+      <div class="step-row">
+        <button class="btn danger" id="btn-pod-crash" onclick="startPodCrash()" disabled data-tip="单 pod 异常退出 (OOMKilled / panic / liveness 失败) → readiness 标 false → EndpointSlice 临时下架 + 各节点 kube-proxy 改 iptables 摘除 → kubelet 原地重启容器 (沙箱保留, IP 不变) → readiness 恢复 → 各节点 kube-proxy 加回 NAT 规则。不经过 cm/scheduler 调度环节">pod 宕机</button>
+        <button class="btn danger" id="btn-crash" onclick="startCrash()" disabled data-tip="整节点失联, 40s lease 过期 → 5min pod 驱逐 → 跨节点重调度。生产环境云负载均衡通过健康检查会立即剔除故障节点 (本课 k3s 已省略 LB 节点)">节点宕机</button>
+      </div>
+      <div class="ctrl-sep"></div>
+      <div class="step-row">
+        <button class="btn" id="btn-rollout" onclick="startRollout()" disabled data-tip="生产最常见发版: v1 → v2 逐个替换 (maxSurge=1 / maxUnavailable=0), 全程零中断, 旧 rs 保留可回滚">滚动升级</button>
+        <button class="btn" id="btn-hpa" onclick="startHpa()" disabled data-tip="HorizontalPodAutoscaler: 流量↑ CPU>70% 扩容 → CPU 回落 → 流量↓ 等防抖窗口缩容">HPA 伸缩</button>
+      </div>
+    </div>
+    <div style="display:none">
+      <span id="m-desired">0</span><span id="m-running">0</span><span id="m-dead">0</span><span id="m-heal">0</span><span id="m-req">0</span>
+      <span id="m-n1">0</span><span id="m-n2">0</span><span id="m-n3">0</span>
+    </div>
+  </aside>
+  <div class="world" id="world">
+    <svg id="cables"></svg>
+
+    <!-- 外圈: 开发机 (笔记本) 上跑的 kubectl 命令 -->
+    <div class="host kubectl" id="comp-kubectl">
+      <span class="sb"></span><span class="sa"></span>
+      <span class="host-tag" style="color:#cbd5e1;border-color:var(--line-2)">▣ 开发机</span>
+      <span class="host-ip">192.168.1.100</span>
+      <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20M7 8l3 3-3 3M11 14h5"/></svg></span></div>
+      <div>
+        <div class="en">kubectl</div>
+        <div class="cn">命令行工具</div>
+        <div class="addr req">→ 10.0.0.1:6443</div>
+      </div>
+    </div>
+
+    <!-- 外圈: 镜像仓库 (集群外, kubelet 拉镜像用) -->
+    <div class="host registry" id="comp-registry">
+      <span class="sb"></span><span class="sa"></span>
+      <span class="host-tag" style="color:#93c5fd;border-color:#1e40af">▣ 镜像仓库 · 集群外</span>
+      <div class="reg-ic"><span class="icn"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4M3 7v10l9 4 9-4V7M3 7l9 4 9-4M12 11v10"/></svg></span></div>
+      <div>
+        <div class="en">container registry</div>
+        <div class="cn">镜像仓库 (Docker Hub / 阿里云 ACR)</div>
+        <div class="addr">registry.example.com:443</div>
+      </div>
+    </div>
+
+    <!-- 外圈: 公网终端用户 (浏览器) -->
+    <div class="host internet" id="comp-internet">
+      <span class="sb"></span><span class="sa"></span>
+      <span class="host-tag" style="color:#86efac;border-color:#15803d">▣ 公网</span>
+      <div class="globe"><span class="icn"><svg viewBox="0 0 24 24" style="color:#67e8f9"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="9" ry="4"/><path d="M3 12h18M12 3v18"/></svg></span></div>
+      <div>
+        <div class="en">browser</div>
+        <div class="cn">浏览器 / 客户端</div>
+        <div class="addr req">→ https://example.com</div>
+      </div>
+    </div>
+
+    <!-- master 实体机 (矩形机箱) -->
+    <div class="host master-host">
+      <span class="s-bl"></span><span class="s-br"></span>
+      <span class="vents"></span>
+      <span class="host-tag">▣ host: master-node · 实体机</span>
+      <span class="host-ip">10.0.0.1</span>
+      <div class="ring"></div>
+      <span class="ring-tag">control plane · 4 个核心进程 (CoreDNS / CCM 等略, Service 是虚拟资源)</span>
+
+      <div class="sat sat-cm" id="comp-cm">
+        <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><path d="M12 4v16M5 9l-2.5 5h5L5 9zm14 0l-2.5 5h5L19 9zM4 20h16"/></svg></span></div>
+        <div class="info">
+          <div class="en">controller mgr</div>
+          <div class="cn">控制器集合</div>
+          <div class="addr muted">127.0.0.1:10257</div>
+        </div>
+      </div>
+
+      <div class="sat sat-etcd" id="comp-etcd">
+        <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.5"/><path d="M4 5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V5"/><path d="M4 11v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6"/></svg></span></div>
+        <div class="info">
+          <div class="en">etcd</div>
+          <div class="cn">集群账本</div>
+          <div class="addr">10.0.0.1:2379</div>
+        </div>
+      </div>
+
+      <div class="sat sat-more">
+        <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg></span></div>
+        <div class="info">
+          <div class="en">...</div>
+          <div class="cn">CoreDNS / CCM 等 (略)</div>
+        </div>
+      </div>
+
+      <div class="sat sat-sched" id="comp-sched">
+        <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></span></div>
+        <div class="info">
+          <div class="en">scheduler</div>
+          <div class="cn">调度器</div>
+          <div class="addr muted">127.0.0.1:10259</div>
+        </div>
+      </div>
+
+
+      <div class="center-api" id="comp-api">
+        <div class="ic-big"><span class="icn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="12" cy="3.5" r="1.4"/><circle cx="19.5" cy="7.7" r="1.4"/><circle cx="19.5" cy="16.3" r="1.4"/><circle cx="12" cy="20.5" r="1.4"/><circle cx="4.5" cy="16.3" r="1.4"/><circle cx="4.5" cy="7.7" r="1.4"/><path d="M12 9.7V5M14.3 10.7l3.8-2.2M14.3 13.3l3.8 2.2M12 14.3V19M9.7 13.3l-3.8 2.2M9.7 10.7l-3.8-2.2"/></svg></span></div>
+        <div class="en">api server</div>
+        <div class="cn">通信枢纽 · 集群唯一入口</div>
+        <div class="addr" style="margin-top:6px">10.0.0.1:6443 (https)</div>
+        <div class="screen">$ listen :6443<span class="cur"></span></div>
+      </div>
+    </div>
+
+    <!-- 中间层: 左边 gateway 抽象 (实际是 3 副本 Pod, demo 抽象为一个), 右边虚拟资源层 (service) -->
+    <div class="gateway-hint" id="comp-gateway">
+      <div class="gh-icon">
+        <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1"/><circle cx="15" cy="12" r="1" fill="currentColor"/><path d="M5 21h14"/></svg>
+      </div>
+      <div class="gh-text">
+        <div class="gh-title">gateway controller</div>
+        <div class="gh-desc">不是控制面进程, 而是 <b>Deployment 部署的 3 副本 Pod</b>, 分散跑在 3 个 worker 节点上 (podAntiAffinity)。<br>本课 k3s 用户直接打节点 IP:443 即可命中任一副本; 生产环境前面会再加一层云负载均衡做健康检查。</div>
+      </div>
+    </div>
+
+    <div class="sat-svc-floating" id="comp-svc">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M10 14L7 17a3.5 3.5 0 11-5-5l3-3M14 10l3-3a3.5 3.5 0 115 5l-3 3M8 16l8-8"/></svg></div>
+      <div class="info">
+        <div class="title">service · 虚拟资源</div>
+        <div class="desc">没有任何进程, 不属于任何机器 — 只是 etcd 里一条记录 + <b>各节点内核 iptables 规则</b>。给一组 pod 一个稳定的 ClusterIP <code>10.96.0.20:80</code>, 即使后端 pod 重启换 IP, 调用方也无感。</div>
+      </div>
+    </div>
+
+    <!-- 底部 worker nodes -->
+    <div class="workers-row">
+      <div class="node">
+        <span class="nsb"></span><span class="nsa"></span>
+        <span class="host-tag">▣ 实体机</span>
+        <span class="host-ip">10.0.0.11</span>
+        <div class="node-head">
+          <div class="nh-label">
+            <div class="en">worker node 1</div>
+          </div>
+          <div class="fan"></div>
+        </div>
+        <div class="mods">
+          <div class="mp main" id="kubelet-1">
+            <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3.5M12 18.5V22M4.2 4.2l2.5 2.5M17.3 17.3l2.5 2.5M2 12h3.5M18.5 12H22M4.2 19.8l2.5-2.5M17.3 6.7l2.5-2.5"/></svg></span></div>
+            <div><div class="en">kubelet</div><div class="cn">节点管家</div><div class="addr">10.0.0.11:10250</div></div>
+          </div>
+          <div class="mp aux" id="proxy-1">
+            <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><path d="M4 12h6m4 0h6M10 12l-2-2m2 2l-2 2m6-2l2-2m-2 2l2 2"/></svg></span></div>
+            <div><div class="en">kube-proxy</div><div class="cn">网络代理</div><div class="addr">10.0.0.11:10256</div></div>
+          </div>
+        </div>
+        <div class="pod-bay" id="pod-area-1">
+          <div class="pod-empty">— empty bay —</div>
+        </div>
+      </div>
+
+      <div class="node">
+        <span class="nsb"></span><span class="nsa"></span>
+        <span class="host-tag">▣ 实体机</span>
+        <span class="host-ip">10.0.0.12</span>
+        <div class="node-head">
+          <div class="nh-label">
+            <div class="en">worker node 2</div>
+          </div>
+          <div class="fan"></div>
+        </div>
+        <div class="mods">
+          <div class="mp main" id="kubelet-2">
+            <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3.5M12 18.5V22M4.2 4.2l2.5 2.5M17.3 17.3l2.5 2.5M2 12h3.5M18.5 12H22M4.2 19.8l2.5-2.5M17.3 6.7l2.5-2.5"/></svg></span></div>
+            <div><div class="en">kubelet</div><div class="cn">节点管家</div><div class="addr">10.0.0.12:10250</div></div>
+          </div>
+          <div class="mp aux" id="proxy-2">
+            <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><path d="M4 12h6m4 0h6M10 12l-2-2m2 2l-2 2m6-2l2-2m-2 2l2 2"/></svg></span></div>
+            <div><div class="en">kube-proxy</div><div class="cn">网络代理</div><div class="addr">10.0.0.12:10256</div></div>
+          </div>
+        </div>
+        <div class="pod-bay" id="pod-area-2">
+          <div class="pod-empty">— empty bay —</div>
+        </div>
+      </div>
+
+      <div class="node">
+        <span class="nsb"></span><span class="nsa"></span>
+        <span class="host-tag">▣ 实体机</span>
+        <span class="host-ip">10.0.0.13</span>
+        <div class="node-head">
+          <div class="nh-label">
+            <div class="en">worker node 3</div>
+          </div>
+          <div class="fan"></div>
+        </div>
+        <div class="mods">
+          <div class="mp main" id="kubelet-3">
+            <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3.5M12 18.5V22M4.2 4.2l2.5 2.5M17.3 17.3l2.5 2.5M2 12h3.5M18.5 12H22M4.2 19.8l2.5-2.5M17.3 6.7l2.5-2.5"/></svg></span></div>
+            <div><div class="en">kubelet</div><div class="cn">节点管家</div><div class="addr">10.0.0.13:10250</div></div>
+          </div>
+          <div class="mp aux" id="proxy-3">
+            <div class="ic"><span class="icn"><svg viewBox="0 0 24 24"><path d="M4 12h6m4 0h6M10 12l-2-2m2 2l-2 2m6-2l2-2m-2 2l2 2"/></svg></span></div>
+            <div><div class="en">kube-proxy</div><div class="cn">网络代理</div><div class="addr">10.0.0.13:10256</div></div>
+          </div>
+        </div>
+        <div class="pod-bay" id="pod-area-3">
+          <div class="pod-empty">— empty bay —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 组件详情弹窗 -->
+<div class="info-mask" id="info-mask" onclick="closeInfo()">
+  <div class="info-box" onclick="event.stopPropagation()">
+    <div class="info-head">
+      <span class="info-title" id="info-title"></span>
+      <button class="info-close" onclick="closeInfo()">×</button>
+    </div>
+    <div class="info-body" id="info-body"></div>
+  </div>
+</div>
+
+<div class="yaml-mask" id="yaml-mask">
+  <div class="yaml-box">
+    <div class="yaml-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span>$ vim deployment.yaml</span>
+      <span class="fname">deployment.yaml</span>
+    </div>
+    <div class="yaml-body" id="yaml-body"></div>
+    <div class="yaml-foot">
+      <span class="hint">即将执行: <code>kubectl apply -f deployment.yaml</code></span>
+      <button class="btn ghost" onclick="closeYaml()">取消</button>
+      <button class="btn success" id="yaml-confirm">确认提交</button>
+    </div>
+  </div>
+</div>
+
+<div class="terminal">
+  <div class="terminal-head">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span style="margin-left:8px">k8s-control-plane:~$</span>
+    <span class="right">system log · 系统日志</span>
+  </div>
+  <div class="terminal-body" id="console-log">
+    <div class="ln"><span class="t">[boot]</span><span class="pr mute">·</span><span class="msg mute">系统就绪, 等待开发者下发部署指令...</span></div>
+  </div>
+</div>
+
+<script>
+const STEP_DELAY = 2000;
+const PACKET_DURATION = 2200;
+const PACKET_INTERVAL = 200;
+const PULSE_DURATION = 1400;
+
+const CONNECTIONS = [
+  /* 外部用户 → gateway controller (抽象为单一节点, 实际是 3 副本散在 worker, 见 gateway-hint 说明) */
+  { from:'comp-internet', to:'comp-gateway', kind:'traffic' },
+  { from:'comp-gateway',  to:'comp-svc',     kind:'traffic' },
+  // 注: service ↔ kube-proxy 没有连线 — service 是虚拟资源不参与数据路径,
+  // 包到达节点后由内核 netfilter 直接 DNAT 成 pod IP, kube-proxy 进程不碰数据.
+  { from:'comp-kubectl',  to:'comp-api',  kind:'control' },
+  { from:'comp-api',      to:'comp-etcd', kind:'control' },
+  { from:'comp-api',      to:'comp-cm',   kind:'control' },
+  { from:'comp-api',      to:'comp-sched',kind:'control' },
+  { from:'comp-api',      to:'comp-svc',  kind:'control' },
+  { from:'comp-api',      to:'kubelet-1', kind:'control' },
+  { from:'comp-api',      to:'kubelet-2', kind:'control' },
+  { from:'comp-api',      to:'kubelet-3', kind:'control' },
+  // kube-proxy watch service/endpoint
+  { from:'comp-api', to:'proxy-1', kind:'control' },
+  { from:'comp-api', to:'proxy-2', kind:'control' },
+  { from:'comp-api', to:'proxy-3', kind:'control' },
+  // kubelet → registry (拉镜像)
+  { from:'comp-registry', to:'kubelet-1', kind:'control' },
+  { from:'comp-registry', to:'kubelet-2', kind:'control' },
+  { from:'comp-registry', to:'kubelet-3', kind:'control' },
+  // 节点内: kubelet 与 kube-proxy 通常通过本机交互, 也可视为相邻
+  { from:'kubelet-1', to:'proxy-1', kind:'control' },
+  { from:'kubelet-2', to:'proxy-2', kind:'control' },
+  { from:'kubelet-3', to:'proxy-3', kind:'control' },
+];
+
+const COL = {
+  control:'#a78bfa',
+  traffic:'#facc15',
+  packet_traffic:'#fde047',
+  packet_control:'#c4b5fd',
+  packet_error:'#fca5a5',
+};
+
+/* 长连接 watch 的线 — 一旦激活就保持微微亮 */
+const WATCH_LINES = new Set([
+  'comp-api__comp-cm',
+  'comp-api__comp-sched',
+  'comp-api__kubelet-1','comp-api__kubelet-2','comp-api__kubelet-3',
+  'comp-api__proxy-1','comp-api__proxy-2','comp-api__proxy-3',
+]);
+
+let isWorking=false, activePods=[], podCounter=0;
+let metrics={desired:0,running:0,dead:0,heal:0,req:0};
+let deadNodes = new Set();   // 当前失联节点编号集合, 给 simulateTraffic 跳过宕机节点的 gateway 用
+const wires={};
+
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const $ = id => document.getElementById(id);
+
+function log(html, type='mute'){
+  const panel = $('console-log');
+  const t = new Date().toLocaleTimeString('en-US',{hour12:false});
+  const div = document.createElement('div');
+  div.className='ln';
+  const pr = {info:'»',ok:'✓',warn:'!',err:'✖',mute:'·'}[type]||'·';
+  html = html.replace(/【(.*?)】/g,'<span class="hi">[$1]</span>');
+  div.innerHTML = `<span class="t">[${t}]</span><span class="pr ${type}">${pr}</span><span class="msg ${type==='mute'?'mute':''}">${html}</span>`;
+  panel.appendChild(div);
+  panel.scrollTop = panel.scrollHeight;
+}
+
+function svgNS(name, attrs={}){
+  const el = document.createElementNS('http://www.w3.org/2000/svg', name);
+  for(const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+function getCenter(el){
+  const w = $('world').getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  return { x: r.left - w.left + r.width/2, y: r.top - w.top + r.height/2 };
+}
+/* 返回 el 边缘上、朝着 target 方向的锚点 (用于连线起止) */
+function anchor(el, target){
+  const w = $('world').getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const tR = target.getBoundingClientRect();
+  const cx = r.left - w.left + r.width/2;
+  const cy = r.top  - w.top  + r.height/2;
+  const tx = tR.left - w.left + tR.width/2;
+  const ty = tR.top  - w.top  + tR.height/2;
+  const dx = tx - cx, dy = ty - cy;
+  if(dx === 0 && dy === 0) return { x: cx, y: cy };
+  const hw = r.width/2 + 2, hh = r.height/2 + 2;  // +2 让锚点略出框外
+  const sx = dx !== 0 ? hw / Math.abs(dx) : Infinity;
+  const sy = dy !== 0 ? hh / Math.abs(dy) : Infinity;
+  const s = Math.min(sx, sy);
+  return { x: cx + dx * s, y: cy + dy * s };
+}
+function pathBezier(p1, p2){
+  const dx = p2.x-p1.x, dy = p2.y-p1.y;
+  // 让线条曲度更柔和
+  const c1x = p1.x + dx*0.4, c1y = p1.y + dy*0.55;
+  const c2x = p2.x - dx*0.4, c2y = p2.y - dy*0.55;
+  return `M${p1.x},${p1.y} C${c1x},${c1y} ${c2x},${c2y} ${p2.x},${p2.y}`;
+}
+function pathThrough(points){
+  if(points.length<2) return '';
+  let d = `M${points[0].x},${points[0].y}`;
+  for(let i=1;i<points.length;i++){
+    const a=points[i-1], b=points[i];
+    const dx=b.x-a.x, dy=b.y-a.y;
+    const c1x=a.x+dx*0.4, c1y=a.y+dy*0.6;
+    const c2x=b.x-dx*0.4, c2y=b.y-dy*0.6;
+    d += ` C${c1x},${c1y} ${c2x},${c2y} ${b.x},${b.y}`;
+  }
+  return d;
+}
+
+function buildConnections(){
+  const svg = $('cables');
+  svg.innerHTML = '';
+  const world = $('world');
+  svg.setAttribute('width', world.offsetWidth);
+  svg.setAttribute('height', world.offsetHeight);
+
+  CONNECTIONS.forEach(c => {
+    const a=$(c.from), b=$(c.to); if(!a||!b) return;
+    const d = pathBezier(anchor(a, b), anchor(b, a));
+    const color = c.kind==='control' ? COL.control : COL.traffic;
+    const bg = svgNS('path', { d, class:'wire-bg' });
+    const glow = svgNS('path', { d, class:'wire-glow', stroke:color });
+    const flow = svgNS('path', { d, class:'wire-flow', stroke:color });
+    svg.appendChild(bg);
+    svg.appendChild(glow);
+    svg.appendChild(flow);
+    // 激活时也要让 bg 变色
+    bg.dataset.color = color;
+    wires[`${c.from}__${c.to}`] = { bg, glow, flow, kind:c.kind, color, d };
+  });
+}
+
+/* 把一条线标为"断开" (节点宕机时), 暗红色 + 停止流动 */
+function breakWire(fromId, toId){
+  const w = wires[`${fromId}__${toId}`] || wires[`${toId}__${fromId}`];
+  if(!w) return;
+  w.bg.classList.remove('lit');
+  w.bg.classList.remove('watching');
+  w.bg.classList.add('broken');
+  w.bg.setAttribute('stroke','#7c3a3a');
+  if(w.flow){
+    w.flow.classList.remove('lit');
+    w.flow.classList.remove('watching');
+  }
+  if(w.glow) w.glow.classList.remove('lit');
+}
+/* 恢复一条断开的线到 idle (节点重新上线) */
+function restoreWire(fromId, toId){
+  const w = wires[`${fromId}__${toId}`] || wires[`${toId}__${fromId}`];
+  if(!w) return;
+  w.bg.classList.remove('broken');
+  w.bg.setAttribute('stroke','#1e2942');
+}
+
+/* 临时连线: 给"服务发现 / pod 间调用"这类没预画线的链路用,
+   动态创建一条 SVG 路径, 显示 ms 后淡出移除 (不污染 wires 表) */
+function tempWire(fromId, toId, ms=1800, color){
+  // 临时金线: 复用 lightWire 的三层结构 (bg + glow + flow), 视觉跟主流程完全一致
+  const a = $(fromId), b = $(toId);
+  if(!a || !b) return;
+  const svg = $('cables');
+  if(!svg) return;
+  const c = color || COL.traffic;
+  const d = pathBezier(anchor(a, b), anchor(b, a));
+  // 三层: bg 底线 + glow 模糊发光 + flow 虚线流动 (跟 .wire-bg.lit / .wire-glow.lit / .wire-flow.lit 一致)
+  const bg = svgNS('path', { d, class:'wire-bg lit', stroke:c });
+  const glow = svgNS('path', { d, class:'wire-glow lit', stroke:c });
+  const flow = svgNS('path', { d, class:'wire-flow lit', stroke:c });
+  svg.appendChild(bg);
+  svg.appendChild(glow);
+  svg.appendChild(flow);
+  // 同步 flash 两端组件 (跟 lightWire 一致)
+  flash(fromId, ms, 'lit');
+  flash(toId, ms, 'lit');
+  setTimeout(()=>{
+    bg.style.transition='opacity .35s'; bg.style.opacity='0';
+    glow.style.transition='opacity .35s'; glow.style.opacity='0';
+    flow.style.transition='opacity .35s'; flow.style.opacity='0';
+    setTimeout(()=>{ bg.remove(); glow.remove(); flow.remove(); }, 400);
+  }, ms);
+}
+
+function lightWire(fromId, toId, ms=1800){
+  // 线本身是无向的, 双向都查
+  const k1 = `${fromId}__${toId}`, k2 = `${toId}__${fromId}`;
+  const w = wires[k1] || wires[k2];
+  if(!w) return;
+  // 顺手闪一下两端组件 (lit 金光), 让 "线亮 + 两头亮" 同步
+  flash(fromId, ms, 'lit');
+  flash(toId, ms, 'lit');
+  const isWatch = WATCH_LINES.has(k1) || WATCH_LINES.has(k2);
+  w.bg.classList.add('lit');
+  w.bg.setAttribute('stroke', w.color);
+  w.glow.classList.add('lit');
+  w.flow.classList.add('lit');
+  setTimeout(()=>{
+    w.bg.classList.remove('lit');
+    w.glow.classList.remove('lit');
+    w.flow.classList.remove('lit');
+    if(isWatch){
+      // 长连接 watch: 切到暗紫色, 仍有流动效果 (但比 lit 暗很多)
+      w.bg.classList.add('watching');
+      w.bg.setAttribute('stroke', '#6e5e9c');
+      w.flow.classList.add('watching');
+      w.flow.setAttribute('stroke', '#a78bfa');
+    } else {
+      w.bg.setAttribute('stroke', '#1e2942');
+    }
+  }, ms);
+}
+
+function animateBall(d, color, duration, size=5, onArrive){
+  const svg = $('cables');
+  const tempPath = svgNS('path', { d, fill:'none', stroke:'none' });
+  svg.appendChild(tempPath);
+  const len = tempPath.getTotalLength();
+  if(!len){ tempPath.remove(); return; }
+  const circle = svgNS('circle', { r:size, fill:color, cx:0, cy:0 });
+  circle.style.filter = `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 12px ${color})`;
+  svg.appendChild(circle);
+  const start = performance.now();
+  function frame(now){
+    const elapsed = now - start;
+    const t = Math.min(1, elapsed/duration);
+    const e = t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+    const pt = tempPath.getPointAtLength(len*e);
+    circle.setAttribute('cx', pt.x);
+    circle.setAttribute('cy', pt.y);
+    if(t<1) requestAnimationFrame(frame);
+    else { circle.remove(); tempPath.remove(); onArrive && onArrive(); }
+  }
+  requestAnimationFrame(frame);
+}
+function pulseWire(fromId, toId, color, duration=PULSE_DURATION, size=5){
+  // 小球永远沿 from→to 的实际方向飞 (锚点在边缘, 跟连线一致)
+  const a = $(fromId), b = $(toId);
+  if(!a || !b) return;
+  const d = pathBezier(anchor(a, b), anchor(b, a));
+  animateBall(d, color, duration, size);
+}
+function sendRequestPacket(nodeIds, color, duration, size=5, onArrive){
+  // 使用边缘锚点, 与连线一致
+  const els = nodeIds.map(id => $(id)).filter(Boolean);
+  if(els.length<2) return;
+  const pts = els.map((el, i) => {
+    const prev = els[i-1], next = els[i+1];
+    if(!prev) return anchor(el, next);
+    if(!next) return anchor(el, prev);
+    // 中间点用中心 (因为有两个邻居, 锚点取中心更平滑)
+    return getCenter(el);
+  });
+  animateBall(pathThrough(pts), color, duration, size, onArrive);
+}
+
+function flash(id, ms=1800, cls='lit'){
+  const el = $(id); if(!el) return;
+  // 修复: 同一元素连续 flash 时, 前一次的 setTimeout 会错误地提前抹掉本次的 lit
+  // 用 dataset 记录每个 class 的 timer, 新 flash 触发时取消老 timer
+  const key = `_flashTimer_${cls}`;
+  if(el[key]){ clearTimeout(el[key]); }
+  el.classList.add(cls);
+  el[key] = setTimeout(()=>{
+    el.classList.remove(cls);
+    el[key] = null;
+  }, ms);
+}
+
+function updateMetrics(){
+  $('m-desired').textContent = metrics.desired;
+  $('m-running').textContent = metrics.running;
+  $('m-dead').textContent    = metrics.dead;
+  $('m-heal').textContent    = metrics.heal;
+  $('m-req').textContent     = metrics.req;
+  const c=[0,0,0,0];
+  activePods.forEach(p=>{ if(!p.dead) c[p.node]++; });
+  $('m-n1').textContent = c[1]+' pods';
+  $('m-n2').textContent = c[2]+' pods';
+  $('m-n3').textContent = c[3]+' pods';
+}
+function setButtons(d){
+  $('replica-input').disabled = d || activePods.length>0;
+  $('btn-deploy').disabled    = d || activePods.length>0;
+  $('btn-crash').disabled     = d || activePods.length===0;
+  $('btn-pod-crash').disabled = d || activePods.length===0;
+  $('btn-traffic').disabled   = d || activePods.length===0;
+  $('btn-hpa').disabled       = d || activePods.length===0;
+  $('btn-rollout').disabled   = d || activePods.length===0;
+  isWorking = d;
+}
+async function step(msg, type='info', flashIds, wirePairs){
+  log(msg, type);
+  if(flashIds) (Array.isArray(flashIds)?flashIds:[flashIds]).forEach(h=>flash(h, STEP_DELAY-200, 'lit'));
+  if(wirePairs) wirePairs.forEach(([f,t])=>lightWire(f,t, STEP_DELAY-200));
+  await sleep(STEP_DELAY);
+}
+
+function createPod(nodeNum, name, ipOverride){
+  const bay = $(`pod-area-${nodeNum}`);
+  bay.classList.add('has-pod');
+  const id = `pod-${++podCounter}`;
+  // ipOverride: 用于"原地重启容器"场景, 沙箱(pause 容器)保留 → IP 不变
+  const ip = ipOverride || `10.244.${nodeNum}.${100+(podCounter%150)}`;
+  const el = document.createElement('div');
+  el.className = 'pod';
+  el.id = id;
+  el.innerHTML = `
+    <div>
+      <div class="pname">${name}</div>
+      <div class="pinfo">${ip}:80</div>
+    </div>
+    <div class="bar"></div>`;
+  bay.appendChild(el);
+  return { id:podCounter, node:nodeNum, name, domId:id, ip };
+}
+function clearAllPods(){
+  [1,2,3].forEach(i=>{
+    const b = $(`pod-area-${i}`);
+    b.classList.remove('has-pod');
+    b.innerHTML = '<div class="pod-empty">— empty bay —</div>';
+  });
+}
+
+function buildYaml(n){
+  return (
+'<span class="c"># ============================================</span>\n'+
+'<span class="c"># users-api Deployment · 业务后端服务</span>\n'+
+'<span class="c"># 跑 nginx-style web 后端, 演示 K8s 部署全链路</span>\n'+
+'<span class="c"># ============================================</span>\n'+
+'<span class="k">apiVersion</span>: apps/v1               <span class="c"># Deployment 走 apps/v1 这个稳定 API 组</span>\n'+
+'<span class="k">kind</span>: <span class="s">Deployment</span>                 <span class="c"># 资源类型: 声明式管理一组 pod, 自动维护副本数 + 滚动升级</span>\n'+
+'<span class="k">metadata</span>:\n'+
+'  <span class="k">name</span>: <span class="s">users-api</span>                <span class="c"># Deployment 名 (作为后续 RS / Pod 命名前缀)</span>\n'+
+'  <span class="k">namespace</span>: <span class="s">default</span>             <span class="c"># 默认命名空间, 生产建议按业务/团队分</span>\n'+
+'<span class="k">spec</span>:\n'+
+`  <span class="k">replicas</span>: <span class="n">${n}</span>                    <span class="c"># 期望副本数 (HPA 会动态改这个值)</span>\n`+
+'  <span class="k">revisionHistoryLimit</span>: <span class="n">10</span>        <span class="c"># 保留 10 个历史版本, kubectl rollout undo 可回滚</span>\n'+
+'  <span class="k">selector</span>:                       <span class="c"># RS 用这个 selector 找到自己管的 pod</span>\n'+
+'    <span class="k">matchLabels</span>:\n'+
+'      <span class="k">app</span>: <span class="s">users-api</span>\n'+
+'\n'+
+'  <span class="k">strategy</span>:                       <span class="c"># 滚动升级策略 (kubectl set image 时生效)</span>\n'+
+'    <span class="k">type</span>: <span class="s">RollingUpdate</span>             <span class="c"># 滚动 (默认), 另一种是 Recreate (先全删再起)</span>\n'+
+'    <span class="k">rollingUpdate</span>:\n'+
+'      <span class="k">maxSurge</span>: <span class="n">1</span>                  <span class="c"># 升级时最多多出 1 个 pod (短暂超副本)</span>\n'+
+'      <span class="k">maxUnavailable</span>: <span class="n">0</span>           <span class="c"># 始终不少于 replicas (保证服务不中断)</span>\n'+
+'\n'+
+'  <span class="k">template</span>:                       <span class="c"># pod 模板 (RS 按此模板创建 pod)</span>\n'+
+'    <span class="k">metadata</span>:\n'+
+'      <span class="k">labels</span>:\n'+
+'        <span class="k">app</span>: <span class="s">users-api</span>            <span class="c"># 给 pod 打 label, 跟 selector 对得上 (否则 RS 找不到自己的 pod)</span>\n'+
+'    <span class="k">spec</span>:\n'+
+'      <span class="k">terminationGracePeriodSeconds</span>: <span class="n">30</span>  <span class="c"># 优雅退出窗口: SIGTERM 后 30s 内进程要善后</span>\n'+
+'      <span class="k">containers</span>:\n'+
+'      - <span class="k">name</span>: <span class="s">api</span>                    <span class="c"># 容器名 (kubectl exec -c api 时用)</span>\n'+
+'        <span class="k">image</span>: <span class="s">users-api:v1.0</span>        <span class="c"># 镜像 tag, 升级时 kubectl set image 改这个</span>\n'+
+'        <span class="k">imagePullPolicy</span>: <span class="s">IfNotPresent</span>  <span class="c"># 已缓存就跳过拉取, 节省启动时间</span>\n'+
+'        <span class="k">ports</span>:\n'+
+'        - <span class="k">containerPort</span>: <span class="n">80</span>          <span class="c"># 容器监听端口 (跟 Service.targetPort 对得上)</span>\n'+
+'\n'+
+'        <span class="k">resources</span>:                  <span class="c"># 资源配额 (HPA / scheduler 都靠这个)</span>\n'+
+'          <span class="k">requests</span>:                 <span class="c"># 至少给我这么多 (scheduler 按这个找节点)</span>\n'+
+'            <span class="k">cpu</span>: <span class="s">100m</span>                <span class="c"># 0.1 核 (HPA CPU% = 实际/requests, 必填)</span>\n'+
+'            <span class="k">memory</span>: <span class="s">128Mi</span>\n'+
+'          <span class="k">limits</span>:                   <span class="c"># 最多用这么多 (超 limit 会被 cgroup 杀)</span>\n'+
+'            <span class="k">cpu</span>: <span class="s">500m</span>                <span class="c"># 0.5 核, 用超会被限速 (CPU 是可压缩资源)</span>\n'+
+'            <span class="k">memory</span>: <span class="s">512Mi</span>              <span class="c"># 用超直接 OOMKilled (内存是不可压缩资源)</span>\n'+
+'\n'+
+'        <span class="k">readinessProbe</span>:            <span class="c"># 就绪探针 (Ready 后才加入 EndpointSlice 接流量)</span>\n'+
+'          <span class="k">httpGet</span>: { <span class="k">path</span>: /healthz, <span class="k">port</span>: <span class="n">80</span> }\n'+
+'          <span class="k">initialDelaySeconds</span>: <span class="n">3</span>       <span class="c"># 容器起来 3s 后才开始探</span>\n'+
+'          <span class="k">periodSeconds</span>: <span class="n">10</span>            <span class="c"># 每 10s 探一次</span>\n'+
+'          <span class="k">failureThreshold</span>: <span class="n">3</span>          <span class="c"># 连续 3 次失败才标 NotReady</span>\n'+
+'\n'+
+'        <span class="k">livenessProbe</span>:             <span class="c"># 存活探针 (失败会重启容器, 不影响 EndpointSlice)</span>\n'+
+'          <span class="k">httpGet</span>: { <span class="k">path</span>: /healthz, <span class="k">port</span>: <span class="n">80</span> }\n'+
+'          <span class="k">periodSeconds</span>: <span class="n">15</span>'
+  );
+}
+function openYaml(n){
+  $('yaml-body').innerHTML = buildYaml(n);
+  $('yaml-mask').classList.add('show');
+  return new Promise(resolve=>{
+    const c=$('yaml-confirm');
+    function ok(){cleanup();resolve(true)}
+    function cancel(){cleanup();resolve(false)}
+    function cleanup(){$('yaml-mask').classList.remove('show');c.removeEventListener('click',ok)}
+    window._yamlCancel = cancel;
+    c.addEventListener('click', ok);
+  });
+}
+function closeYaml(){ if(window._yamlCancel) window._yamlCancel(); }
+
+/* 滚动升级专用: 显示 diff 风格 yaml (image 从 v1 → v2) */
+function buildRolloutYaml(){
+  return (
+'<span class="c"># 滚动升级 · 在原 Deployment yaml 上只改 image tag</span>\n'+
+'<span class="c"># 改完后 kubectl apply -f deployment.yaml (或 kubectl set image 等效)</span>\n'+
+'<span class="k">apiVersion</span>: apps/v1\n'+
+'<span class="k">kind</span>: <span class="s">Deployment</span>\n'+
+'<span class="k">metadata</span>:\n'+
+'  <span class="k">name</span>: <span class="s">users-api</span>\n'+
+'<span class="k">spec</span>:\n'+
+'  <span class="k">replicas</span>: <span class="n">6</span>\n'+
+'  <span class="k">strategy</span>:\n'+
+'    <span class="k">type</span>: <span class="s">RollingUpdate</span>\n'+
+'    <span class="k">rollingUpdate</span>:\n'+
+'      <span class="k">maxSurge</span>: <span class="n">1</span>\n'+
+'      <span class="k">maxUnavailable</span>: <span class="n">0</span>\n'+
+'  <span class="k">template</span>:\n'+
+'    <span class="k">spec</span>:\n'+
+'      <span class="k">containers</span>:\n'+
+'      - <span class="k">name</span>: <span class="s">api</span>\n'+
+'<span class="diff-del">        <span class="k">image</span>: <span class="s">users-api:v1.0</span>       <span class="c"># 旧版本</span></span>\n'+
+'<span class="diff-add">        <span class="k">image</span>: <span class="s">users-api:v2.0</span>       <span class="c"># 新版本 ← 只改这一行</span></span>\n'+
+'        <span class="k">ports</span>:\n'+
+'        - <span class="k">containerPort</span>: <span class="n">80</span>\n'+
+'        <span class="k">resources</span>:\n'+
+'          <span class="k">requests</span>: { <span class="k">cpu</span>: <span class="s">100m</span>, <span class="k">memory</span>: <span class="s">128Mi</span> }\n'+
+'          <span class="k">limits</span>:   { <span class="k">cpu</span>: <span class="s">500m</span>, <span class="k">memory</span>: <span class="s">512Mi</span> }\n'+
+'        <span class="k">readinessProbe</span>:\n'+
+'          <span class="k">httpGet</span>: { <span class="k">path</span>: /healthz, <span class="k">port</span>: <span class="n">80</span> }\n'+
+'\n'+
+'<span class="c"># Deployment Controller 会自动: 创建新 ReplicaSet (rs-v2) → 按 maxSurge=1 / maxUnavailable=0</span>\n'+
+'<span class="c"># 策略逐个替换 pod (起新 → 等 Ready → 退旧), 全程业务零中断。</span>\n'+
+'<span class="c"># 旧 ReplicaSet 保留 (revisionHistoryLimit=10), kubectl rollout undo 一键回滚。</span>'
+  );
+}
+function openRolloutYaml(){
+  $('yaml-body').innerHTML = buildRolloutYaml();
+  // 改弹窗 head 提示
+  document.querySelector('.yaml-head span:nth-of-type(4)').textContent = '$ vim deployment.yaml  (改 image: v1.0 → v2.0)';
+  document.querySelector('.yaml-foot .hint').innerHTML = '即将执行: <code>kubectl apply -f deployment.yaml</code> (或等效 <code>kubectl set image deployment/users-api api=users-api:v2.0</code>)';
+  $('yaml-mask').classList.add('show');
+  return new Promise(resolve=>{
+    const c=$('yaml-confirm');
+    function ok(){cleanup();resolve(true)}
+    function cancel(){cleanup();resolve(false)}
+    function cleanup(){
+      $('yaml-mask').classList.remove('show');
+      // 复位 head/foot 文字, 避免污染 startDeploy 的弹窗
+      document.querySelector('.yaml-head span:nth-of-type(4)').textContent = '$ vim deployment.yaml';
+      document.querySelector('.yaml-foot .hint').innerHTML = '即将执行: <code>kubectl apply -f deployment.yaml</code>';
+      c.removeEventListener('click',ok);
+    }
+    window._yamlCancel = cancel;
+    c.addEventListener('click', ok);
+  });
+}
+
+/* ===== 步进式部署演示 ===== */
+let deploySteps = null;
+let deployIdx = 0;
+let deployN = 6;
+let stepSnapshots = [];   // 每次执行 nextStep 前的状态, 用于 prevStep 还原
+let autoTimer = null;     // 自动演示定时器
+const AUTO_INTERVAL = 2200;
+
+/* 清理上一步遗留的动画 (飞球 + 线点亮 + 组件 lit) */
+function clearTransientAnimations(){
+  const svg = $('cables');
+  if(svg){
+    svg.querySelectorAll('circle').forEach(c => c.remove());
+    // 清掉用于 animateMotion 的临时 path
+    svg.querySelectorAll('path').forEach(p => {
+      if(p.getAttribute('stroke') === 'none') p.remove();
+    });
+  }
+  Object.values(wires).forEach(w => {
+    if(w.bg){
+      w.bg.classList.remove('lit');
+      if(!w.bg.classList.contains('watching')){
+        w.bg.setAttribute('stroke','#1e2942');
+      } else {
+        w.bg.setAttribute('stroke','#6e5e9c');
+      }
+    }
+    if(w.glow) w.glow.classList.remove('lit');
+    if(w.flow){
+      w.flow.classList.remove('lit');
+      // 保留 watching 状态 (持续流动)
+    }
+  });
+  document.querySelectorAll('.lit, .traffic, .hit').forEach(el => {
+    el.classList.remove('lit');
+    el.classList.remove('traffic');
+    el.classList.remove('hit');
+  });
+}
+
+function snapshotState(){
+  return {
+    log: $('console-log').innerHTML,
+    pods: [1,2,3].map(i => $(`pod-area-${i}`).innerHTML),
+    podsCls: [1,2,3].map(i => $(`pod-area-${i}`).className),
+    activePods: activePods.map(p=>({...p})),
+    metrics: {...metrics},
+    podCounter,
+    // 记录哪些 watch 线已经在 watching 状态 (用于 prevStep 还原)
+    watching: Object.keys(wires).filter(k => wires[k].bg && wires[k].bg.classList.contains('watching')),
+  };
+}
+function restoreState(snap){
+  $('console-log').innerHTML = snap.log;
+  [1,2,3].forEach((i,k)=>{
+    $(`pod-area-${i}`).className = snap.podsCls[k];
+    $(`pod-area-${i}`).innerHTML = snap.pods[k];
+  });
+  activePods = snap.activePods.map(p=>({...p}));
+  metrics = {...snap.metrics};
+  podCounter = snap.podCounter;
+  updateMetrics();
+  // 还原 watch 状态: 只让快照里记录的线保持 watching, 其余清掉
+  // 注意: broken (节点宕机断线) 状态保留, 不被还原覆盖
+  const watchingSet = new Set(snap.watching || []);
+  Object.entries(wires).forEach(([k, w])=>{
+    if(!w.bg) return;
+    if(w.bg.classList.contains('broken')) return;
+    if(watchingSet.has(k)){
+      w.bg.classList.add('watching');
+      w.bg.setAttribute('stroke','#6e5e9c');
+      if(w.flow) w.flow.classList.add('watching');
+    } else {
+      w.bg.classList.remove('watching');
+      w.bg.setAttribute('stroke','#1e2942');
+      if(w.flow) w.flow.classList.remove('watching');
+    }
+  });
+}
+
+function buildDeploySteps(n){
+  return [
+    { msg:`👨‍💻 开发者执行 kubectl apply -f deployment.yaml, 客户端读取本地 yaml (replicas=${n})`, type:'info',
+      run:()=>flash('comp-kubectl',1800,'lit') },
+    { msg:'① 【kubectl】 → 【api server :6443】 发起 HTTPS POST, 携带 yaml 文本', type:'info',
+      run:()=>{ pulseWire('comp-kubectl','comp-api',COL.packet_control); flash('comp-kubectl',1800,'lit'); flash('comp-api',1800,'lit'); lightWire('comp-kubectl','comp-api',1800);} },
+    { msg:'② 【api server】 完成 认证(AuthN) / 鉴权(AuthZ) / 准入控制(Admission), 把 Deployment 对象写入 【etcd :2379】 (revision +1)', type:'info',
+      run:()=>{ pulseWire('comp-api','comp-etcd',COL.packet_control); flash('comp-api',1800,'lit'); flash('comp-etcd',1800,'lit'); lightWire('comp-api','comp-etcd',1800);} },
+    { msg:'③ 【controller manager】 里的 Deployment Controller watch 到新 Deployment, 进入 reconcile loop: 对比 desired vs current 状态, 发现需要创建一个 ReplicaSet', type:'info',
+      run:()=>{ pulseWire('comp-api','comp-cm',COL.packet_control); flash('comp-cm',1800,'lit'); lightWire('comp-api','comp-cm',1800);} },
+    { msg:`③ⓑ Deployment Controller 通过 api 创建 ReplicaSet; ReplicaSet Controller 接管, 计算 desired(${n}) - current(0) = ${n}, 通过 api 创建 ${n} 个 pending pod (nodeName 为空)`, type:'info',
+      run:()=>{ pulseWire('comp-cm','comp-api',COL.packet_control); flash('comp-cm',1800,'lit'); flash('comp-api',1800,'lit'); lightWire('comp-api','comp-cm',1800);} },
+    { msg:'③ⓒ pending pod 资源持久化到 【etcd】, 等待被调度', type:'info',
+      run:()=>{ pulseWire('comp-api','comp-etcd',COL.packet_control,1000,4); flash('comp-api',1800,'lit'); flash('comp-etcd',1800,'lit'); lightWire('comp-api','comp-etcd',1800);} },
+    { msg:'④ 【scheduler】 长连接 watch 到 pending pod (nodeName 为空), 启动调度算法', type:'info',
+      run:()=>{ pulseWire('comp-api','comp-sched',COL.packet_control); flash('comp-sched',1800,'lit'); lightWire('comp-api','comp-sched',1800);} },
+    { msg:'④ⓐ 【过滤 Filter】 scheduler 从 【api】 读取所有 Node 资源 (Node 信息由各 kubelet 持续上报到 api → etcd) → 剔除不满足条件的节点: (1) 资源不足 cpu/内存 (2) 不匹配 nodeSelector / 亲和性 (3) 有不可容忍的污点 (4) 端口冲突', type:'info',
+      run:()=>{
+        // scheduler 不直接跟 kubelet 通信, 是从 api 读取 Node 列表
+        pulseWire('comp-api','comp-sched', COL.packet_control, 1000, 4);
+        lightWire('comp-api','comp-sched', 1800);
+      } },
+    { msg:'④ⓑ 【打分 Score】 scheduler 在内部对候选节点按多维打分: 资源富余 (LeastRequested) / cpu-内存均衡 / pod 分布均匀 / 镜像本地缓存 / 亲和性偏好 — 累加得最终分 (这是 scheduler 内部计算, 不跨组件通信)', type:'info',
+      run:()=>{ flash('comp-sched',1800,'lit'); } },
+    { msg:'④ⓒ 【绑定 Bind】 选最高分节点, scheduler 写 Binding 对象 (给 pod 填上 nodeName) → api server → etcd', type:'info',
+      run:()=>{
+        pulseWire('comp-sched','comp-api',COL.packet_control);
+        lightWire('comp-sched','comp-api',1800);
+        // 紧跟着 api 把 Binding 写入 etcd
+        setTimeout(()=>{
+          pulseWire('comp-api','comp-etcd',COL.packet_control);
+          lightWire('comp-api','comp-etcd',1500);
+        }, 400);
+      } },
+    { msg:'⑤ 各节点 【kubelet】 通过长连接 watch api :6443, 发现自己的 nodeName 被分配了 pod', type:'info',
+      run:()=>{ [1,2,3].forEach(i=>{ lightWire('comp-api',`kubelet-${i}`,2400); flash(`kubelet-${i}`,2000,'lit'); pulseWire('comp-api',`kubelet-${i}`,COL.packet_control,1200,4); }); } },
+    { msg:'⑥ⓐ 各 【kubelet】 通过 CRI 让 【containerd】 向 【registry】 发起 PullImage 请求 (每个 pod 一次, 同节点多 pod 同镜像会复用缓存)', type:'info',
+      run:()=>{
+        // 计算每个节点实际要起的 pod 数 (按 i%3 轮询分配)
+        const podsPerNode = [0,0,0,0];
+        for(let i=0;i<deployN;i++) podsPerNode[(i%3)+1]++;
+        [1,2,3].forEach(i=>{
+          if(podsPerNode[i] === 0) return;
+          // 飞球数 = 该节点要起的 pod 数
+          for(let k=0; k<podsPerNode[i]; k++){
+            setTimeout(()=>{
+              pulseWire(`kubelet-${i}`,'comp-registry', COL.packet_control, 1000, 4);
+            }, k * 250);
+          }
+          lightWire(`kubelet-${i}`,'comp-registry', 1800 + podsPerNode[i]*100);
+        });
+      } },
+    { msg:'⑥ⓑ 【registry】 流式返回镜像 layer (每个 pod 一次镜像 fetch, 视觉上一节点几个 pod 就几个飞球)', type:'info',
+      run:()=>{
+        const podsPerNode = [0,0,0,0];
+        for(let i=0;i<deployN;i++) podsPerNode[(i%3)+1]++;
+        [1,2,3].forEach(i=>{
+          if(podsPerNode[i] === 0) return;
+          for(let k=0; k<podsPerNode[i]; k++){
+            setTimeout(()=>{
+              pulseWire('comp-registry',`kubelet-${i}`, COL.packet_traffic, 900, 5);
+            }, k * 280);
+          }
+          lightWire('comp-registry',`kubelet-${i}`, 2400 + podsPerNode[i]*100);
+        });
+      } },
+    { msg:'⑥ⓒ 【containerd】 用拉下来的镜像创建容器 → pod 监听 :80', type:'info',
+      run:()=>{
+        for(let i=0;i<deployN;i++){
+          const node = (i%3)+1;
+          flash(`kubelet-${node}`,1500,'lit');
+          const p = createPod(node, `users-api-${String(i+1).padStart(2,'0')}`);
+          activePods.push(p);
+          metrics.running++;
+          updateMetrics();
+          log(`【kubelet ${node}】 → CRI → 【containerd】 → pod 【${p.name}】 running · ip=${p.ip}`, 'ok');
+        }
+        log(`部署完毕, ${deployN}/${deployN} pod 已稳态运行 ✨`, 'ok');
+      } }
+  ];
+}
+
+function updateStepButtons(){
+  const has = deploySteps && deploySteps.length > 0;
+  const done = has && deployIdx >= deploySteps.length;
+  $('btn-prev').disabled = !has || deployIdx <= 0;
+  $('btn-next').disabled = !has || done;
+  $('btn-auto').disabled = !has || done;
+  $('btn-deploy').disabled = has;
+  $('btn-crash').disabled  = activePods.length===0;
+  $('btn-pod-crash').disabled = activePods.length===0;
+  $('btn-traffic').disabled = activePods.length===0;
+  $('btn-hpa').disabled = activePods.length===0;
+  $('btn-rollout').disabled = activePods.length===0;
+}
+
+function nextStep(){
+  if(!deploySteps || deployIdx >= deploySteps.length) return;
+  clearTransientAnimations();              // 清掉上一步遗留的动画
+  stepSnapshots.push(snapshotState());     // 快照当前状态
+  const s = deploySteps[deployIdx];
+  log(s.msg, s.type);
+  s.run();
+  deployIdx++;
+  updateStepButtons();
+  // auto 中: 末尾停止, 否则重置定时器跟随当前点击节奏
+  if(autoTimer){
+    if(deployIdx >= deploySteps.length) stopAutoPlay();
+    else { clearInterval(autoTimer); autoTimer = setInterval(()=>{
+      if(!deploySteps || deployIdx >= deploySteps.length){ stopAutoPlay(); return; }
+      nextStep();
+    }, AUTO_INTERVAL); }
+  }
+}
+
+function prevStep(){
+  if(!deploySteps || deployIdx <= 0) return;
+  clearTransientAnimations();              // 清掉当前步的动画
+  const snap = stepSnapshots.pop();
+  if(snap) restoreState(snap);
+  deployIdx--;
+  updateStepButtons();
+  // auto 中: 重置定时器继续, 不停止 auto
+  if(autoTimer){
+    clearInterval(autoTimer);
+    autoTimer = setInterval(()=>{
+      if(!deploySteps || deployIdx >= deploySteps.length){ stopAutoPlay(); return; }
+      nextStep();
+    }, AUTO_INTERVAL);
+  }
+}
+
+function resetAll(){
+  stopAutoPlay();
+  $('console-log').innerHTML = '';
+  clearAllPods();
+  activePods = [];
+  metrics = { desired:0, running:0, dead:0, heal:0, req:0 };
+  updateMetrics();
+  deploySteps = null;
+  deployIdx = 0;
+  stepSnapshots = [];
+  // 重置: 所有 watch / broken 状态也清掉 (模拟"集群从头开始")
+  Object.values(wires).forEach(w => {
+    if(w.bg){
+      w.bg.classList.remove('watching');
+      w.bg.classList.remove('broken');
+      w.bg.setAttribute('stroke','#1e2942');
+    }
+    if(w.flow){ w.flow.classList.remove('watching'); }
+  });
+  // 清掉节点宕机的失联状态: 节点失联提示, deadNodes 集合
+  [1,2,3].forEach(i => {
+    const bay = $(`pod-area-${i}`);
+    const empty = bay && bay.querySelector('.pod-empty');
+    if(empty && empty.textContent.includes('节点失联')){
+      bay.classList.remove('has-pod');
+      bay.innerHTML = '<div class="pod-empty">— empty bay —</div>';
+    }
+  });
+  deadNodes.clear();
+  log('已重置 · 等待开发者下发部署...', 'mute');
+  updateStepButtons();
+}
+
+function toggleAutoPlay(){
+  if(autoTimer){ stopAutoPlay(); return; }
+  if(!deploySteps || deployIdx >= deploySteps.length) return;
+  $('btn-auto').textContent = '暂停';
+  nextStep();
+  autoTimer = setInterval(()=>{
+    if(!deploySteps || deployIdx >= deploySteps.length){ stopAutoPlay(); return; }
+    nextStep();
+  }, AUTO_INTERVAL);
+}
+function stopAutoPlay(){
+  if(autoTimer){ clearInterval(autoTimer); autoTimer = null; }
+  $('btn-auto').textContent = '自动播放';
+}
+
+async function startDeploy(){
+  if(activePods.length>0 || deploySteps) return;
+  const n = parseInt($('replica-input').value);
+  if(n<1||n>15){ alert('副本 1-15'); return; }
+  const ok = await openYaml(n);
+  if(!ok) return;
+
+  $('console-log').innerHTML = '';
+  clearAllPods();
+  activePods = [];
+  deployN = n;
+  metrics = { desired:n, running:0, dead:0, heal:0, req:0 };
+  updateMetrics();
+
+  log(`▶ $ kubectl apply -f deployment.yaml (副本数=${n})`, 'info');
+  log('▶ 已就绪, 点 「下一步 →」 逐步演示, 或 「自动播放」 自动跑', 'mute');
+  deploySteps = buildDeploySteps(n);
+  deployIdx = 0;
+  stepSnapshots = [];
+  updateStepButtons();
+}
+
+/* pod 宕机: 单个 pod 异常退出, kubelet 在本节点自愈 (不跨节点, 不经 scheduler) */
+async function startPodCrash(){
+  if(isWorking || activePods.length===0) return;
+  setButtons(true);
+  const alive = activePods.filter(p=>!p.dead);
+  if(!alive.length){ setButtons(false); return; }
+  const dead = alive[Math.floor(Math.random()*alive.length)];
+  const dom = $(dead.domId);
+
+  log('────────────────────────────────────', 'mute');
+  log(`💥 模拟故障: pod 【${dead.name}】 在 node ${dead.node} 上异常退出 (常见原因: OOMKilled / 应用 panic / liveness probe 失败)`, 'err');
+  dom.classList.add('dead');
+  dom.querySelector('.pname').textContent = 'dead';
+  dead.dead = true;
+  metrics.running--; metrics.dead++; updateMetrics();
+  await sleep(STEP_DELAY);
+
+  // ① 本节点 kubelet 检测到容器异常退出, readiness probe 立即转 fail
+  flash(`kubelet-${dead.node}`, STEP_DELAY-200, 'lit');
+  await step(`① 【kubelet ${dead.node}】 通过 liveness/readiness probe 或容器退出事件, 立即检测到 pod 异常 → 本机 readiness 标 false`, 'warn');
+
+  // ② kubelet 上报 pod.status.conditions(Ready=false) → api → etcd
+  pulseWire(`kubelet-${dead.node}`, 'comp-api', COL.packet_control);
+  lightWire(`kubelet-${dead.node}`, 'comp-api', STEP_DELAY);
+  setTimeout(()=>pulseWire('comp-api','comp-etcd', COL.packet_control), 400);
+  await step(`② 【kubelet】 通过 watch 长连接上报 pod.status (Ready=false) → 【api】 → 【etcd】 持久化`, 'warn',
+             ['comp-api','comp-etcd'], [[`kubelet-${dead.node}`,'comp-api'],['comp-api','comp-etcd']]);
+
+  // ③ cm 的 EndpointSlice Controller watch 到 Ready=false → 改 EndpointSlice, kube-proxy 摘除该 endpoint
+  pulseWire('comp-api','comp-cm', COL.packet_control);
+  lightWire('comp-api','comp-cm', STEP_DELAY);
+  await step(`③ 【cm】 EndpointSlice Controller watch 到 → 把这个 endpoint 标 ready=false (Service 后端列表里临时下架)`, 'warn',
+             ['comp-cm'], [['comp-api','comp-cm']]);
+
+  // ④ EndpointSlice 变更广播 → 所有节点 kube-proxy 调 iptables 临时摘除
+  pulseWire('comp-cm','comp-api', COL.packet_control);
+  lightWire('comp-cm','comp-api', STEP_DELAY);
+  [1,2,3].forEach(nn => {
+    pulseWire('comp-api', `proxy-${nn}`, COL.packet_control);
+    lightWire('comp-api', `proxy-${nn}`, STEP_DELAY);
+  });
+  await step(`④ 各节点 【kube-proxy】 收到 EndpointSlice 更新 → 调 iptables 系统调用<b>临时摘除</b>该 endpoint → 新进来的流量绕开这个 pod, 不再 DNAT 到它`, 'info',
+             [1,2,3].map(n=>`proxy-${n}`), []);
+
+  // ⑤ kubelet 本地按 restartPolicy=Always 原地重启容器 (不经过 cm/scheduler)
+  flash(`kubelet-${dead.node}`, 1500, 'lit');
+  await step(`⑤ 按 <code>pod.spec.restartPolicy=Always</code>, 【kubelet ${dead.node}】 通过 CRI 调 【containerd】 在本节点<b>原地重启容器</b> → 沙箱 (pause 容器) 保留 → <b>Pod IP 不变</b> · restartCount +1 (不经过 cm / scheduler / 跨节点调度)`, 'info', `kubelet-${dead.node}`);
+
+  // 移除旧 dom, 用同一个 IP 重建 (代表沙箱保留, IP 复用)
+  setTimeout(()=>{
+    dom.remove();
+    const bay = $(`pod-area-${dead.node}`);
+    if(!bay.querySelector('.pod')){
+      bay.classList.remove('has-pod');
+      bay.innerHTML = '<div class="pod-empty">— empty bay —</div>';
+    }
+  }, 600);
+  activePods = activePods.filter(p=>p.id!==dead.id);
+  const newP = createPod(dead.node, dead.name, dead.ip);  // 同节点同名同 IP (沙箱保留, 原地重启)
+  activePods.push(newP);
+  metrics.running++; metrics.heal++; updateMetrics();
+  flash(newP.domId, 1800, 'hit');
+  log(`✓ 容器重启完成 · pod 【${newP.name}】 · ip=${newP.ip} (IP 沿用旧沙箱, 没有变化)`, 'ok');
+  await sleep(STEP_DELAY * 0.5);
+
+  // ⑥ readiness 恢复 → kubelet 上报 → cm 改回 ready=true
+  pulseWire(`kubelet-${dead.node}`, 'comp-api', COL.packet_control);
+  lightWire(`kubelet-${dead.node}`, 'comp-api', STEP_DELAY);
+  pulseWire('comp-api', 'comp-cm', COL.packet_control);
+  lightWire('comp-api', 'comp-cm', STEP_DELAY);
+  await step(`⑥ readiness probe 通过 → 【kubelet】 上报 ready=true → 【api】 → 【cm】 EndpointSlice Controller 把该 endpoint 重新标 ready=true`, 'ok',
+             ['comp-cm'], []);
+
+  // ⑦ 各节点 kube-proxy 把该 endpoint 加回 iptables
+  pulseWire('comp-cm','comp-api', COL.packet_control);
+  lightWire('comp-cm','comp-api', STEP_DELAY);
+  [1,2,3].forEach(nn => {
+    pulseWire('comp-api', `proxy-${nn}`, COL.packet_control);
+    lightWire('comp-api', `proxy-${nn}`, STEP_DELAY);
+  });
+  await step(`⑦ 各节点 【kube-proxy】 调 iptables 把该 endpoint <b>加回</b> NAT 规则表 → 流量恢复路由到这个 pod。<b>这就是 readiness probe 的意义: 容器还没准备好接流量时, 整个集群临时绕开它</b>`, 'ok',
+             [1,2,3].map(n=>`proxy-${n}`), []);
+
+  log(`集群恢复稳态 (累计自愈 ${metrics.heal} 次)`, 'ok');
+  setButtons(false);
+}
+
+async function startCrash(){
+  if(isWorking || activePods.length===0) return;
+  setButtons(true);
+
+  // 先恢复之前已经宕机的节点 (假装运维已修好, 重新接入)
+  const recovered = [];
+  Object.entries(wires).forEach(([k, w])=>{
+    if(!w.bg.classList.contains('broken')) return;
+    w.bg.classList.remove('broken');
+    // 该线是 watch 线 → 恢复为 watching (集群运行中 watch 应该已重建)
+    if(WATCH_LINES.has(k)){
+      w.bg.classList.add('watching');
+      w.bg.setAttribute('stroke','#6e5e9c');
+      if(w.flow) w.flow.classList.add('watching');
+    } else {
+      w.bg.setAttribute('stroke','#1e2942');
+    }
+    recovered.push(k);
+  });
+  // 清掉"节点失联"提示, 恢复 empty bay
+  [1,2,3].forEach(i => {
+    const bay = $(`pod-area-${i}`);
+    const empty = bay.querySelector('.pod-empty');
+    if(empty && empty.textContent.includes('节点失联')){
+      bay.classList.remove('has-pod');
+      bay.innerHTML = '<div class="pod-empty">— empty bay —</div>';
+    }
+  });
+  deadNodes.clear();
+  if(recovered.length){
+    log('🔧 上次宕机的节点已修复重新上线, watch 长连接重建, gateway controller 副本回到 3/3', 'ok');
+  }
+
+  // 选一整个节点失联 (而不是单 pod)
+  const alive = activePods.filter(p=>!p.dead);
+  if(!alive.length){ setButtons(false); return; }
+  const candidates = [...new Set(alive.map(p=>p.node))];
+  const deadNode = candidates[Math.floor(Math.random()*candidates.length)];
+  const deadPods = alive.filter(p => p.node === deadNode);
+
+  log('────────────────────────────────────', 'mute');
+  log(`💥 模拟故障: 切断 worker node ${deadNode} (10.0.0.1${deadNode}) 的电源 → 节点完全失联`, 'err');
+  deadNodes.add(deadNode);
+  // 该节点上的 gateway controller 副本也跟着死, 但因为 3 副本散在 3 节点, 还有 2 个在其他节点正常运行
+  // 云负载均衡健康检查会自动剔除该节点 → 用户访问无感
+  log(`⚡ 该节点上的 gateway controller 副本死了, 但还有 2 个副本在其他节点正常运行 (Deployment 多副本 + podAntiAffinity 的价值)`, 'warn');
+  log(`⚡ 生产环境前面的云负载均衡通过健康检查 (周期 2-5s × 失败阈值 2-3 次 ≈ 6-15s) 把 node ${deadNode} 从后端池剔除 → 流量切到剩余 2 个 gateway 副本, 外部用户无感知 (本 demo 已省略 LB 节点)`, 'ok');
+  // 全部 pod 标 dead, 节点标 NotReady
+  deadPods.forEach(p=>{
+    const dom = $(p.domId);
+    if(dom){ dom.classList.add('dead'); dom.querySelector('.pname').textContent = 'dead'; }
+    p.dead = true;
+  });
+  flash(`kubelet-${deadNode}`, 4000, 'lit');
+  metrics.running -= deadPods.length;
+  metrics.dead += deadPods.length;
+  updateMetrics();
+  // 节点断电瞬间: kubelet 和 kube-proxy 的 watch 长连接全部断开 (TCP RST 或心跳超时)
+  breakWire('comp-api', `kubelet-${deadNode}`);
+  breakWire('comp-api', `proxy-${deadNode}`);
+  await sleep(STEP_DELAY);
+
+  // ① 节点已死, kubelet 也死了, 停止续约 NodeLease (沉默, 不发任何消息)
+  flash('comp-api', STEP_DELAY-200, 'lit');
+  await step(`① 节点已死, 【kubelet ${deadNode}】 与 【kube-proxy ${deadNode}】 的 watch 长连接断开。【api server】 持有的 NodeLease 停止续约, 等待 node-monitor-grace-period (默认 40s) 过期`, 'warn');
+
+  // ② cm 的 node-controller watch 到 lease 过期, 给节点打 unreachable taint
+  pulseWire('comp-api', 'comp-cm', COL.packet_control);
+  await step('② T+40s: 【controller manager】 里的 node-controller 发现 lease 过期 → 标记节点 NotReady, 打上 <code>node.kubernetes.io/unreachable</code> taint (NoExecute)', 'warn',
+             ['comp-cm'], [['comp-api','comp-cm']]);
+
+  // ②b: 再等 tolerationSeconds (默认 5min), 才真正驱逐 pod
+  await step(`②ⓑ T+40s ~ T+5min: pod 上的默认 toleration (<code>tolerationSeconds: 300</code>) 仍能容忍 unreachable taint。<b>等 5 分钟 toleration 过期后, taint-based eviction 才真正驱逐这些 pod</b> — 这就是为什么 k8s 故障重建是分钟级而不是秒级`, 'warn',
+             ['comp-cm'], []);
+
+  // ③ rs-controller 发现副本不够, 批量创建新 pending pod → api → etcd
+  pulseWire('comp-cm','comp-api', COL.packet_control);
+  setTimeout(()=>pulseWire('comp-api','comp-etcd', COL.packet_control), 400);
+  await step(`③ ReplicaSet Controller reconcile: 发现 running(${metrics.running}) < desired(${deployN}), 通过 【api】 → 【etcd】 创建 ${deadPods.length} 个新的 pending pod`, 'warn',
+             ['comp-cm','comp-api','comp-etcd'], [['comp-api','comp-cm'],['comp-api','comp-etcd']]);
+
+  // ④ scheduler 重新调度
+  pulseWire('comp-api','comp-sched', COL.packet_control);
+  await step(`④ 【scheduler】 watch 到 ${deadPods.length} 个 pending pod → 三阶段调度: 【过滤】 排除 NotReady 的 node ${deadNode} → 【打分】 在剩余节点中按资源富余度 + pod 均衡度打分 → 【绑定】 分别选最高分节点`, 'info',
+             ['comp-sched'], [['comp-api','comp-sched']]);
+
+  // ④b sched 写 binding → api → etcd
+  pulseWire('comp-sched','comp-api', COL.packet_control);
+  setTimeout(()=>pulseWire('comp-api','comp-etcd', COL.packet_control), 400);
+  await step('④ⓑ 【scheduler】 给每个 pod 写回 Binding (填 nodeName) → 【api】 → 【etcd】 持久化', 'info',
+             ['comp-sched','comp-api','comp-etcd'], [['comp-api','comp-sched'],['comp-api','comp-etcd']]);
+
+  // ⑤ 各活节点 kubelet 收到 binding
+  const healthyNodes = [1,2,3].filter(n => n !== deadNode);
+  pulseWire('comp-api', `kubelet-${healthyNodes[0]}`, COL.packet_control);
+  pulseWire('comp-api', `kubelet-${healthyNodes[1]}`, COL.packet_control);
+  await step(`⑤ 健康节点的 【kubelet】 (node ${healthyNodes.join(', ')}) watch 到新 binding`, 'info',
+             healthyNodes.map(n=>`kubelet-${n}`),
+             healthyNodes.map(n=>['comp-api',`kubelet-${n}`]));
+
+  // ⑥ kubelet → containerd 起替补 pod
+  await step(`⑥ 这些 【kubelet】 通过 CRI 调 【containerd】 真正起 ${deadPods.length} 个替补容器`, 'info',
+             healthyNodes.map(n=>`kubelet-${n}`), []);
+
+  // 清掉死 pod, 创建替补 pod, 均匀分布到健康节点
+  setTimeout(()=>{
+    deadPods.forEach(p=>{ const d=$(p.domId); if(d) d.remove(); });
+    const bay = $(`pod-area-${deadNode}`);
+    if(!bay.querySelector('.pod')){
+      bay.classList.remove('has-pod');
+      bay.innerHTML = '<div class="pod-empty">— 节点失联, 槽位已驱逐 —</div>';
+    }
+  }, 600);
+  activePods = activePods.filter(p => p.node !== deadNode);
+  const newPods = [];
+  deadPods.forEach((p, i) => {
+    const target = healthyNodes[i % healthyNodes.length];
+    flash(`kubelet-${target}`, 1200, 'lit');
+    const newP = createPod(target, `${p.name}*`);
+    activePods.push(newP);
+    newPods.push(newP);
+    metrics.running++; metrics.heal++;
+    flash(newP.domId, 1800, 'hit');
+    log(`✨ 替补 pod 【${newP.name}】 在 node ${target} 启动 · ip=${newP.ip}`, 'ok');
+  });
+  updateMetrics();
+  await sleep(STEP_DELAY * 0.6);
+
+  // ⑦ EndpointSlice 更新: 旧 pod IP 移除, 新 pod IP 加入
+  pulseWire(`kubelet-${healthyNodes[0]}`, 'comp-api', COL.packet_control);
+  lightWire(`kubelet-${healthyNodes[0]}`, 'comp-api', STEP_DELAY);
+  pulseWire('comp-api', 'comp-cm', COL.packet_control);
+  lightWire('comp-api', 'comp-cm', STEP_DELAY);
+  await step(`⑦ 新 pod readiness probe 通过 → 【kubelet】 上报 → 【cm】 里的 EndpointSlice Controller 更新 Service 后端列表: 移除死 pod IP (${deadPods.map(p=>p.ip).join(', ')}) → 加入新 pod IP (${newPods.map(p=>p.ip).join(', ')})`, 'warn',
+             ['comp-cm'], []);
+
+  // ⑧ 各健康节点 kube-proxy 收到通知更新 iptables
+  pulseWire('comp-cm', 'comp-api', COL.packet_control);
+  lightWire('comp-cm', 'comp-api', STEP_DELAY);
+  healthyNodes.forEach(nn => {
+    pulseWire('comp-api', `proxy-${nn}`, COL.packet_control);
+    lightWire('comp-api', `proxy-${nn}`, STEP_DELAY);
+  });
+  await step(`⑧ 各健康节点的 【kube-proxy】 (node ${healthyNodes.join(', ')}) watch 到 EndpointSlice 变化 → 调 iptables 系统调用更新本地 NAT 规则表 (删旧规则 + 加新规则), 内核 netfilter 立即按新规则做 DNAT。<b>失联节点 ${deadNode} 上的 kube-proxy 已死, 接不到通知, 等节点恢复后重建 watch 拉一次全量自动同步</b>`, 'info',
+             healthyNodes.map(n=>`proxy-${n}`), []);
+
+  log(`集群恢复稳态: ${metrics.running}/${deployN} pod running (累计自愈 ${metrics.heal} 次)`, 'ok');
+  setButtons(false);
+}
+
+
+/* ===== HPA 自动伸缩演示 (扩容 + 缩容) =====
+   HPA 不是独立进程, 它是 kube-controller-manager 内置的一个 controller。
+   真实链路: kubelet/cAdvisor → metrics-server → HPA(cm 内) → api → etcd → scheduler → kubelet
+   这里把 metrics-server 简化, 流量上升直接体现在 pod 的红色 cpu 条上, HPA controller 在 cm 内做决策。 */
+async function startHpa(){
+  if(isWorking || activePods.length===0) return;
+  setButtons(true);
+  const alive = activePods.filter(p=>!p.dead);
+  if(!alive.length){ setButtons(false); return; }
+  const oldN = alive.length;
+
+  log('════════════════════════════════════', 'mute');
+  log('📈 演示 HPA (HorizontalPodAutoscaler) 自动伸缩', 'info');
+  log('▶ Demo 配置: targetCPU=70%, min=2, max=15 (k8s 默认 min=1 / max 无上限, 这里为 demo 设的)', 'mute');
+  log('▶ 扩容默认 stabilizationWindowSeconds=0s (立即扩); 缩容默认 300s 防抖, 这里加速', 'mute');
+  await sleep(700);
+
+  /* ===== Phase 1: 流量激增 → 扩容 ===== */
+  log('────────────────────────────────────', 'mute');
+  log('① 业务流量激增, 已有 pod 的 CPU 飙升到 ~90% (>70% 阈值, 红色仪表)', 'warn');
+  alive.forEach(p=>{ const el=$(p.domId); if(el) el.classList.add('hot'); });
+  await sleep(STEP_DELAY);
+
+  log('② 各节点 【kubelet】 的 cAdvisor 采集容器 CPU/内存, 通过 NodeStatus 上报到 【api】 (并行: cAdvisor 也直接被 metrics-server 抓取, 但 demo 简化掉了 metrics-server 这个组件)', 'info');
+  // 真实链路: kubelet → metrics-server (pod) → 通过 metrics.k8s.io 暴露 → HPA(cm) 经 api 查询
+  // 这里简化为: kubelet → api → cm (不画 kubelet 直连 cm 那条根本不存在的线)
+  [1,2,3].forEach(i=>{
+    if(alive.some(p=>p.node===i)){
+      pulseWire(`kubelet-${i}`,'comp-api', COL.packet_control, 1000, 4);
+      lightWire(`kubelet-${i}`,'comp-api', STEP_DELAY);
+    }
+  });
+  await sleep(STEP_DELAY*0.6);
+
+  log('②ⓑ 【cm】 里的 HPA controller 每 15s (默认 horizontal-pod-autoscaler-sync-period) 通过 <code>metrics.k8s.io</code> API 向 【api】 查询所有 pod 的 CPU 利用率 (api 转发给 metrics-server pod)', 'info');
+  pulseWire('comp-cm','comp-api', COL.packet_control);
+  lightWire('comp-cm','comp-api', STEP_DELAY);
+  pulseWire('comp-api','comp-cm', COL.packet_control);
+  lightWire('comp-api','comp-cm', STEP_DELAY);
+  await sleep(STEP_DELAY*0.7);
+
+  const targetCpu = 70, curCpu = 90;
+  const desired = Math.min(15, Math.ceil(oldN * curCpu / targetCpu));
+  const addN = desired - oldN;
+  log(`③ 【cm】 内的 HPA controller 计算: desiredReplicas = ceil(${oldN} × ${curCpu}% / ${targetCpu}%) = ${desired}, 需扩容 ${addN} 个`, 'info');
+  flash('comp-cm', STEP_DELAY, 'lit');
+  await sleep(STEP_DELAY);
+
+  if(addN <= 0){
+    log('⚠ 已达 max 副本上限, 无法继续扩容 (生产中此时需要 cluster-autoscaler 加节点)', 'warn');
+    alive.forEach(p=>{ const el=$(p.domId); if(el) el.classList.remove('hot'); });
+    setButtons(false);
+    return;
+  }
+
+  log(`④ 【cm】 向 【api server】 PATCH deployment.spec.replicas: ${oldN} → ${desired}`, 'info');
+  sendRequestPacket(['comp-cm','comp-api'], COL.packet_control, 1100, 4);
+  flash('comp-api', STEP_DELAY, 'lit');
+  lightWire('comp-cm','comp-api', STEP_DELAY);
+  await sleep(STEP_DELAY);
+
+  log(`⑤ 【api server】 把新 spec 写入 【etcd】 (此时 ${addN} 个 pod 处于 Pending 状态)`, 'info');
+  sendRequestPacket(['comp-api','comp-etcd'], COL.packet_control, 900, 4);
+  flash('comp-etcd', STEP_DELAY, 'lit');
+  lightWire('comp-api','comp-etcd', STEP_DELAY);
+  await sleep(STEP_DELAY);
+
+  log(`⑥ 【scheduler】 通过 watch 拿到 ${addN} 个 pending pod, 按打分给每个 pod 选节点 → 回写 binding 到 api → etcd`, 'info');
+  pulseWire('comp-api','comp-sched', COL.packet_control);
+  lightWire('comp-api','comp-sched', STEP_DELAY);
+  setTimeout(()=>{
+    pulseWire('comp-sched','comp-api', COL.packet_control);
+    lightWire('comp-sched','comp-api', STEP_DELAY*0.7);
+  }, 600);
+  setTimeout(()=>{
+    pulseWire('comp-api','comp-etcd', COL.packet_control);
+    lightWire('comp-api','comp-etcd', STEP_DELAY*0.6);
+  }, 1000);
+  await sleep(STEP_DELAY);
+
+  log(`⑦ 各节点 【kubelet】 watch 到分配给自己的新 pod → 调用 containerd 启动容器`, 'info');
+  const newPods = [];
+  // scheduler Filter 阶段会排除 NotReady 节点
+  const healthyForHpa = [1,2,3].filter(n => !deadNodes.has(n));
+  for(let i=0; i<addN; i++){
+    const nodeNum = healthyForHpa[i % healthyForHpa.length];
+    const podName = `users-api-${String(oldN + i + 1).padStart(2,'0')}`;
+    pulseWire('comp-api',`kubelet-${nodeNum}`, COL.packet_control, 700, 3);
+    lightWire('comp-api',`kubelet-${nodeNum}`, 900);
+    await sleep(260);
+    const newP = createPod(nodeNum, podName);
+    newPods.push(newP);
+    activePods.push(newP);
+    flash(newP.domId, 1200, 'hit');
+    metrics.running++; metrics.desired++; updateMetrics();
+  }
+  await sleep(STEP_DELAY);
+  log(`✓ 扩容完成: ${oldN} → ${desired} 个 pod`, 'ok');
+
+  await sleep(700);
+  log('⑧ 新 pod 上线分担流量, 所有 pod CPU 回落到 ~30% (绿色仪表)', 'info');
+  activePods.filter(p=>!p.dead).forEach(p=>{ const el=$(p.domId); if(el) el.classList.remove('hot'); });
+  await sleep(STEP_DELAY*1.2);
+
+  /* ===== Phase 2: 流量回落 → 缩容 ===== */
+  log('────────────────────────────────────', 'mute');
+  log('⑨ 业务流量回落, CPU 长时间维持在 ~30% (低于阈值)', 'warn');
+  await sleep(STEP_DELAY);
+
+  const downTo = Math.max(2, Math.ceil(desired * 30 / targetCpu));
+  const removeN = desired - downTo;
+  log(`⑩ 【cm】 内 HPA 计算: desiredReplicas = ceil(${desired} × 30% / ${targetCpu}%) = ${downTo}, 触发缩容前先等 stabilizationWindow 防抖 (此处加速)`, 'info');
+  flash('comp-cm', STEP_DELAY, 'lit');
+  await sleep(STEP_DELAY);
+
+  if(removeN <= 0){
+    log('✓ 无需缩容, 维持当前副本数', 'ok');
+    setButtons(false);
+    return;
+  }
+
+  log(`⑪ 【cm】 → 【api server】 PATCH replicas: ${desired} → ${downTo} (需移除 ${removeN} 个)`, 'info');
+  pulseWire('comp-cm','comp-api', COL.packet_control);
+  lightWire('comp-cm','comp-api', STEP_DELAY);
+  await sleep(STEP_DELAY);
+
+  log(`⑫ 【api server】 写 etcd → 准备通知对应节点 【kubelet】 优雅终止 pod (SIGTERM + 30s grace)`, 'info');
+  pulseWire('comp-api','comp-etcd', COL.packet_control);
+  lightWire('comp-api','comp-etcd', STEP_DELAY);
+  await sleep(STEP_DELAY);
+
+  for(let i=0; i<removeN; i++){
+    const target = newPods.pop();
+    if(!target) break;
+    const dom = $(target.domId);
+    if(dom){
+      dom.classList.add('terminating');
+      pulseWire('comp-api',`kubelet-${target.node}`, COL.packet_control, 600, 3);
+      lightWire('comp-api',`kubelet-${target.node}`, 800);
+      await sleep(380);
+      dom.remove();
+      const bay = $(`pod-area-${target.node}`);
+      if(!bay.querySelector('.pod')){
+        bay.classList.remove('has-pod');
+        bay.innerHTML = '<div class="pod-empty">— empty bay —</div>';
+      }
+    }
+    activePods = activePods.filter(p => p.id !== target.id);
+    metrics.running--; metrics.desired--; updateMetrics();
+  }
+  log(`✓ 缩容完成: ${desired} → ${downTo} 个 pod (HPA 完整周期演示结束)`, 'ok');
+  setButtons(false);
+}
+
+/* ===== 滚动升级 (Rolling Update, 生产最常见操作) =====
+   开发者改 image: users-api:v1.0 → users-api:v2.0
+   Deployment Controller 用 maxSurge=1 / maxUnavailable=0 策略, 起 1 个新 → 退 1 个旧, 逐个替换
+   全程业务不中断, 流量始终能被处理 (因为 Service 自动只把流量发给 Ready 的新版本 pod) */
+async function startRollout(){
+  if(isWorking || activePods.length===0) return;
+  const alive = activePods.filter(p=>!p.dead);
+  if(!alive.length){ return; }
+
+  // 先弹 yaml diff, 让用户看清"改了哪一行" + 确认提交
+  const ok = await openRolloutYaml();
+  if(!ok) return;
+
+  setButtons(true);
+  log('════════════════════════════════════', 'mute');
+  log('🔄 演示 Rolling Update (滚动升级, 生产最常见操作)', 'info');
+  log('▶ 升级策略: maxSurge=1 (最多多 1 个 pod) · maxUnavailable=0 (始终不少于副本数) · 零停机', 'mute');
+  await sleep(700);
+
+  log('① 开发者改 image (v1.0 → v2.0) → <code>kubectl apply -f deployment.yaml</code>', 'cmd');
+  flash('comp-kubectl', STEP_DELAY, 'lit');
+  pulseWire('comp-kubectl','comp-api', COL.packet_control);
+  lightWire('comp-kubectl','comp-api', STEP_DELAY);
+  await sleep(STEP_DELAY);
+
+  log('② 【api server】 PATCH Deployment → etcd 持久化新 spec (template.image=v2)', 'info');
+  pulseWire('comp-api','comp-etcd', COL.packet_control);
+  flash('comp-etcd', STEP_DELAY, 'lit');
+  lightWire('comp-api','comp-etcd', STEP_DELAY);
+  await sleep(STEP_DELAY);
+
+  log('③ 【Deployment Controller】 reconcile: 检测到 template hash 变了 → 自动创建一个新 ReplicaSet (rs-v2), 旧 rs-v1 保留 (用于回滚)', 'info');
+  flash('comp-cm', STEP_DELAY, 'lit');
+  pulseWire('comp-api','comp-cm', COL.packet_control);
+  lightWire('comp-api','comp-cm', STEP_DELAY);
+  await sleep(STEP_DELAY);
+
+  log('④ 开始逐个滚动: 每次 rs-v2 加 1 个 pod, 等它 Ready 后 rs-v1 退 1 个 pod (maxSurge=1 / maxUnavailable=0)', 'info');
+  await sleep(STEP_DELAY);
+
+  const totalPods = alive.length;
+  let v1Pods = [...alive];
+  let v2Counter = 0;
+
+  for(let round = 1; round <= totalPods; round++){
+    log(`────── 第 ${round}/${totalPods} 轮 ──────`, 'mute');
+
+    /* ===== 阶段 A: 起一个 v2 pod (起来 → ready → 加入 Endpoint) ===== */
+    log(`▸ A-1. 【cm】 的 ReplicaSet Controller (rs-v2) → 【api】: 创建一个 v2 pending pod`, 'info');
+    flash('comp-cm', 700, 'lit');
+    pulseWire('comp-cm','comp-api', COL.packet_control);
+    lightWire('comp-cm','comp-api', 900);
+    await sleep(500);
+
+    log(`▸ A-2. 【api】 → 【etcd】: 写入 pod 对象 (status=Pending, nodeName 为空)`, 'info');
+    pulseWire('comp-api','comp-etcd', COL.packet_control);
+    flash('comp-etcd', 800, 'lit');
+    lightWire('comp-api','comp-etcd', 900);
+    await sleep(500);
+
+    log(`▸ A-3. 【scheduler】 watch 到 pending pod → 三阶段调度 (Filter / Score)`, 'info');
+    pulseWire('comp-api','comp-sched', COL.packet_control);
+    flash('comp-sched', 900, 'lit');
+    lightWire('comp-api','comp-sched', 1000);
+    await sleep(500);
+
+    // scheduler 的 Filter 阶段会排除 NotReady 节点, 新 pod 只能起在健康节点上
+    const healthyForRollout = [1,2,3].filter(n => !deadNodes.has(n));
+    const targetNode = healthyForRollout[(round - 1) % healthyForRollout.length];
+    v2Counter++;
+    const newPodName = `users-api-v2-${String(v2Counter).padStart(2,'0')}`;
+
+    log(`▸ A-4. 【scheduler】 写回 Binding (给 pod 填上 nodeName=node${targetNode}) → 【api】 → 【etcd】`, 'info');
+    pulseWire('comp-sched','comp-api', COL.packet_control);
+    lightWire('comp-sched','comp-api', 1000);
+    flash('comp-api', 800, 'lit');
+    await sleep(400);
+    pulseWire('comp-api','comp-etcd', COL.packet_control);
+    lightWire('comp-api','comp-etcd', 1000);
+    flash('comp-etcd', 700, 'lit');
+    await sleep(400);
+
+    log(`▸ A-5. 【api】 通知目标节点的 【kubelet ${targetNode}】 (watch 到分配给自己的新 pod)`, 'info');
+    pulseWire('comp-api',`kubelet-${targetNode}`, COL.packet_control);
+    flash(`kubelet-${targetNode}`, 900, 'lit');
+    lightWire('comp-api',`kubelet-${targetNode}`, 1100);
+    await sleep(500);
+
+    log(`▸ A-6. 【kubelet ${targetNode}】 通过 CRI 让 containerd 向 registry 拉 users-api:v2.0 镜像`, 'info');
+    pulseWire(`kubelet-${targetNode}`,'comp-registry', COL.packet_control);
+    lightWire(`kubelet-${targetNode}`,'comp-registry', 1400);
+    flash('comp-registry', 1200, 'lit');
+    await sleep(550);
+    // 镜像回程
+    log(`▸ A-7. 镜像 layer 流式返回 → containerd 创建容器 → pod 进入 Running 状态`, 'info');
+    pulseWire('comp-registry',`kubelet-${targetNode}`, COL.packet_control);
+    lightWire('comp-registry',`kubelet-${targetNode}`, 1100);
+    flash(`kubelet-${targetNode}`, 900, 'lit');
+    await sleep(550);
+
+    const newP = createPod(targetNode, newPodName);
+    newP.version = 'v2';
+    activePods.push(newP);
+    metrics.running++;  // 注: 暂时多出 1 个 (maxSurge=1 真实行为), Deployment.desired 不变
+    updateMetrics();
+    flash(newP.domId, 1500, 'hit');
+    const npd = $(newP.domId);
+    if(npd) npd.classList.add('v2');
+    log(`  ✓ v2 pod 【${newP.name}】 容器启动完成 (Running ≠ Ready, 还要等 readiness probe)`, 'ok');
+    await sleep(500);
+
+    log(`▸ A-8. readiness probe 探测通过 → 【kubelet】 上报 pod.status.ready=true → 【api】 → 【etcd】`, 'info');
+    pulseWire(`kubelet-${targetNode}`,'comp-api', COL.packet_control);
+    lightWire(`kubelet-${targetNode}`,'comp-api', 1100);
+    flash('comp-api', 800, 'lit');
+    await sleep(400);
+    pulseWire('comp-api','comp-etcd', COL.packet_control);
+    lightWire('comp-api','comp-etcd', 1000);
+    flash('comp-etcd', 700, 'lit');
+    await sleep(500);
+
+    log(`▸ A-9. 【cm】 的 EndpointSlice Controller watch 到 pod Ready → 修改 EndpointSlice 对象 (Service 的后端列表 +1), 通过 api 持久化 → 各节点 kube-proxy 收到通知, 刷新本地 iptables 规则 → 新流量从此能打到这个 v2 pod`, 'info');
+    pulseWire('comp-api','comp-cm', COL.packet_control);
+    lightWire('comp-api','comp-cm', 1200);
+    pulseWire('comp-cm','comp-api', COL.packet_control);
+    lightWire('comp-cm','comp-api', 1200);
+    // Service 本身不参与通信 (它是抽象资源, 不是进程), 不 flash
+    // 真实变化在 kube-proxy: 收到 EndpointSlice 更新 → 改本地 iptables
+    // 跳过失联节点 (该节点 watch 长连接已断, kube-proxy 也死了)
+    [1,2,3].filter(nn => !deadNodes.has(nn)).forEach(nn => {
+      pulseWire('comp-api',`proxy-${nn}`, COL.packet_control);
+      lightWire('comp-api',`proxy-${nn}`, 1200);
+    });
+    await sleep(STEP_DELAY * 0.6);
+
+    /* ===== 阶段 B: 退一个 v1 pod (摘除 → 通知 → SIGTERM) ===== */
+    const victim = v1Pods.shift();
+    if(victim){
+      log(`▸ B-1. 【cm】 的 ReplicaSet Controller (rs-v1) reconcile: 看到 rs-v2 副本到达 desired → 缩 rs-v1 一个 → 通过 【api】 删 v1 pod 【${victim.name}】`, 'info');
+      flash('comp-cm', 700, 'lit');
+      pulseWire('comp-cm','comp-api', COL.packet_control);
+      lightWire('comp-cm','comp-api', 900);
+      await sleep(500);
+
+      log(`▸ B-2. 【api】 → 【etcd】 写 deletionTimestamp (pod 进入 Terminating 状态, 还没真删)`, 'info');
+      pulseWire('comp-api','comp-etcd', COL.packet_control);
+      lightWire('comp-api','comp-etcd', 1000);
+      flash('comp-etcd', 800, 'lit');
+      await sleep(500);
+
+      log(`▸ B-3. 【关键】 EndpointSlice Controller watch 到 deletionTimestamp → 改 EndpointSlice 对象 (后端 -1) → 通过 api 广播给各 kube-proxy → 本地 iptables 立即摘除该 pod。<b>这一步必须发生在 SIGTERM 之前, 否则新流量打到正在终止的 pod 会被 RST</b>`, 'warn');
+      pulseWire('comp-api','comp-cm', COL.packet_control);
+      lightWire('comp-api','comp-cm', 1200);
+      pulseWire('comp-cm','comp-api', COL.packet_control);
+      lightWire('comp-cm','comp-api', 1200);
+      // 只通知健康节点的 kube-proxy (失联节点上的进程已不可达)
+      [1,2,3].filter(nn => !deadNodes.has(nn)).forEach(nn => {
+        pulseWire('comp-api',`proxy-${nn}`, COL.packet_control);
+        lightWire('comp-api',`proxy-${nn}`, 1200);
+      });
+      log(`  ✓ 各健康节点 kube-proxy 已从 iptables 摘除 【${victim.name}】, 新流量只发给剩余 ready 的 pod`, 'ok');
+      await sleep(500);
+
+      log(`▸ B-4. 【api】 通知 【kubelet ${victim.node}】 (watch 到 deletionTimestamp): 终止该 pod`, 'info');
+      pulseWire('comp-api',`kubelet-${victim.node}`, COL.packet_control);
+      flash(`kubelet-${victim.node}`, 900, 'lit');
+      lightWire('comp-api',`kubelet-${victim.node}`, 1100);
+      await sleep(500);
+
+      const vdom = $(victim.domId);
+      if(vdom){
+        vdom.classList.add('terminating');
+        log(`▸ B-5. kubelet 发 SIGTERM 给容器, 等 terminationGracePeriodSeconds (默认 30s) 让进程处理完在途请求后优雅退出`, 'info');
+        await sleep(600);
+        vdom.remove();
+        const bay = $(`pod-area-${victim.node}`);
+        if(!bay.querySelector('.pod')){
+          bay.classList.remove('has-pod');
+          bay.innerHTML = '<div class="pod-empty">— empty bay —</div>';
+        }
+      }
+
+      log(`▸ B-6. 容器退出 → kubelet 上报 → 【api】 真正从 etcd 删除 pod 对象`, 'info');
+      pulseWire(`kubelet-${victim.node}`,'comp-api', COL.packet_control);
+      lightWire(`kubelet-${victim.node}`,'comp-api', 1100);
+      flash('comp-api', 700, 'lit');
+      await sleep(400);
+      pulseWire('comp-api','comp-etcd', COL.packet_control);
+      lightWire('comp-api','comp-etcd', 1000);
+      flash('comp-etcd', 700, 'lit');
+      activePods = activePods.filter(p => p.id !== victim.id);
+      metrics.running--;  // 回到 N
+      updateMetrics();
+      log(`  ✓ v1 pod 【${victim.name}】 已优雅退出, rs-v1 副本数 -1, rs-v2 +1`, 'ok');
+    }
+    await sleep(STEP_DELAY * 0.5);
+  }
+
+  log('────────────────────────────────────', 'mute');
+  log(`✓ 滚动升级完成: ${totalPods} 个 v1 pod 全部替换为 v2 (全程业务零中断)`, 'ok');
+  log('💡 旧 rs-v1 保留 (默认 revisionHistoryLimit=10), 出问题可 <code>kubectl rollout undo</code> 一键回滚', 'mute');
+  setButtons(false);
+}
+
+async function simulateTraffic(){
+  if(isWorking || activePods.length===0) return;
+  setButtons(true);
+  const n = parseInt($('req-input').value);
+  if(n<1||n>100){ alert('并发 1-100'); setButtons(false); return; }
+  const alive = activePods.filter(p=>!p.dead);
+  if(!alive.length){ log('无可用 pod','err'); setButtons(false); return; }
+
+  log('════════════════════════════════════', 'mute');
+  log(`🌐 模拟 ${n} 个并发用户请求`, 'info');
+  metrics.req += n; updateMetrics();
+  await sleep(600);
+
+  log('① 用户浏览器 → 公网 DNS 解析 example.com → 拿到节点 IP → 发 HTTPS 请求到 worker 节点 (生产环境前面通常还有云负载均衡, 本课用 k3s 直接打节点 IP, 故省略 LB 节点)', 'info');
+  lightWire('comp-internet','comp-gateway', STEP_DELAY*2);
+  await sleep(STEP_DELAY);
+
+  // gateway 是 3 副本 Pod 散在 3 worker (podAntiAffinity), demo 抽象为单一 gateway 节点
+  log(`② 包到达节点 → 内核 netfilter 第一次 DNAT (NodePort 30443 → gateway pod IP 443) → 进入 gateway controller。注: gateway 实际是 3 副本, 这里抽象为单一节点 (见中间层说明)`, 'info');
+  flash('comp-gateway', STEP_DELAY*2, 'lit');
+  await sleep(STEP_DELAY);
+
+  log('③ 【gateway controller】 完成 tls 终止, 按 HTTPRoute 规则, 把请求转发到 【service ClusterIP 10.96.x.x:80】', 'info');
+  flash('comp-svc', STEP_DELAY*2, 'lit');
+  lightWire('comp-gateway','comp-svc', STEP_DELAY*2);
+  await sleep(STEP_DELAY);
+
+  const podHits = [];
+  const nodeHits = {1:0,2:0,3:0};
+  for(let i=0;i<n;i++){
+    const p = alive[Math.floor(Math.random()*alive.length)];
+    podHits.push(p); nodeHits[p.node]++;
+  }
+  log('④ 节点内核 netfilter 第二次 DNAT: 命中 【kube-proxy】 写的 iptables/ipvs 规则, 把 10.96.x.x:80 改写成某个真实 pod IP (10.244.x.x:80)。<b>kube-proxy 进程不在数据路径上, 只是"规则录入员"</b>', 'info');
+  // 只 flash 对应节点的 kube-proxy (表示它的规则被命中)
+  [...new Set(podHits.map(p=>p.node))].forEach(nn=>{
+    flash(`proxy-${nn}`, STEP_DELAY*2, 'lit');
+  });
+  await sleep(STEP_DELAY);
+
+  log(`⑤ 包经 CNI (Calico) 跨节点路由, ${n} 个请求 packet 沿管道独立抵达目标 pod 10.244.x.x:80`, 'ok');
+  podHits.forEach((p, idx)=>{
+    setTimeout(()=>{
+      // 路径绕过 kube-proxy (它不在数据路径上): internet → gateway → svc → 目标 pod
+      sendRequestPacket(
+        ['comp-internet','comp-gateway','comp-svc', p.domId],
+        COL.packet_traffic, PACKET_DURATION, 5,
+        ()=>{
+          const el = $(p.domId);
+          if(el){ el.classList.add('hit'); setTimeout(()=>el.classList.remove('hit'),1100); }
+        }
+      );
+    }, idx * PACKET_INTERVAL);
+  });
+  await sleep(PACKET_DURATION + n*PACKET_INTERVAL + 600);
+  log(`业务 pod 命中分布 · node1=【${nodeHits[1]}】 · node2=【${nodeHits[2]}】 · node3=【${nodeHits[3]}】`, 'ok');
+  log('⑥ 响应包沿原路返回: pod → 内核 conntrack 表自动反向 DNAT (pod IP → ClusterIP → NodePort IP) → gateway → 用户。无需 kube-proxy 再次介入', 'info');
+  log('💡 副作用: pod 应用看到的 src IP 是节点 IP, 不是真实用户 IP。生产中常用 X-Forwarded-For 头或 externalTrafficPolicy=Local 来保留真实客户端 IP', 'mute');
+  log('全部请求成功响应 ✓', 'ok');
+  setButtons(false);
+}
+
+/* ===== 组件详情弹窗 ===== */
+const INFO = {
+  'comp-kubectl': {
+    title:'kubectl · 命令行客户端',
+    simple:'餐厅<b>老板手里的 iPad 后台</b>。在 iPad 上敲两下, 后厨 (集群) 就有反应 — 加菜、改份量、关店都从这下指令。它本身不是餐厅员工, 谁拿到 kubeconfig (后厨门禁卡) 谁就能用它管理餐厅。',
+    desc:'开发者和集群交互的 CLI 工具, 跑在开发机或 CI/CD 机器上的一个普通二进制。',
+    duties:['解析本地 ~/.kube/config 获取 api 地址和证书','把命令翻译成 HTTPS 请求发到 api server','解析返回结果并格式化输出'],
+    talks:['→ api server (HTTPS, :6443)'],
+    notes:'kubectl 不是集群内组件, 是个客户端工具。任何能拿到 kubeconfig 的人都能用它操作集群。',
+  },
+  'comp-internet': {
+    title:'终端用户 · 浏览器',
+    simple:'<b>来吃饭的顾客</b>。顾客跟餐厅之间只有一道门, 只认餐厅招牌 (域名), 看不到后厨任何细节, 也不关心是哪个厨师做的菜。',
+    desc:'公网用户, 通过浏览器访问业务域名。',
+    duties:['用户输入 https://example.com','DNS 解析域名 → 节点公网 IP (生产环境前面通常有云负载均衡)','建立 TCP 连接, 发起 HTTPS 请求'],
+    talks:['→ 集群入口节点 (TCP, :443)'],
+  },
+  'comp-ingress': {
+    title:'Gateway Controller · 七层网关 (Gateway API, 生产模式 3 副本)',
+    simple:'餐厅<b>大堂经理 / 领位主管</b>。排号机把客人派进来后, 他问"要吃什么菜" (按域名 / 路径解析 7 层请求), 然后引导客人去对应取餐窗口 (Service)。顺便帮你脱外套 (TLS 终止)。<b>这是 7 层路由, 比门口排号机懂得多</b>。',
+    desc:'本质就是一个 <code>Pod</code>, 由 Deployment 以 <code>replicas: 3</code> 部署。Gateway API 是 k8s 官方下一代入口标准, 替代已退休的 ingress-nginx (2026/3 EOL)。<br><br><b>生产保活配置 (本演示已开启):</b><ul><li><code>podAntiAffinity: topologyKey=hostname</code> 强制 3 副本散到 3 个节点</li><li>PodDisruptionBudget <code>minAvailable: 2</code> 防止自愿中断把副本砍光</li><li>生产环境前置云负载均衡 (本课 k3s 已省略, 直接打节点 IP), ~5s 健康检查节点宕机立即剔除</li><li>跨 AZ 部署 (生产建议) 抗整 AZ 故障</li></ul>',
+    duties:['终止 TLS (解 https)','按 <code>HTTPRoute</code> / <code>GRPCRoute</code> 规则匹配后端 service','转发到 Service ClusterIP'],
+    talks:['← 外部流量 (节点 IP:443, 或前置云负载均衡转发过来)','→ Service (内部 ClusterIP)','↔ api server (watch Gateway / HTTPRoute 资源)'],
+    notes:'核心 CRD: <b>GatewayClass</b> (类型定义) / <b>Gateway</b> (具体实例) / <b>HTTPRoute</b> (路由规则)。常见实现: envoy-gateway / istio gateway / cilium gateway / kgateway 等。<br><br>相比老 Ingress, Gateway API 支持更细粒度路由、多协议、跨命名空间委托、RBAC 分权 (集群管理员管 Gateway, 应用开发管 HTTPRoute)。',
+  },
+  'comp-api': {
+    title:'kube-apiserver · 集群唯一入口',
+    simple:'餐厅的<b>订单系统 (POS)</b>。所有"点菜 / 改菜 / 退菜"指令都必须经过它登记。<b>唯一能翻动菜谱簿 (etcd) 的人</b>, 其他员工要查订单 / 改订单都得通过它。所有信息进出口都过它。',
+    desc:'k8s 的核心, 所有组件之间的通信都通过它。集群中唯一被允许直接访问 etcd 的组件。',
+    duties:['提供 RESTful API (HTTPS :6443)','完成 认证(AuthN) / 鉴权(AuthZ) / 准入控制(Admission)','读写 etcd 持久化状态','提供 watch 机制让其他组件订阅资源变更'],
+    talks:['↔ etcd (唯一读写, :2379)','↔ controller manager / scheduler / kubelet / kube-proxy (watch + 写)','← kubectl / ingress / 外部 (REST API)'],
+    notes:'无状态可水平扩展。是集群的"瓶颈"也是最关键的高可用点。',
+  },
+  'comp-etcd': {
+    title:'etcd · 分布式 KV 数据库',
+    simple:'餐厅<b>总账本</b>。厚厚一本, 同时记录: 菜谱配方 (Deployment)、当前在做的订单 (Pod)、储物柜密码 (Secret)、员工信息 (Node) ......。只有订单系统 (api server) 能动这本账, 其他人想查也得通过它。',
+    desc:'存储所有集群状态的强一致 (Raft 协议) 数据库。',
+    duties:['存所有 k8s 资源对象 (Deployment / ReplicaSet / Pod / Node / Service / ConfigMap / Secret ...)','支持事务 + watch (api server 基于此实现 watch 接口)','生产环境通常 3 / 5 节点集群'],
+    talks:['↔ api server (唯一客户端, 通过 :2379)'],
+    notes:'只有 api server 直接访问 etcd。其他组件想读 etcd → 必须通过 api server。这是 k8s 设计的关键: etcd 访问被严格控制。',
+  },
+  'comp-cm': {
+    title:'controller-manager · 控制器集合',
+    simple:'餐厅<b>厨房经理团队</b>, 几十个小经理挤在一个办公室。每个盯一种事: 一个管"招牌菜应该有 5 份在做, 现在只有 3 份 → 加 2 份", 另一个管"哪个工位的厨师没打卡超过 5min → 重派工位"...... 都在不停 reconcile: <b>看现状 → 对比订单 → 改</b>。',
+    desc:'几十个控制器跑在同一个进程里, 每个控制器维护一种资源的"期望 vs 实际"状态。',
+    duties:['Deployment Controller: Deployment → ReplicaSet','ReplicaSet Controller: ReplicaSet → Pod','Node Controller: 监控节点心跳, 标 NotReady','Endpoint Controller: 维护 Service 的 endpoint 列表','...还有几十个'],
+    talks:['↔ api server (watch + 写)'],
+    notes:'本地 :10257 只暴露 metrics / health, 不对外提供 API。',
+  },
+  'comp-sched': {
+    title:'scheduler · 调度器',
+    simple:'餐厅的<b>派单员</b>。新菜单上的菜 (pod) 还没工位, 它来决定派到哪个厨房 (node) 做。流程: <b>筛选</b> (哪些厨房设备不够) → <b>打分</b> (哪个厨房最闲) → <b>派单</b> (写上"这道菜在 2 号厨房做")。',
+    desc:'给 pending pod (nodeName 为空的 Pod) 分配 node。',
+    duties:['watch 所有 pending pod','【过滤 Filter】 排除资源不足 / 不匹配亲和性 / 有污点 / 端口冲突的节点','【打分 Score】 对剩余节点按多维打分 (资源富余/均衡/分布/亲和性)','【绑定 Bind】 选最高分节点, 写 Binding 对象'],
+    talks:['↔ api server (watch pending pod, 写 Binding)'],
+    notes:'scheduler 不直接通知 kubelet, 只是把 pod 填上 nodeName。kubelet 自己 watch 到属于自己的 pod。',
+  },
+  'comp-svc': {
+    title:'Service · 服务抽象 (虚拟资源)',
+    simple:'餐厅的<b>取餐窗口号 (虚拟)</b>。"宫保鸡丁请到 10.96.0.20 窗口取" — 这个窗口背后会随机派给某个在做这道菜的厨师 (pod), 不一定每次同一个人, 客人不用管。厨师换了 (pod 重启 IP 变) 窗口号不变。<b>它没有实体, 不是一个真正的窗口, 只是一组厨师的"取餐代号"</b>, 靠每个工位墙上的指示牌 (iptables) 实现路由。',
+    desc:'k8s 里的"逻辑服务", 给一组 pod 提供稳定的虚拟 IP (ClusterIP) 和 DNS 名。<code>它不是进程</code>, 是 etcd 里的资源对象 + 各节点上的 iptables/ipvs 规则。',
+    duties:['给一组 pod 起一个名字 (e.g. my-svc.default.svc.cluster.local)','分配一个 ClusterIP (虚拟 IP, 仅集群内可达)','通过 EndpointSlice 记录实际后端 pod 列表','四层 (TCP/UDP) 负载均衡'],
+    talks:['由 kube-proxy 实现 (各节点 iptables/ipvs 规则)','被 ingress / 业务 pod 访问'],
+    notes:'常见类型: ClusterIP (默认, 仅内部) / NodePort (各 node 开端口) / LoadBalancer (云厂商分配公网 IP)。',
+  },
+  'comp-registry': {
+    title:'Container Registry · 镜像仓库',
+    simple:'餐厅外的<b>食材冷库 / 中央厨房</b>。每个新菜 (容器) 开做前, 工位主厨 (kubelet) 要先来这里取出标准食材包 (镜像)。冷库<b>在餐厅外</b> (Docker Hub / 阿里云 ACR / Harbor)。已经领过的食材包 (本地缓存) 不用重复跑一趟。',
+    desc:'集群<b>外部</b>的镜像仓库, 存储所有容器镜像。kubelet 拉镜像必须找它。',
+    duties:['存储 OCI 镜像 (按 name:tag 索引)','按层 (layer) 提供拉取, 支持去重','认证 / 鉴权 (私有仓库需登录)','镜像签名 / 扫描 (生产推荐)'],
+    talks:['← kubelet (通过 containerd 调 PullImage, HTTPS)','← CI/CD 推镜像'],
+    notes:'常见的: Docker Hub (公共) / Harbor (自建) / 阿里云 ACR / AWS ECR / GCR / quay.io。<br><br>pod 启动时 kubelet 通过 CRI 让 containerd 拉镜像。如果镜像在本地已缓存 (imagePullPolicy=IfNotPresent), 跳过这步。生产强烈建议私有仓库 + imagePullSecrets。',
+  },
+  'kubelet': {
+    title:'kubelet · 节点管家',
+    simple:'每个厨房 (node) 的<b>工位主厨</b>。订单系统 (api) 通知"这里要做一道新菜"→ 主厨去冷库取食材 (拉镜像) → 让助手 (containerd) 真正动手做 (起容器)。每 10 秒探头看一眼 (NodeLease) 证明厨房还在运转。<b>是每个厨房唯一的 k8s 系统进程</b>。',
+    desc:'每个 worker 上一个 kubelet 进程, 是节点上的核心 agent。',
+    duties:['通过 watch api 获取分配给本节点的 pod','<b>调用 CRI (gRPC) 让 containerd 真正起容器</b>','通过 NodeLease 定期续约心跳 (默认 10s)','执行 liveness / readiness / startup 探针','上报 pod 状态 / 节点资源使用'],
+    talks:['↔ api server (watch + 写 NodeLease, :10250)','→ <code>containerd</code> (CRI, unix socket <code>/var/run/containerd.sock</code>)'],
+    notes:'kubelet 不直接创建容器, 而是通过 <b>CRI (Container Runtime Interface)</b> 调用底层运行时 (containerd / cri-o / docker)。containerd 才是真正调 runc 起容器、管 cgroup/namespace 的进程。<br><br>节点宕机 = kubelet 死 = 心跳停 = api 40s 后判定 NotReady。',
+  },
+  'kube-proxy': {
+    title:'kube-proxy · 网络代理',
+    simple:'每个厨房<b>取餐窗口背后的指示牌管理员</b>。提前把"窗口号 → 实际工位"的指示牌 (iptables 规则) 贴在每个窗口背后。传菜员 (内核 netfilter) 来取菜时只看牌不问人 — 看到 "10.96.0.20 → 3 号工位张三 / 7 号工位李四" 就直接送过去。<b>他贴完牌就走人, 菜流根本不经过他</b>。',
+    desc:'每个 worker 上的网络组件, 实现 Service 的四层负载均衡。',
+    duties:['watch api 获取 Service / EndpointSlice 变更','在本节点写 iptables 或 ipvs 规则','把 ClusterIP:port 的流量 DNAT 成实际 pod IP:port'],
+    talks:['↔ api server (watch Service / Endpoint)'],
+    notes:'<b>不在数据路径上!</b> 真正转发流量的是 Linux 内核的 netfilter (iptables) 或 ipvs。kube-proxy 只是规则的"程序员"。',
+  },
+  'pod': {
+    title:'Pod · 容器组',
+    simple:'厨房里的<b>一个工位</b>。1 到 N 个厨师 (容器) 一起协作 (主厨 + 备菜师 sidecar), 共用同一张操作台 (一个 IP)、共用同一套调料柜 (共享存储)。<b>是 k8s 能调度的最小单位</b>, 你不能单独调度某个厨师, 只能整个工位一起调度。',
+    desc:'k8s 调度的最小单元, 一个 pod 内可以有 1 个或多个容器, 共享网络命名空间 (同一 IP, 同一组端口) 和 (可选) 存储卷。',
+    duties:['由 ReplicaSet 创建并维持数量','由 scheduler 分配到具体 node','由该 node 的 kubelet 通过 containerd 真正起容器'],
+    talks:['被 service / ingress 路由到','通过 CNI 拿到 pod IP (10.244.x.x)'],
+    notes:'一个 pod 内的多个容器共享同一 IP, 通过 localhost 互访。常见模式: 主容器 + sidecar (日志收集/服务网格 proxy)。',
+  },
+};
+
+function openInfo(id){
+  // kubelet-1/2/3 / proxy-1/2/3 / pod-X → 公共信息 key
+  let key = id;
+  if(id.startsWith('kubelet-')) key = 'kubelet';
+  else if(id.startsWith('proxy-')) key = 'kube-proxy';
+  else if(id.startsWith('pod-')) key = 'pod';
+  else if(id === 'comp-gateway') key = 'comp-ingress';  // gateway 抽象节点复用 ingress 弹窗
+  const data = INFO[key];
+  if(!data) return;
+  $('info-title').textContent = data.title;
+  let html = '';
+  if(data.simple){
+    html += `<div class="info-simple">${data.simple}</div>`;
+  }
+  html += `<p class="info-desc">${data.desc}</p>`;
+  if(data.duties){
+    html += '<h4>主要职责</h4><ul>' + data.duties.map(d=>`<li>${d}</li>`).join('') + '</ul>';
+  }
+  if(data.talks){
+    html += '<h4>通信关系</h4><ul>' + data.talks.map(t=>`<li>${t}</li>`).join('') + '</ul>';
+  }
+  if(data.notes){
+    html += `<div class="info-notes">${data.notes}</div>`;
+  }
+  $('info-body').innerHTML = html;
+  $('info-mask').classList.add('show');
+}
+function closeInfo(){ $('info-mask').classList.remove('show'); }
+
+function initClickable(){
+  const ids = ['comp-kubectl','comp-internet','comp-registry',
+               'comp-gateway',
+               'comp-api','comp-etcd','comp-cm','comp-sched','comp-svc',
+               'kubelet-1','kubelet-2','kubelet-3',
+               'proxy-1','proxy-2','proxy-3'];
+  ids.forEach(id => {
+    const el = $(id);
+    if(!el || el.dataset.clickbound) return;
+    el.dataset.clickbound = '1';
+    el.addEventListener('click', (e) => { e.stopPropagation(); openInfo(id); });
+  });
+  // pod 区域用事件代理 (pod 是动态创建的)
+  [1,2,3].forEach(i => {
+    const bay = $(`pod-area-${i}`);
+    if(!bay || bay.dataset.clickbound) return;
+    bay.dataset.clickbound = '1';
+    bay.addEventListener('click', (e) => {
+      const pod = e.target.closest('.pod');
+      if(pod) openInfo('pod-'+pod.id);
+    });
+  });
+}
+
+function openManual(){ $('manual-mask').classList.add('show'); }
+function closeManual(){ $('manual-mask').classList.remove('show'); }
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    closeManual();
+    closeInfo && closeInfo();
+    closeYaml && closeYaml();
+  }
+});
+
+function init(){ buildConnections(); initClickable(); }
+window.addEventListener('load', ()=>{
+  init();
+  setTimeout(init, 200);
+  setTimeout(init, 600);
+});
+window.addEventListener('resize', ()=>{
+  clearTimeout(window.__rebuild);
+  window.__rebuild = setTimeout(init, 100);
+});
+</script>
+</body>
+</html>

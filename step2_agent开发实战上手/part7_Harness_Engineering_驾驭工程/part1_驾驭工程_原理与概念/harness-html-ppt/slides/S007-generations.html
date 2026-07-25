@@ -1,0 +1,142 @@
+<!-- S007 三代工程：包含而非替代 -->
+<style>
+  #s7-wrap { width:100%; max-width:960px; margin:0 auto; text-align:center; }
+  #s7-title { font-family:var(--font-heading); font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s7-subtitle { font-size:clamp(.78rem,1.1vw,.9rem); color:var(--text-dim); margin-top:.3rem; opacity:0; transition:opacity .5s ease; }
+
+  /* 三栏卡片 */
+  #s7-cards { display:flex; gap: 1.2rem; justify-content:center; align-items:stretch; flex-wrap:wrap; margin-top: 1.8rem; }
+  .s7-card { background:var(--card-bg); backdrop-filter:var(--glass-blur); border:2px solid; border-radius:12px; padding: 1rem 1.1rem; flex:1; min-width:220px; max-width:280px; text-align:left; cursor:pointer; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease, box-shadow .3s ease; position:relative; }
+  .s7-card.visible { opacity:1; transform:translateY(0); }
+  .s7-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,.08); }
+  .s7-card.active { border-width:3px; transform:translateY(-4px) scale(1.02); box-shadow:0 12px 32px rgba(0,0,0,.12); }
+
+  .s7-card[data-gen="pe"] { border-color:rgba(74,144,217,.5); }
+  .s7-card[data-gen="pe"].active { border-color:#4a90d9; background:rgba(74,144,217,.06); }
+  .s7-card[data-gen="ce"] { border-color:rgba(39,174,96,.5); }
+  .s7-card[data-gen="ce"].active { border-color:#27ae60; background:rgba(39,174,96,.06); }
+  .s7-card[data-gen="he"] { border-color:rgba(193,127,89,.5); }
+  .s7-card[data-gen="he"].active { border-color:var(--accent); background:rgba(193,127,89,.06); }
+
+  .s7-badge { display:inline-block; font-size:.65rem; font-weight:700; padding:.15rem .5rem; border-radius:1rem; margin-bottom:.4rem; color:#fff; }
+  .s7-card[data-gen="pe"] .s7-badge { background:#4a90d9; }
+  .s7-card[data-gen="ce"] .s7-badge { background:#27ae60; }
+  .s7-card[data-gen="he"] .s7-badge { background:var(--accent); }
+
+  .s7-en { font-family:var(--font-heading); font-size:clamp(.85rem,1.3vw,1.05rem); font-weight:700; }
+  .s7-card[data-gen="pe"] .s7-en { color:#4a90d9; }
+  .s7-card[data-gen="ce"] .s7-en { color:#27ae60; }
+  .s7-card[data-gen="he"] .s7-en { color:var(--accent); }
+
+  .s7-cn { font-size:clamp(.75rem,1.05vw,.88rem); color:var(--card-text); font-weight:600; margin-top:.1rem; }
+  .s7-year { font-size:clamp(.65rem,.9vw,.75rem); color:var(--text-dim); margin-top:.25rem; }
+  .s7-points { margin:.5rem 0 0; padding-left:1.1rem; font-size:clamp(.72rem,1vw,.82rem); color:var(--card-text); line-height:1.6; }
+  .s7-points li { margin-bottom:.2rem; }
+
+  .s7-arrow { display:flex; align-items:center; color:var(--text-dim); font-size:1.4rem; font-weight:700; opacity:0; transition:opacity .5s ease; }
+  .s7-arrow.visible { opacity:1; }
+
+  /* 详情区 */
+  #s7-detail { max-width:640px; margin: 1.2rem auto 0; background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:12px; padding: 1rem 1.2rem; text-align:left; opacity:0; transform:translateY(8px); transition:opacity .5s ease, transform .5s ease; min-height:80px; }
+  #s7-detail.visible { opacity:1; transform:translateY(0); }
+  .s7-d-title { font-family:var(--font-heading); font-size:clamp(.88rem,1.25vw,1rem); font-weight:700; margin-bottom:.4rem; }
+  .s7-d-text { font-size:clamp(.75rem,1.05vw,.85rem); color:var(--card-text); line-height:1.65; }
+  .s7-d-text strong { color:var(--primary); }
+  .s7-d-hint { font-size:clamp(.72rem,1vw,.82rem); color:var(--text-dim); text-align:center; line-height:1.6; }
+
+  @media(max-width:760px){
+    #s7-cards { flex-direction:column; align-items:center; }
+    .s7-card { max-width:360px; width:100%; }
+    .s7-arrow { transform:rotate(90deg); margin:.3rem 0; }
+  }
+</style>
+
+<div id="s7-wrap">
+  <div id="s7-title">三代工程：包含而非替代</div>
+  <div id="s7-subtitle">PE &sub; CE &sub; HE，每一代都包含前一代，而非替代</div>
+
+  <div id="s7-cards">
+    <div class="s7-card" data-gen="pe">
+      <div class="s7-badge">第一代</div>
+      <div class="s7-en">Prompt Engineering</div>
+      <div class="s7-cn">提示词工程</div>
+      <div class="s7-year">2022-2023 &middot; 单轮对话</div>
+      <ul class="s7-points">
+        <li>优化单次调用指令</li>
+        <li>精准表达意图</li>
+      </ul>
+    </div>
+
+    <div class="s7-arrow">&rarr;</div>
+
+    <div class="s7-card" data-gen="ce">
+      <div class="s7-badge">第二代</div>
+      <div class="s7-en">Context Engineering</div>
+      <div class="s7-cn">上下文工程</div>
+      <div class="s7-year">2024-2025 &middot; 多轮精准</div>
+      <ul class="s7-points">
+        <li>提供模型"当前可见信息"</li>
+        <li>包含历史对话、检索、工具</li>
+      </ul>
+    </div>
+
+    <div class="s7-arrow">&rarr;</div>
+
+    <div class="s7-card" data-gen="he">
+      <div class="s7-badge">第三代</div>
+      <div class="s7-en">Harness Engineering</div>
+      <div class="s7-cn">驾驭工程</div>
+      <div class="s7-year">2025-2026 &middot; 长时运行</div>
+      <ul class="s7-points">
+        <li>系统性约束与治理</li>
+        <li>持续观测、纠偏、收敛</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 详情区 -->
+  <div id="s7-detail">
+    <div class="s7-d-hint">点击上方任意卡片，查看该层在包含关系中的具体定位与机制示例</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s7-title');
+  var subtitle=document.getElementById('s7-subtitle');
+  var cards=document.querySelectorAll('.s7-card');
+  var arrows=document.querySelectorAll('.s7-arrow');
+  var detail=document.getElementById('s7-detail');
+
+  var data={
+    pe: {
+      title: 'Prompt Engineering &middot; 最内层',
+      text: 'PE 只关注<strong>"单次调用时模型看到什么"</strong>。一次 Claude Code 会话里，你写在 system prompt 里的每句话都属于 PE。但它不管"上一轮说了什么"，也不管"跑 100 轮之后会不会失控"。没有 PE，模型连基本指令都听不懂；但只有 PE，模型每轮都是失忆状态。'
+    },
+    ce: {
+      title: 'Context Engineering &middot; 包含 PE',
+      text: 'CE 在 PE 的基础上，增加了<strong>"上下文组装"</strong>——把历史对话、检索结果、工具 schema、记忆片段拼成模型当前能看到的完整输入。CLAUDE.md 读取、tool schema 注入、RAG 检索都属于 CE 层。没有 CE，模型无法跨轮次保持连贯；但 CE 不解决"跑太久会崩溃"的问题。'
+    },
+    he: {
+      title: 'Harness Engineering &middot; 包含 CE 与 PE',
+      text: 'HE 在 CE 和 PE 的基础上，增加了<strong>"运行期约束"</strong>——max_iterations 刹车、progress 文件持久化、context compaction、验证闭环。没有 HE，模型再强也会在长任务中循环失控或 context 溢出。一次完整的 Claude Code 会话同时运行着三代工程的所有机制。'
+    }
+  };
+
+  function showDetail(gen){
+    cards.forEach(function(c){ c.classList.remove('active'); });
+    document.querySelector('.s7-card[data-gen="'+gen+'"]').classList.add('active');
+    detail.innerHTML='<div class="s7-d-title" style="color:'+(gen==='pe'?'#4a90d9':gen==='ce'?'#27ae60':'var(--accent)')+';">'+data[gen].title+'</div><div class="s7-d-text">'+data[gen].text+'</div>';
+  }
+
+  cards.forEach(function(c){
+    c.addEventListener('click', function(){ showDetail(c.dataset.gen); });
+  });
+
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  cards.forEach(function(c,i){ setTimeout(function(){ c.classList.add('visible'); },600+i*200); });
+  arrows.forEach(function(a,i){ setTimeout(function(){ a.classList.add('visible'); },800+i*200); });
+  setTimeout(function(){ detail.classList.add('visible'); },1200);
+})();
+</script>

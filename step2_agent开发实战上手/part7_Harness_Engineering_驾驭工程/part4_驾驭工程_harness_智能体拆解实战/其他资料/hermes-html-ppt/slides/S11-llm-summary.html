@@ -1,0 +1,526 @@
+<style>
+/* =====================================================
+   S11 · 冷记忆③ LLM 摘要层 — 3-worker concurrent assembly line
+   ===================================================== */
+
+.s11-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.2rem 3rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ── 整体内容栏 ── */
+.s11-content {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+/* ── 标题区 ── */
+.s11-header {
+  text-align: center;
+  opacity: 0;
+}
+.s11-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-style: normal;
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.01em;
+}
+.s11-subtitle {
+  font-family: var(--font-zh);
+  font-size: 0.9rem;
+  color: var(--text-subtle);
+  font-style: normal;
+  margin: 0;
+}
+
+/* ── 顶部警告区 ── */
+.s11-warning-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: rgba(229, 115, 115, 0.08);
+  border: 1px solid rgba(229, 115, 115, 0.28);
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  opacity: 0;
+}
+.s11-warning-icon {
+  font-size: 1.2rem;
+  animation: none;
+}
+.s11-warning-icon.pulse {
+  animation: s11-red-pulse 1.4s ease-in-out 2;
+}
+.s11-warning-text {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent-red);
+  font-weight: 600;
+  font-style: normal;
+}
+.s11-warning-sub {
+  font-family: var(--font-zh);
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  font-style: normal;
+  margin-left: 0.3rem;
+}
+
+@keyframes s11-red-pulse {
+  0%, 100% { text-shadow: 0 0 0 transparent; opacity: 1; }
+  50% { text-shadow: 0 0 12px var(--accent-red); opacity: 0.75; }
+}
+
+/* ── session 堆栈 ── */
+.s11-sessions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  opacity: 0;
+}
+.s11-session-chip {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-body);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  padding: 0.18rem 0.5rem;
+  font-style: normal;
+  white-space: nowrap;
+}
+.s11-sessions-label {
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-zh);
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  font-style: normal;
+  margin-top: 0.15rem;
+}
+.s11-arrow-down {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  margin: -0.45rem 0;
+  line-height: 1;
+}
+
+/* ── 并发摘要器框 ── */
+.s11-pipeline-box {
+  border: 1.5px solid var(--card-border-strong);
+  border-radius: 10px;
+  padding: 0.7rem 1.2rem 0.85rem;
+  background: var(--card-bg);
+  opacity: 0;
+}
+.s11-pipeline-header {
+  font-family: var(--font-zh);
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  font-style: normal;
+  text-align: center;
+  margin-bottom: 0.45rem;
+  border-bottom: 1px solid var(--rule-line);
+  padding-bottom: 0.32rem;
+}
+.s11-concurrency-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 0.55rem;
+}
+.s11-meta-item {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-style: normal;
+}
+.s11-meta-item .s11-meta-val {
+  color: var(--accent-amber);
+  font-weight: 700;
+}
+.s11-meta-item .s11-meta-label {
+  color: var(--text-subtle);
+}
+
+/* ── Worker 行 ── */
+.s11-worker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+}
+.s11-worker-row {
+  display: grid;
+  grid-template-columns: 1.6rem 4.6rem 1fr 5.2rem;
+  align-items: center;
+  gap: 0.6rem;
+}
+.s11-worker-icon {
+  font-size: 0.95rem;
+  text-align: center;
+  transition: opacity 0.3s;
+}
+.s11-worker-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-body);
+  font-style: normal;
+  font-weight: 500;
+}
+.s11-worker-label.s11-waiting {
+  color: var(--text-dim);
+}
+.s11-progress-track {
+  height: 6px;
+  background: rgba(91, 140, 184, 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.s11-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: var(--accent-amber);
+  transition: background 0.3s;
+}
+.s11-progress-fill.done {
+  background: var(--secondary);
+}
+.s11-worker-status {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  font-style: normal;
+  text-align: right;
+  white-space: nowrap;
+}
+.s11-worker-status.s11-status-done {
+  color: var(--secondary);
+  font-weight: 600;
+}
+.s11-worker-status.s11-status-waiting {
+  color: var(--text-dim);
+}
+
+/* ── 5 元素 schema ── */
+.s11-schema-box {
+  border: 1.5px solid var(--card-border);
+  border-radius: 10px;
+  padding: 0.6rem 1.2rem 0.7rem;
+  background: rgba(36, 49, 66, 0.6);
+  opacity: 0;
+}
+.s11-schema-header {
+  font-family: var(--font-zh);
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-style: normal;
+  text-align: center;
+  margin-bottom: 0.4rem;
+  border-bottom: 1px solid var(--rule-line);
+  padding-bottom: 0.28rem;
+}
+.s11-schema-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+.s11-schema-row {
+  display: grid;
+  grid-template-columns: 1.3rem 11rem 1fr;
+  align-items: center;
+  gap: 0.55rem;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.s11-schema-row.lit {
+  opacity: 1;
+  transform: none;
+}
+.s11-schema-num {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--accent-amber);
+  font-weight: 700;
+  font-style: normal;
+  text-align: center;
+}
+.s11-schema-key {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--secondary);
+  font-weight: 600;
+  font-style: normal;
+}
+.s11-schema-desc {
+  font-family: var(--font-zh);
+  font-size: 0.76rem;
+  color: var(--text-body);
+  font-style: normal;
+}
+
+/* ── 兜底机制 ── */
+.s11-fallback-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.s11-fallback-row.lit {
+  opacity: 1;
+  transform: none;
+}
+.s11-fallback-label {
+  font-family: var(--font-zh);
+  font-size: 0.76rem;
+  color: var(--text-subtle);
+  font-style: normal;
+  flex-shrink: 0;
+}
+.s11-fallback-pill {
+  font-family: var(--font-zh);
+  font-size: 0.74rem;
+  font-style: normal;
+  padding: 0.18rem 0.6rem;
+  border-radius: 18px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.s11-fallback-pill.retry {
+  color: var(--accent-amber);
+  border-color: rgba(212, 165, 116, 0.35);
+  background: rgba(212, 165, 116, 0.07);
+}
+.s11-fallback-pill.degrade {
+  color: var(--secondary);
+  border-color: rgba(125, 211, 192, 0.35);
+  background: rgba(125, 211, 192, 0.07);
+}
+
+/* ── 右下角 callout ── */
+.s11-callout {
+  text-align: right;
+  opacity: 0;
+}
+.s11-callout-tag {
+  display: inline-block;
+  font-family: var(--font-zh);
+  font-size: 0.74rem;
+  color: var(--accent-amber);
+  border: 1px solid rgba(212, 165, 116, 0.4);
+  background: rgba(212, 165, 116, 0.08);
+  border-radius: 6px;
+  padding: 0.22rem 0.65rem;
+  font-style: normal;
+}
+.s11-callout-tag.amber-pulse {
+  animation: s11-amber-pulse 1.4s ease-in-out 2;
+}
+
+@keyframes s11-amber-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 4px rgba(212, 165, 116, 0.3); }
+}
+
+/* ── 跳过提示 ── */
+.s11-skip-hint {
+  text-align: center;
+  font-family: var(--font-zh);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-style: normal;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.s11-skip-hint.visible {
+  opacity: 1;
+}
+
+/* ── prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .s11-schema-row,
+  .s11-fallback-row {
+    transition: none;
+  }
+  .s11-progress-fill {
+    transition: none;
+  }
+  .s11-warning-icon.pulse {
+    animation: none;
+  }
+  .s11-callout-tag.amber-pulse {
+    animation: none;
+  }
+}
+</style>
+
+<div class="slide" data-slide-id="S11">
+  <div class="s11-wrap">
+    <div class="s11-content">
+
+      <!-- 标题 -->
+      <div class="s11-header" id="s11-header">
+        <h2 class="s11-title">冷记忆③ · LLM 摘要层</h2>
+        <p class="s11-subtitle">命中 10 个 session，怎么避免爆 context</p>
+      </div>
+
+      <!-- 顶部警告 -->
+      <div class="s11-warning-row" id="s11-warning">
+        <span class="s11-warning-icon" id="s11-warning-icon">💥</span>
+        <span class="s11-warning-text">命中 10 个 session × 100K tokens = 总 1M tokens</span>
+        <span class="s11-warning-sub">直接注入 context 会爆炸</span>
+      </div>
+
+      <!-- session 卡片堆 -->
+      <div class="s11-sessions" id="s11-sessions">
+        <span class="s11-session-chip">session #1 · 97K</span>
+        <span class="s11-session-chip">session #2 · 112K</span>
+        <span class="s11-session-chip">session #3 · 88K</span>
+        <span class="s11-session-chip">session #4 · 105K</span>
+        <span class="s11-session-chip">session #5 · 94K</span>
+        <span class="s11-session-chip">session #6 · 99K</span>
+        <span class="s11-session-chip">session #7 · 103K</span>
+        <span class="s11-session-chip">session #8 · 91K</span>
+        <span class="s11-session-chip">session #9 · 108K</span>
+        <span class="s11-session-chip">session #10 · 96K</span>
+        <div class="s11-sessions-label">10 个命中 session → 先摘要再注入</div>
+      </div>
+
+      <div class="s11-arrow-down" id="s11-arrow1">▼</div>
+
+      <!-- 并发摘要器 -->
+      <div class="s11-pipeline-box" id="s11-pipeline">
+        <div class="s11-pipeline-header">异步并发摘要器</div>
+        <div class="s11-concurrency-meta">
+          <span class="s11-meta-item">
+            <span class="s11-meta-val">default</span>
+            <span class="s11-meta-label"> = 3 路并发</span>
+          </span>
+          <span class="s11-meta-item">
+            <span class="s11-meta-val">max</span>
+            <span class="s11-meta-label"> = 5 路并发</span>
+          </span>
+        </div>
+        <div class="s11-worker-list">
+          <!-- Worker 1 -->
+          <div class="s11-worker-row" id="s11-w1">
+            <span class="s11-worker-icon" id="s11-w1-icon">⚙️</span>
+            <span class="s11-worker-label">Worker 1</span>
+            <div class="s11-progress-track">
+              <div class="s11-progress-fill" id="s11-w1-bar"></div>
+            </div>
+            <span class="s11-worker-status" id="s11-w1-status">— session 1</span>
+          </div>
+          <!-- Worker 2 -->
+          <div class="s11-worker-row" id="s11-w2">
+            <span class="s11-worker-icon" id="s11-w2-icon">⚙️</span>
+            <span class="s11-worker-label">Worker 2</span>
+            <div class="s11-progress-track">
+              <div class="s11-progress-fill" id="s11-w2-bar"></div>
+            </div>
+            <span class="s11-worker-status" id="s11-w2-status">— session 2</span>
+          </div>
+          <!-- Worker 3 -->
+          <div class="s11-worker-row" id="s11-w3">
+            <span class="s11-worker-icon" id="s11-w3-icon">⚙️</span>
+            <span class="s11-worker-label">Worker 3</span>
+            <div class="s11-progress-track">
+              <div class="s11-progress-fill" id="s11-w3-bar"></div>
+            </div>
+            <span class="s11-worker-status" id="s11-w3-status">— session 3</span>
+          </div>
+          <!-- Worker 4 (等待) -->
+          <div class="s11-worker-row" id="s11-w4">
+            <span class="s11-worker-icon" style="opacity:0.4">⏸</span>
+            <span class="s11-worker-label s11-waiting">Worker 4</span>
+            <div class="s11-progress-track">
+              <div class="s11-progress-fill" id="s11-w4-bar" style="background:var(--text-dim);opacity:0.3"></div>
+            </div>
+            <span class="s11-worker-status s11-status-waiting" id="s11-w4-status">等待槽位</span>
+          </div>
+          <!-- Worker 5 (等待) -->
+          <div class="s11-worker-row" id="s11-w5">
+            <span class="s11-worker-icon" style="opacity:0.4">⏸</span>
+            <span class="s11-worker-label s11-waiting">Worker 5</span>
+            <div class="s11-progress-track">
+              <div class="s11-progress-fill" id="s11-w5-bar" style="background:var(--text-dim);opacity:0.3"></div>
+            </div>
+            <span class="s11-worker-status s11-status-waiting" id="s11-w5-status">等待槽位</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="s11-arrow-down" id="s11-arrow2">▼</div>
+
+      <!-- 5 元素结构化摘要 schema -->
+      <div class="s11-schema-box" id="s11-schema">
+        <div class="s11-schema-header">5 元素结构化摘要（固定 schema）</div>
+        <div class="s11-schema-list">
+          <div class="s11-schema-row" id="s11-sr1">
+            <span class="s11-schema-num">①</span>
+            <span class="s11-schema-key">What asked</span>
+            <span class="s11-schema-desc">用户问什么</span>
+          </div>
+          <div class="s11-schema-row" id="s11-sr2">
+            <span class="s11-schema-num">②</span>
+            <span class="s11-schema-key">What done</span>
+            <span class="s11-schema-desc">Agent 做了什么</span>
+          </div>
+          <div class="s11-schema-row" id="s11-sr3">
+            <span class="s11-schema-num">③</span>
+            <span class="s11-schema-key">Key decisions</span>
+            <span class="s11-schema-desc">关键决策</span>
+          </div>
+          <div class="s11-schema-row" id="s11-sr4">
+            <span class="s11-schema-num">④</span>
+            <span class="s11-schema-key">Technical details</span>
+            <span class="s11-schema-desc">技术细节</span>
+          </div>
+          <div class="s11-schema-row" id="s11-sr5">
+            <span class="s11-schema-num">⑤</span>
+            <span class="s11-schema-key">Unresolved</span>
+            <span class="s11-schema-desc">未解决问题</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 兜底机制 + callout -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div class="s11-fallback-row" id="s11-fallback">
+          <span class="s11-fallback-label">兜底机制：</span>
+          <span class="s11-fallback-pill retry">💥 失败 → 重试 3 次（线性退避 1+2+3 秒）</span>
+          <span class="s11-fallback-pill degrade">💥 全失败 → 降级 raw preview（截原文前 N 字符）</span>
+        </div>
+        <div class="s11-callout" id="s11-callout">
+          <span class="s11-callout-tag" id="s11-callout-tag">Hermes LLM 摘要不是硬依赖，可降级</span>
+        </div>
+      </div>
+
+      <!-- 跳过提示 -->
+      <div class="s11-skip-hint" id="s11-skip">按 Enter 跳过动画</div>
+
+    </div>
+  </div>
+</div>

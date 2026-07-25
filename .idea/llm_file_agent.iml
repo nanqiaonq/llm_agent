@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/step1_大模型技术入门/part3_模型agent开发基础/课件资料/agent-travel-code/backend/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/step1_大模型技术入门/part4_模型rag入门/其他资料/rag-code-search/backend/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/step2_agent开发实战上手/part6_Agent_skills/part2_agent_skills_设计实战/__MACOSX/mini-OpenClaw项目源码/backend/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/step2_agent开发实战上手/part6_Agent_skills/part2_agent_skills_设计实战/mini-OpenClaw项目源码/backend/.venv" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.14 (llm_file_agent)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

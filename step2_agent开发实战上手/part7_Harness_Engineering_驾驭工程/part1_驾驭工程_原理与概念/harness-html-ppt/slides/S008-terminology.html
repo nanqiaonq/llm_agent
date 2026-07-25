@@ -1,0 +1,65 @@
+<!-- S008 术语边界 + LangChain 三层 -->
+<div style="width:100%;max-width:950px;">
+  <div class="slide-header" style="text-align:center;margin-bottom:1.2rem;">
+    <div class="chapter-badge anim-fade-in" style="animation-delay:0.1s;opacity:0;">字典基底</div>
+    <h2 class="slide-title anim-fade-in" style="animation-delay:0.2s;opacity:0;font-size:clamp(1.5rem,3vw,2.2rem);">术语边界 + LangChain 三层架构</h2>
+  </div>
+
+  <div class="anim-slide-up" style="animation-delay:0.3s;opacity:0;">
+    <style>
+      .center { width: auto; display: table; margin-left: auto; margin-right: auto; }
+    </style>
+    <div class="center">
+      <table class="data-table" style="max-width:900px;font-size:clamp(0.7rem,1vw,0.82rem);">
+        <thead>
+          <tr>
+            <th>术语</th>
+            <th>是什么</th>
+            <th>解决什么</th>
+            <th>与 Harness 的关系</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Agent</strong><div style="font-size:0.72rem;color:var(--text-dim);font-weight:400;margin-top:0.15rem;">智能体 / 代理</div></td>
+            <td>会用工具完成任务的软件实体</td>
+            <td>让 LLM 具备行动能力</td>
+            <td>Agent 是<strong style="color:var(--accent);">目标</strong>，Harness 是<strong style="color:var(--accent);">让目标能持续运行的工程系统</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Scaffolding</strong><div style="font-size:0.72rem;color:var(--text-dim);font-weight:400;margin-top:0.15rem;">脚手架</div></td>
+            <td>prompt 到达模型前的组装层</td>
+            <td>让 LLM 的输入更可控</td>
+            <td>Scaffolding 是 Harness 的<strong style="color:var(--accent);">一部分</strong>（偏 context 装配层）</td>
+          </tr>
+          <tr>
+            <td><strong>Framework</strong><div style="font-size:0.72rem;color:var(--text-dim);font-weight:400;margin-top:0.15rem;">框架</div></td>
+            <td>提供类库和抽象的开发工具包</td>
+            <td>让你不用从零写 LLM 调用链</td>
+            <td>Framework 是<strong style="color:var(--accent);">积木</strong>，Harness 是用积木<strong style="color:var(--accent);">搭出来的整车</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Runtime</strong><div style="font-size:0.72rem;color:var(--text-dim);font-weight:400;margin-top:0.15rem;">运行时</div></td>
+            <td>负责执行 agent 逻辑的运行时引擎</td>
+            <td>让 agent 状态机在工业环境可运行</td>
+            <td>Runtime 是<strong style="color:var(--accent);">发动机</strong>，Harness 是发动机 + 底盘 + 传动</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="anim-fade-in" style="animation-delay:0.7s;opacity:0;margin-top: 1.8rem;text-align:center;">
+    <div style="font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;">LangChain 产品线三层</div>
+    <div style="display:flex;gap:0.5rem;justify-content:center;align-items:center;flex-wrap:wrap;">
+      <div class="node node-secondary">Framework · 框架（LangChain）</div>
+      <span style="color:var(--text-dim);">→</span>
+      <div class="node node-primary">Runtime · 运行时（LangGraph）</div>
+      <span style="color:var(--text-dim);">→</span>
+      <div class="node node-accent">Harness · 驾驭（DeepAgents）</div>
+    </div>
+    <div style="margin-top:0.8rem;font-size:0.8rem;color:var(--card-text);">
+      Harrison Chase 2025-10-25 博文："大多数工程师需要的不是 runtime，是一个<strong>能直接跑的 harness</strong>"
+    </div>
+  </div>
+</div>

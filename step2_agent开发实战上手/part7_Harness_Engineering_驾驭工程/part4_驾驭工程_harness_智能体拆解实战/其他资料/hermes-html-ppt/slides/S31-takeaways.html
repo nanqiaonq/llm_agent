@@ -1,0 +1,240 @@
+<!-- slide: S26-takeaways.html | page 26/28 -->
+<!-- chapter: 第4章：收束与收尾 -->
+<!-- interaction_level: 🟢 | pattern: SQ.merged-row-summary（继承） -->
+<!-- assignee: slide-writer -->
+<style>
+/* ── S26 scoped styles ── */
+#s26 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#s26 .s26-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+#s26 .s26-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+#s26 .s26-subtitle {
+  font-size: 0.83rem;
+  color: var(--text-subtle);
+  margin-bottom: 1.1rem;
+}
+
+/* ── 合体行列表 ── */
+#s26 .s26-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+#s26 .s26-row {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.65rem 1rem;
+  backdrop-filter: blur(6px);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+#s26 .s26-row:hover {
+  border-color: var(--card-border-strong);
+  background: rgba(36, 49, 66, 0.95);
+}
+
+/* 数字徽章 */
+#s26 .s26-badge {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent-amber);
+  line-height: 1;
+  min-width: 2.5rem;
+  padding-top: 0.1rem;
+  letter-spacing: -0.02em;
+}
+
+/* 右侧内容 */
+#s26 .s26-row-content {
+  flex: 1;
+}
+
+#s26 .s26-row-label {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+#s26 .s26-row-detail {
+  font-size: 0.8rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+#s26 .s26-row-detail code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.08);
+  border: 1px solid rgba(125, 211, 192, 0.18);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+}
+
+/* 第 04 行特别高亮（四维评价框架最重要） */
+#s26 .s26-row.highlight-row {
+  border-color: rgba(212, 165, 116, 0.3);
+  background: rgba(212, 165, 116, 0.04);
+}
+
+/* ── 学习前后对比小卡片 ── */
+#s26 .s26-before-after {
+  background: var(--card-bg-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  backdrop-filter: blur(6px);
+}
+
+#s26 .ba-col {
+  flex: 1;
+}
+
+#s26 .ba-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+
+#s26 .ba-label.before {
+  color: var(--text-dim);
+}
+
+#s26 .ba-label.after {
+  color: var(--accent-amber);
+}
+
+#s26 .ba-text {
+  font-size: 0.78rem;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+#s26 .ba-arrow {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  color: var(--accent-amber);
+  opacity: 0.7;
+}
+
+#s26 .ba-divider {
+  width: 1px;
+  height: 2.5rem;
+  background: var(--rule-line);
+  flex-shrink: 0;
+}
+</style>
+
+<div id="s26" data-slide-id="S26">
+
+  <!-- Header -->
+  <div class="s26-chapter-label">第4章 · 收束与收尾</div>
+  <div class="s26-title">学员带走 4 件产物</div>
+  <div class="s26-subtitle">对应「读源码 + 跑 demo + 用 3 问评价法 + 四维框架做取舍判断」三条学习主线的全部产出</div>
+
+  <!-- 合体行列表 -->
+  <div class="s26-items">
+
+    <div class="s26-row">
+      <div class="s26-badge">01</div>
+      <div class="s26-row-content">
+        <div class="s26-row-label">Hermes 默认记忆系统架构图</div>
+        <div class="s26-row-detail">
+          热双层：<code>MEMORY.md</code>（Agent 自维护）+ <code>USER.md</code>（用户画像，需启用 Honcho）；
+          冷三件套：<code>SQLite 持久化</code> + <code>FTS5 双索引（unicode61 + trigram）</code> + <code>LLM 摘要层</code>（异步并发 3 / 最大 5 / 失败 3 次重试 / 可降级 raw preview）；
+          扩展层 8 种 Provider 全部 opt-in，不在默认链路。
+        </div>
+      </div>
+    </div>
+
+    <div class="s26-row">
+      <div class="s26-badge">02</div>
+      <div class="s26-row-content">
+        <div class="s26-row-label">Nudge 机制源码 walk 笔记</div>
+        <div class="s26-row-detail">
+          计数器累加（memory: user-turn / skill: tool-iter）→ turn 末判定 → fork 子 agent 4 重约束（<code>max_iter=16</code> / <code>quiet_mode=True</code> / <code>toolsets=memory+skills</code> / 防递归 <code>interval=0</code>）→
+          <code>_SKILL_REVIEW_PROMPT</code> 驱动反思（PATCH&gt;CREATE，ACTIVE 倾向）→ <code>_create_skill</code> 五步校验 → 落盘 <code>~/.hermes/skills/&lt;name&gt;/SKILL.md</code>。
+          不是 AI 自主学习，是 prompt 驱动的机械闭环。
+        </div>
+      </div>
+    </div>
+
+    <div class="s26-row">
+      <div class="s26-badge">03</div>
+      <div class="s26-row-content">
+        <div class="s26-row-label">本地可跑 MVP Demo 代码包</div>
+        <div class="s26-row-detail">
+          langchain 三件套：<code>NudgeMiddleware</code>（计数器 + turn 末判定 + fork 子 agent）+ <code>@tool write_skill</code>（落盘动作）+
+          <code>create_agent(tools=[write_skill], middleware=[])</code>（受限子 agent）；
+          配 5 轮真实 kafka 调试场景 + 三组 <code>nudge_interval</code> 改参实验（5 / 2 / 0）。
+        </div>
+      </div>
+    </div>
+
+    <div class="s26-row highlight-row">
+      <div class="s26-badge">04</div>
+      <div class="s26-row-content">
+        <div class="s26-row-label">3 问评价法 + 四维评价框架</div>
+        <div class="s26-row-detail">
+          <code>静态↔动态</code> / <code>信任↔约束</code> / <code>集中↔分治</code>；
+          3 问（能力 / 风险 / 入口）↔ L1 三支柱（GC / AC / 入口治理）+ 第 4 维 CE，附前三节关键词映射；
+          下节课末尾用同一把尺横评 Claude Code / Codex / DeepAgents / OpenClaw 四家。
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 学习前后对比 -->
+  <div class="s26-before-after">
+    <div class="ba-col">
+      <div class="ba-label before">学习前</div>
+      <div class="ba-text">会写 SKILL.md，但不知道它能否被自动维护；不知道如何评价「我的 harness 在动态轴上算强还是弱」</div>
+    </div>
+    <div class="ba-arrow">&#8594;</div>
+    <div class="ba-divider"></div>
+    <div class="ba-col">
+      <div class="ba-label after">学习后</div>
+      <div class="ba-text">能看懂 Nudge 自动生产链路；能用四维评价（GC / AC / CE / 入口治理）判断任何 harness 的取舍位置；能一行配置禁用 nudge；能预见 skill_provenance.py 的工程铺垫</div>
+    </div>
+  </div>
+
+</div>

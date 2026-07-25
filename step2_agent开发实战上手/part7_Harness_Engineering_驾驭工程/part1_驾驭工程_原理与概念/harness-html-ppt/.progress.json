@@ -1,0 +1,17 @@
+{
+  "skill_version": "2.1",
+  "courseware_name": "harness-engineering-lesson1",
+  "source_type": "material",
+  "phase_completed": "-0.5",
+  "phase_0_5_completed": true,
+  "phase_0_75_completed": false,
+  "last_agent": "orchestrator",
+  "next_agent": "html-courseware-designer",
+  "quality_guard_passes": 0,
+  "redo_count": 0,
+  "total_slides": 26,
+  "slides_completed": [],
+  "interactive_eng_slides": ["S010", "S013", "S017", "S020", "S022", "S023", "S024", "S026", "S030"],
+  "last_updated": "2026-04-23T00:00:00+08:00",
+  "checkpoint": {}
+}

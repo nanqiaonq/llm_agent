@@ -1,0 +1,172 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content" style="padding:var(--slide-pad-y) var(--slide-pad-x);display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;padding-top:80px;">
+
+        <!-- 标题区 -->
+        <div class="animate-ready" data-delay="0" style="text-align:center;margin-bottom:10px;">
+            <div style="display:inline-block;padding:4px 12px;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.3);border-radius:var(--radius-full);margin-bottom:8px;">
+                <span style="font-size:0.85rem;font-weight:600;color:var(--red);">2026年2月5日 · 真实事件</span>
+            </div>
+            <h1 style="font-size:clamp(1.8rem,4vw,2.5rem);margin:0 0 6px 0;color:var(--text-primary);">
+                血洗华尔街
+            </h1>
+            <p style="font-size:clamp(0.95rem,2vw,1.1rem);color:var(--text-secondary);margin:0;">
+                Agent Skills 如何在一天内蒸发 <strong style="color:var(--red);">2850 亿美元</strong>
+            </p>
+        </div>
+
+        <!-- 发布事件提示 -->
+        <div class="animate-ready" data-delay="0.1" style="text-align:center;margin-bottom:12px;">
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+                <span style="font-size:0.85rem;color:var(--text-secondary);">触发事件：</span>
+                <span style="font-size:0.9rem;font-weight:600;color:var(--text-primary);">Anthropic 发布 Claude Cowork + 11 Skills</span>
+            </div>
+        </div>
+
+        <!-- 股价图表区 -->
+        <div class="animate-ready" data-delay="0.2" id="stock-chart-area" style="width:100%;max-width:1000px;position:relative;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-md);margin-bottom:12px;">
+
+            <!-- 时间轴 -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+                <div style="font-size:0.8rem;color:var(--text-tertiary);">2026年2月5日</div>
+                <div id="current-time" style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">09:00</div>
+                <div style="font-size:0.8rem;color:var(--text-tertiary);">收盘 16:00</div>
+            </div>
+
+            <!-- 垂直柱状图容器 -->
+            <div style="position:relative;height:260px;background:linear-gradient(to bottom, var(--bg-base) 0%, rgba(220,38,38,0.02) 100%);border-radius:var(--radius-md);padding:16px;display:flex;align-items:flex-end;justify-content:space-around;gap:10px;">
+
+                <!-- LegalZoom 柱状图 -->
+                <div class="stock-bar-wrapper" style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;">
+                    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;width:100%;position:relative;">
+                        <div class="stock-bar" data-name="LegalZoom" data-drop="20" data-initial-value="1000" data-color="#DC2626" style="width:100%;background:linear-gradient(to bottom, #DC2626, #EF4444);border-radius:var(--radius-sm) var(--radius-sm) 0 0;position:relative;height:0%;transition:height 0.3s ease;">
+                            <div class="stock-value" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:0.8rem;font-weight:700;color:#DC2626;white-space:nowrap;">$1000亿</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;text-align:center;">
+                        <div style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:2px;">LegalZoom</div>
+                        <div class="stock-percent" style="font-size:0.7rem;color:#DC2626;font-weight:600;">0%</div>
+                    </div>
+                </div>
+
+                <!-- Thomson Reuters 柱状图 -->
+                <div class="stock-bar-wrapper" style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;">
+                    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;width:100%;position:relative;">
+                        <div class="stock-bar" data-name="Thomson Reuters" data-drop="22" data-initial-value="1200" data-color="#B91C1C" style="width:100%;background:linear-gradient(to bottom, #B91C1C, #DC2626);border-radius:var(--radius-sm) var(--radius-sm) 0 0;position:relative;height:0%;transition:height 0.3s ease;">
+                            <div class="stock-value" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:0.8rem;font-weight:700;color:#B91C1C;white-space:nowrap;">$1200亿</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;text-align:center;">
+                        <div style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:2px;">Thomson Reuters</div>
+                        <div class="stock-percent" style="font-size:0.7rem;color:#B91C1C;font-weight:600;">0%</div>
+                    </div>
+                </div>
+
+                <!-- Moody's 柱状图 -->
+                <div class="stock-bar-wrapper" style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;">
+                    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;width:100%;position:relative;">
+                        <div class="stock-bar" data-name="Moody's" data-drop="10" data-initial-value="800" data-color="#EF4444" style="width:100%;background:linear-gradient(to bottom, #EF4444, #F87171);border-radius:var(--radius-sm) var(--radius-sm) 0 0;position:relative;height:0%;transition:height 0.3s ease;">
+                            <div class="stock-value" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:0.8rem;font-weight:700;color:#EF4444;white-space:nowrap;">$800亿</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;text-align:center;">
+                        <div style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:2px;">Moody's</div>
+                        <div class="stock-percent" style="font-size:0.7rem;color:#EF4444;font-weight:600;">0%</div>
+                    </div>
+                </div>
+
+                <!-- S&P Global 柱状图 -->
+                <div class="stock-bar-wrapper" style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;">
+                    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;width:100%;position:relative;">
+                        <div class="stock-bar" data-name="S&P Global" data-drop="12" data-initial-value="900" data-color="#F87171" style="width:100%;background:linear-gradient(to bottom, #F87171, #FCA5A5);border-radius:var(--radius-sm) var(--radius-sm) 0 0;position:relative;height:0%;transition:height 0.3s ease;">
+                            <div class="stock-value" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:0.8rem;font-weight:700;color:#F87171;white-space:nowrap;">$900亿</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;text-align:center;">
+                        <div style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:2px;">S&P Global</div>
+                        <div class="stock-percent" style="font-size:0.7rem;color:#F87171;font-weight:600;">0%</div>
+                    </div>
+                </div>
+
+                <!-- FactSet 柱状图 -->
+                <div class="stock-bar-wrapper" style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;">
+                    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;width:100%;position:relative;">
+                        <div class="stock-bar" data-name="FactSet" data-drop="8" data-initial-value="600" data-color="#FCA5A5" style="width:100%;background:linear-gradient(to bottom, #FCA5A5, #FEE2E2);border-radius:var(--radius-sm) var(--radius-sm) 0 0;position:relative;height:0%;transition:height 0.3s ease;">
+                            <div class="stock-value" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:0.8rem;font-weight:700;color:#FCA5A5;white-space:nowrap;">$600亿</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;text-align:center;">
+                        <div style="font-size:0.75rem;font-weight:600;color:var(--text-primary);margin-bottom:2px;">FactSet</div>
+                        <div class="stock-percent" style="font-size:0.7rem;color:#FCA5A5;font-weight:600;">0%</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 播放按钮 -->
+            <div style="text-align:center;margin-top:12px;">
+                <button id="play-btn" class="btn btn-primary" style="padding:8px 20px;font-size:0.9rem;display:inline-flex;align-items:center;gap:8px;">
+                    <span>▶</span>
+                    <span>播放：见证历史时刻</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- 冲击力总结 -->
+        <div class="animate-ready" data-delay="0.3" style="text-align:center;">
+            <div style="display:inline-block;padding:12px 20px;background:rgba(220,38,38,0.05);border:2px solid rgba(220,38,38,0.2);border-radius:var(--radius-lg);">
+                <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:3px;">SaaS 行业市值蒸发</div>
+                <div style="font-size:1.8rem;font-weight:700;color:var(--red);margin-bottom:6px;">
+                    <span id="loss-number">0</span> 亿美元
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-primary);">
+                    从 <strong>App-First</strong> 到 <strong style="color:var(--teal);">Skill-First</strong> 的范式转变
+                </div>
+            </div>
+            <p style="margin-top:8px;font-size:0.8rem;color:var(--text-tertiary);">
+                这不是科幻，这是正在发生的现实
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<style>
+.stock-bar {
+    box-shadow: 0 -2px 8px rgba(220,38,38,0.3);
+    transition: height 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+.shake-effect {
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes collapse {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(0.95); }
+    100% { transform: scaleY(1); }
+}
+
+.collapse-effect {
+    animation: collapse 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .stock-bar-wrapper:nth-child(n+4) {
+        display: none;
+    }
+
+    .stock-value {
+        font-size: 0.7rem !important;
+    }
+}
+</style>

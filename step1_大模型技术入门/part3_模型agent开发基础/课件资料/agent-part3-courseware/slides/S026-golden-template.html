@@ -1,0 +1,129 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s026-code-wrap {
+            width: min(980px, 96%);
+            margin: 0 auto 1.1vh;
+            border-radius: 14px;
+            border: 1px solid rgba(148,163,184,0.3);
+            background: rgba(15,23,42,0.94);
+            box-shadow: 0 12px 30px rgba(15,23,42,0.2);
+            overflow: hidden;
+        }
+
+        .s026-code-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 34px;
+            padding: 0 12px;
+            border-bottom: 1px solid rgba(148,163,184,0.24);
+            background: rgba(30,41,59,0.95);
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            letter-spacing: 0.02em;
+        }
+
+        .s026-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+        .s026-code-body {
+            margin: 0;
+            padding: 10px 12px;
+            text-align: left;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.82rem;
+            line-height: 1.62;
+            color: #e2e8f0;
+            white-space: pre;
+        }
+
+        .s026-line {
+            display: block;
+            border-left: 4px solid transparent;
+            border-radius: 6px;
+            padding: 3px 8px;
+            margin: 2px 0;
+        }
+
+        .s026-func {
+            border-color: #2563eb;
+            background: rgba(37,99,235,0.16);
+        }
+
+        .s026-trigger {
+            border-color: #7c3aed;
+            background: rgba(124,58,237,0.16);
+        }
+
+        .s026-input {
+            border-color: #0891b2;
+            background: rgba(8,145,178,0.16);
+        }
+
+        .s026-boundary {
+            border-color: #ea580c;
+            background: rgba(234,88,12,0.16);
+        }
+
+        .s026-legend {
+            width: min(940px, 96%);
+            margin: 1vh auto 0.8vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 8px 10px;
+            border: 1px solid rgba(148,163,184,0.25);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.72);
+        }
+
+        .s026-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+            color: var(--text-primary);
+        }
+
+        .pill-func { border-color: rgba(37,99,235,0.3); background: rgba(37,99,235,0.1); }
+        .pill-trigger { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.1); }
+        .pill-input { border-color: rgba(8,145,178,0.3); background: rgba(8,145,178,0.1); }
+        .pill-boundary { border-color: rgba(234,88,12,0.3); background: rgba(234,88,12,0.1); }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">技术层 · 2.3</span></div>
+    <h2 class="page-title animate-ready delay-2" style="margin-bottom:0.8vh;">工具描述黄金模板</h2>
+    <p class="page-subtitle animate-ready delay-3" style="margin-bottom:1.4vh;">JSON 代码块示例：四段信息必须同时写清楚</p>
+
+    <div class="s026-code-wrap animate-ready delay-4">
+        <div class="s026-code-head">
+            <span class="s026-dot" style="background:#ef4444;"></span>
+            <span class="s026-dot" style="background:#f59e0b;"></span>
+            <span class="s026-dot" style="background:#22c55e;"></span>
+            <span>tool.get_weather.json</span>
+        </div>
+<pre class="s026-code-body"><span>{</span>
+<span>  "name": "get_weather",</span>
+<span class="s026-line s026-func animate-ready delay-5">  "功能说明": "查询指定城市的当前天气信息。",</span>
+<span class="s026-line s026-trigger animate-ready delay-6">  "触发条件": "当用户询问天气、温度或穿衣建议时调用。",</span>
+<span class="s026-line s026-input animate-ready delay-7">  "输入格式": "参数 city: string，如 \"北京\"、\"上海\"。",</span>
+<span class="s026-line s026-boundary animate-ready delay-8">  "能力边界": "仅支持中国大陆城市，不支持海外及历史天气。"</span>
+<span>}</span></pre>
+    </div>
+
+    <div class="s026-legend animate-ready delay-8">
+        <span class="s026-pill pill-func"><span class="s026-dot" style="background:#2563eb;"></span>功能说明</span>
+        <span class="s026-pill pill-trigger"><span class="s026-dot" style="background:#7c3aed;"></span>触发条件</span>
+        <span class="s026-pill pill-input"><span class="s026-dot" style="background:#0891b2;"></span>输入格式</span>
+        <span class="s026-pill pill-boundary"><span class="s026-dot" style="background:#ea580c;"></span>能力边界</span>
+    </div>
+
+    <div class="animate-ready delay-9" style="margin-top:0.7vh;padding:10px 16px;max-width:930px;border:1px solid rgba(37,99,235,0.24);border-radius:10px;background:rgba(37,99,235,0.08);font-size:0.83rem;color:var(--text-secondary);">
+        💡 只写功能不够，四段都完整，LLM 才能稳定选中正确工具。
+    </div>
+</div>

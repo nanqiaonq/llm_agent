@@ -1,0 +1,17 @@
+{
+    "python_version": "3.11",
+    "dockerfile_lines": [],
+    "dependencies": [
+        "./"
+    ],
+    "graphs": {
+        "deepagents": "./FilesystemBackend.py:agent",
+        "researcher": "./researcher.py:graph",
+        "memscope": "./memscope.py:graph",
+        "gstack-agent": "./gstack_agent/agent.py:graph"
+    },
+    "auth": {
+        "path": "./auth.py:auth"
+    },
+    "env": ".env"
+}

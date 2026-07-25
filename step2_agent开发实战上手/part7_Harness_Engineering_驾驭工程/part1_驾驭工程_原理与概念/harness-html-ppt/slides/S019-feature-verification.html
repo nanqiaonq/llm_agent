@@ -1,0 +1,66 @@
+<!-- S019 Feature List + Verification Loop -->
+<style>
+  #s19-wrap { width:100%; max-width:900px; margin:0 auto; }
+  #s19-title { font-family:var(--font-heading); font-size:clamp(1.4rem,2.6vw,2rem); font-weight:700; color:var(--primary); text-align:center; opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s19-pair { display:flex; gap: 1.7rem; margin-top: 1.8rem; flex-wrap:nowrap; }
+  .s19-col { flex:1; min-width:0; background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:12px; padding: 1.2rem 1.4rem; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; }
+  .s19-col.visible { opacity:1; transform:translateY(0); }
+  .s19-col:hover { border-color:var(--accent); }
+  .s19-col-head { display:flex; align-items:center; gap:.4rem; margin-bottom: .55rem; padding-bottom:.3rem; border-bottom:1px solid var(--card-border); }
+  .s19-num { width:1.5rem; height:1.5rem; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:.7rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .s19-name { font-family:var(--font-heading); font-size:clamp(1rem,1.4vw,1.15rem); font-weight:700; color:var(--primary); }
+  .s19-fix { font-size:clamp(.6rem,.9vw,.7rem); color:var(--accent); margin-left:auto; }
+  .s19-def { font-size:clamp(.82rem,1.1vw,.95rem); color:var(--card-text); line-height:1.65; margin-bottom: .65rem; }
+  .s19-ana { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); line-height:1.65; padding:.5rem .6rem; background:rgba(45,90,122,.04); border-radius:6px; margin-bottom: .65rem; }
+  .s19-code { background:rgba(30,35,45,.85); backdrop-filter:blur(8px); border-radius:8px; padding:.8rem 1rem; font-family:'SF Mono',monospace; font-size:clamp(.78rem,1.05vw,.9rem); color:#d4d4d4; line-height:1.7; overflow-x:auto; white-space:pre-wrap; }
+  .s19-code .k { color:#c586c0; } .s19-code .f { color:#dcdcaa; } .s19-code .s { color:#ce9178; } .s19-code .c { color:#6a9955; }
+  @media(max-width:700px){ #s19-pair{ flex-direction:column; } }
+</style>
+
+<div id="s19-wrap">
+  <div id="s19-title">7.5 Feature List + 7.6 Verification Loop</div>
+  <div id="s19-pair">
+    <div class="s19-col">
+      <div class="s19-col-head"><div class="s19-num">5</div><div class="s19-name">Feature List 任务拆解</div><span class="s19-fix">救 ②源头</span></div>
+      <div class="s19-def">大任务拆成 JSON 清单，强制 agent 单次迭代只做一件事，做完标记再取下一件。</div>
+      <div class="s19-ana"><strong>类比</strong>：Trello 看板——每张卡片有 pending / in_progress / passes 状态，是 agent 的外置工作记忆。</div>
+      <div class="s19-code">
+features = [
+  {<span class="s">"id"</span>:<span class="s">1</span>, <span class="s">"task"</span>:<span class="s">"读文件"</span>,
+   <span class="s">"status"</span>:<span class="s">"pending"</span>},
+  {<span class="s">"id"</span>:<span class="s">2</span>, <span class="s">"task"</span>:<span class="s">"修bug"</span>,
+   <span class="s">"status"</span>:<span class="s">"pending"</span>},
+]
+<span class="k">def</span> <span class="f">get_next_task</span>(features):
+    <span class="k">return</span> <span class="f">next</span>(
+        (f <span class="k">for</span> f <span class="k">in</span> features
+         <span class="k">if</span> f[<span class="s">"status"</span>]==<span class="s">"pending"</span>), <span class="k">None</span>)
+      </div>
+    </div>
+    <div class="s19-col">
+      <div class="s19-col-head"><div class="s19-num">6</div><div class="s19-name">Verification Loop 验证闭环</div><span class="s19-fix">救 ④下游</span></div>
+      <div class="s19-def">每个 feature 完成后用 pytest / Playwright 真机验证，通过才标记 passes=true。</div>
+      <div class="s19-ana"><strong>类比</strong>：QA 验收测试——开发说"修好了"不算数，QA 真的点按钮、跑场景才算数。</div>
+      <div class="s19-code">
+<span class="k">def</span> <span class="f">verify_with_pytest</span>():
+    result = subprocess.run(
+        [<span class="s">"pytest"</span>, <span class="s">"--tb=short"</span>],
+        capture_output=<span class="k">True</span>, text=<span class="k">True</span>)
+    <span class="k">return</span> {
+        <span class="s">"passed"</span>: result.returncode==<span class="s">0</span>,
+        <span class="s">"output"</span>: result.stdout
+            + result.stderr}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s19-title');
+  var cols=document.querySelectorAll('.s19-col');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ cols[0].classList.add('visible'); },500);
+  setTimeout(function(){ cols[1].classList.add('visible'); },800);
+})();
+</script>

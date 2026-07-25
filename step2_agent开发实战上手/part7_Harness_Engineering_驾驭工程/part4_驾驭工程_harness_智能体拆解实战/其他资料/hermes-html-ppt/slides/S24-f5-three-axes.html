@@ -1,0 +1,246 @@
+<style>
+  #s19 {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    position: relative;
+    inset: auto;
+    padding: 1.4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.85rem;
+    opacity: 0;
+    animation: s19-fadein 0.35s ease 0.1s forwards;
+  }
+
+  @keyframes s19-fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* 头部 */
+  .s19-chapter-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--accent-amber);
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .s19-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2.3vw, 1.85rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.25;
+    font-style: normal;
+  }
+  .s19-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-subtle);
+    margin-top: 0.3rem;
+    line-height: 1.55;
+  }
+  .s19-subtitle strong { color: var(--accent-amber); font-weight: 600; }
+
+  /* 概念条 */
+  .s19-concept {
+    background: rgba(125, 211, 192, 0.06);
+    border: 1px solid var(--rule-line);
+    border-left: 3px solid var(--secondary);
+    border-radius: 0.4rem;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--text-body);
+  }
+  .s19-concept strong { color: var(--accent-amber); font-weight: 600; }
+
+  /* 主体表格 4 行 × 4 列 */
+  .s19-table {
+    display: grid;
+    grid-template-columns: 1.2fr 1.4fr 1fr 2.2fr;
+    gap: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.7rem;
+    overflow: hidden;
+  }
+  .s19-th {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.6rem 0.85rem;
+    background: rgba(91, 140, 184, 0.12);
+    border-bottom: 2px solid var(--card-border);
+    color: var(--text-primary);
+  }
+  .s19-cell {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--rule-line);
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--text-body);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.2rem;
+  }
+  .s19-cell:nth-last-child(-n+4) { border-bottom: none; }
+  .s19-cell-q {
+    background: rgba(212, 165, 116, 0.06);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+  }
+  .s19-cell-q-label {
+    font-size: 0.68rem;
+    color: var(--accent-amber);
+    font-family: var(--font-mono);
+    margin-bottom: 0.1rem;
+  }
+  .s19-cell-dim {
+    background: rgba(91, 140, 184, 0.04);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .s19-cell-dim code {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--secondary);
+  }
+  .s19-cell-source {
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+  }
+  .s19-cell-source-pillar {
+    color: var(--secondary);
+    font-weight: 600;
+  }
+  .s19-cell-source-extra {
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+  .s19-cell-desc {
+    font-size: 0.74rem;
+    color: var(--text-body);
+    line-height: 1.55;
+  }
+  .s19-cell-ce-note {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-style: normal;
+  }
+
+  /* 底部 callout */
+  .s19-callout {
+    background: linear-gradient(135deg, rgba(91, 140, 184, 0.08), rgba(212, 165, 116, 0.06));
+    border: 1px solid var(--rule-line);
+    border-radius: 0.55rem;
+    padding: 0.65rem 0.95rem;
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--text-body);
+  }
+  .s19-callout strong { color: var(--accent-amber); font-weight: 600; }
+  .s19-callout-title {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--accent-amber);
+    margin-bottom: 0.35rem;
+  }
+</style>
+
+<div id="s19">
+  <div>
+    <div class="s19-chapter-label">§3.1 &nbsp;—&nbsp; 三支柱回顾 + 入口治理为何要补一维</div>
+    <h2 class="s19-title">3 问评价法 ↔ 三支柱 + 入口治理</h2>
+    <div class="s19-subtitle">
+      把 3 问翻译成你已经学过的术语 · <strong>不是新词，是给 L1 三支柱换个评价坐标系</strong>
+    </div>
+  </div>
+
+  <div class="s19-concept">
+    <strong>3 问 = 工程负责人入门视角</strong>（能力 / 风险 / 入口）· <strong>4 维 = L1 三支柱 + 入口治理补一维</strong>（合规视角）。这把尺不引入新词，是把 L1 你已经看到的源码现象放到坐标系下评价。
+  </div>
+
+  <div class="s19-table">
+    <!-- 表头 -->
+    <div class="s19-th">工程问题</div>
+    <div class="s19-th">评价维度</div>
+    <div class="s19-th">来源</div>
+    <div class="s19-th">白话判断</div>
+
+    <!-- 能力怎么增长 -->
+    <div class="s19-cell s19-cell-q">
+      <div class="s19-cell-q-label">问题一</div>
+      <div>能力怎么增长</div>
+    </div>
+    <div class="s19-cell s19-cell-dim">
+      <code>Garbage Collection</code>
+      <div style="font-size:0.7rem;color:var(--text-subtle);font-weight:400;">动态化</div>
+    </div>
+    <div class="s19-cell s19-cell-source">
+      <span class="s19-cell-source-pillar">L1 三支柱</span>
+    </div>
+    <div class="s19-cell s19-cell-desc">
+      人写死配置 / skill，还是系统运行中自动记忆、自动产 skill、自动清理
+    </div>
+
+    <!-- 风险怎么控制 -->
+    <div class="s19-cell s19-cell-q">
+      <div class="s19-cell-q-label">问题二</div>
+      <div>风险怎么控制</div>
+    </div>
+    <div class="s19-cell s19-cell-dim">
+      <code>Architectural Constraints</code>
+      <div style="font-size:0.7rem;color:var(--text-subtle);font-weight:400;">架构约束</div>
+    </div>
+    <div class="s19-cell s19-cell-source">
+      <span class="s19-cell-source-pillar">L1 三支柱</span>
+    </div>
+    <div class="s19-cell s19-cell-desc">
+      相信 agent 自觉，还是用沙盒、权限、独立工作区(worktree)、回滚机制限制它
+    </div>
+
+    <!-- 入口怎么组织 -->
+    <div class="s19-cell s19-cell-q">
+      <div class="s19-cell-q-label">问题三</div>
+      <div>入口怎么组织</div>
+    </div>
+    <div class="s19-cell s19-cell-dim">
+      <code>入口治理</code>
+      <div style="font-size:0.7rem;color:var(--text-subtle);font-weight:400;">集中 ↔ 分治</div>
+    </div>
+    <div class="s19-cell s19-cell-source">
+      <span class="s19-cell-source-extra">三支柱外补 1 维</span>
+    </div>
+    <div class="s19-cell s19-cell-desc">
+      统一入口和统一权限，还是多平台、多协议、多认证各自管理
+    </div>
+
+    <!-- 上下文管理（CE 第 4 维，3.5 收口） -->
+    <div class="s19-cell s19-cell-q" style="opacity:0.85;">
+      <div class="s19-cell-q-label" style="color:var(--text-subtle);">第 4 维</div>
+      <div style="color:var(--text-body);">(上下文管理)</div>
+    </div>
+    <div class="s19-cell s19-cell-dim">
+      <code>Context Engineering</code>
+      <div style="font-size:0.7rem;color:var(--text-subtle);font-weight:400;">上下文工程</div>
+    </div>
+    <div class="s19-cell s19-cell-source">
+      <span class="s19-cell-source-pillar">L1 三支柱</span>
+    </div>
+    <div class="s19-cell s19-cell-ce-note">
+      第 1 章已详讲（FTS5 双索引 + LLM 摘要）<br>
+      §3.5 四维位置图统一收口
+    </div>
+  </div>
+
+  <div class="s19-callout">
+    <div class="s19-callout-title">下面三节按这三个问题走</div>
+    <strong>§3.2</strong> Hermes 为什么 <strong>GC 强（动态化）</strong> · <strong>§3.3</strong> 为什么 <strong>AC 偏信任端</strong> · <strong>§3.4</strong> 为什么 <strong>入口治理偏分治端</strong> · <strong>§3.5</strong> 把 CE 加进来合成<strong>四维位置图</strong>，就是 Hermes 的完整取舍画像。
+  </div>
+</div>

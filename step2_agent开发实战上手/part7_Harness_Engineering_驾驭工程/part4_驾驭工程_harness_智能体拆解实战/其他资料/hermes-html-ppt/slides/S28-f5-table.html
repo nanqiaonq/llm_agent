@@ -1,0 +1,311 @@
+<style>
+  #s23 {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    inset: auto;
+    padding: 1.2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.7rem;
+  }
+
+  /* 头部 */
+  .s23-chapter-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--accent-amber);
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .s23-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.25;
+    font-style: normal;
+  }
+  .s23-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-subtle);
+    margin-top: 0.3rem;
+    line-height: 1.5;
+  }
+  .s23-subtitle strong { color: var(--accent-amber); font-weight: 600; }
+
+  /* 概念条 */
+  .s23-concept {
+    background: rgba(125, 211, 192, 0.06);
+    border: 1px solid var(--rule-line);
+    border-left: 3px solid var(--secondary);
+    border-radius: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--text-body);
+  }
+  .s23-concept strong { color: var(--accent-amber); font-weight: 600; }
+
+  /* 4 行卡片网格 */
+  .s23-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .s23-card {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 2fr;
+    gap: 1rem;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.6rem;
+    padding: 0.75rem 1.1rem;
+    transition: transform 0.18s ease;
+  }
+  .s23-card:hover { transform: translateX(2px); }
+
+  .s23-card-strong  { border-left: 4px solid var(--secondary); }
+  .s23-card-warn    { border-left: 4px solid var(--accent-amber); }
+  .s23-card-give    { border-left: 4px solid #e57373; }
+
+  /* 左：维度 */
+  .s23-card-dim {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .s23-dim-name {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+  }
+  .s23-dim-strong .s23-dim-name { color: var(--secondary); }
+  .s23-dim-warn   .s23-dim-name { color: var(--accent-amber); }
+  .s23-dim-give   .s23-dim-name { color: #e57373; }
+  .s23-dim-zh {
+    font-size: 0.85rem;
+    color: var(--text-body);
+    font-weight: 500;
+  }
+  .s23-dim-source {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-subtle);
+    background: rgba(91, 140, 184, 0.1);
+    padding: 0.08rem 0.4rem;
+    border-radius: 0.25rem;
+    align-self: flex-start;
+    margin-top: 0.15rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* 中：状态大 chip */
+  .s23-card-pos {
+    display: flex;
+    justify-content: center;
+  }
+  .s23-pos {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 1rem;
+    border-radius: 0.45rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .s23-pos-strong {
+    background: rgba(125, 211, 192, 0.18);
+    color: var(--secondary);
+    border: 1.5px solid rgba(125, 211, 192, 0.5);
+  }
+  .s23-pos-warn {
+    background: rgba(212, 165, 116, 0.18);
+    color: var(--accent-amber);
+    border: 1.5px solid rgba(212, 165, 116, 0.5);
+  }
+  .s23-pos-give {
+    background: rgba(229, 115, 115, 0.18);
+    color: #e57373;
+    border: 1.5px solid rgba(229, 115, 115, 0.5);
+  }
+
+  /* 右：证据 + 代价 */
+  .s23-card-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .s23-evidence,
+  .s23-cost {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .s23-evidence { color: var(--text-body); }
+  .s23-cost     { color: #e5a8a8; font-size: 0.78rem; }
+  .s23-evidence-icon {
+    color: var(--secondary);
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    margin-top: -1px;
+  }
+  .s23-cost-icon {
+    color: #e57373;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .s23-evidence code,
+  .s23-cost code {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--accent-amber);
+    background: rgba(212, 165, 116, 0.1);
+    padding: 0.04rem 0.3rem;
+    border-radius: 0.2rem;
+  }
+
+  /* 底部一句话总结 */
+  .s23-summary {
+    background: linear-gradient(135deg, rgba(91, 140, 184, 0.1), rgba(212, 165, 116, 0.08));
+    border: 1px solid var(--rule-line);
+    border-radius: 0.55rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-body);
+  }
+  .s23-summary strong  { color: var(--accent-amber); font-weight: 700; }
+  .s23-summary em      { font-style: normal; color: var(--secondary); font-weight: 600; }
+  .s23-summary-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--accent-amber);
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+</style>
+
+<div id="s23">
+  <div>
+    <div class="s23-chapter-label">§3.5 &nbsp;—&nbsp; 四维位置图：Hermes 取舍全貌</div>
+    <h2 class="s23-title">四维评价位置图：Hermes 押注了什么、放弃了什么</h2>
+    <div class="s23-subtitle">
+      <strong>不是打分表，不是说哪个更好</strong> · 只回答「Hermes 把工程预算押在哪里、又牺牲了哪里」
+    </div>
+  </div>
+
+  <div class="s23-concept">
+    <strong>四维 = L1 三支柱（GC / AC / CE）+ 入口治理（合规视角补 1 维）</strong>。绿 = 强选 / 黄 = 增强但有代价 / 红 = 部分放弃 — 颜色一眼看出 Hermes 的 4 维偏好。
+  </div>
+
+  <div class="s23-cards">
+
+    <!-- GC 强选 -->
+    <div class="s23-card s23-card-strong s23-dim-strong">
+      <div class="s23-card-dim">
+        <span class="s23-dim-name">Garbage Collection</span>
+        <span class="s23-dim-zh">动态化</span>
+        <span class="s23-dim-source">L1 三支柱</span>
+      </div>
+      <div class="s23-card-pos">
+        <span class="s23-pos s23-pos-strong">强选 · 动态端</span>
+      </div>
+      <div class="s23-card-detail">
+        <div class="s23-evidence">
+          <span class="s23-evidence-icon">✓</span>
+          <span>19 平台一致 + <code>Nudge</code> 自学 skill + <code>Curator</code> 后台清理</span>
+        </div>
+        <div class="s23-cost">
+          <span class="s23-cost-icon">⚠</span>
+          <span>代价：部署复杂 + 自学习虚假产出风险</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AC 部分放弃 -->
+    <div class="s23-card s23-card-give s23-dim-give">
+      <div class="s23-card-dim">
+        <span class="s23-dim-name">Architectural Constraints</span>
+        <span class="s23-dim-zh">架构约束</span>
+        <span class="s23-dim-source">L1 三支柱</span>
+      </div>
+      <div class="s23-card-pos">
+        <span class="s23-pos s23-pos-give">部分放弃 · 偏信任端</span>
+      </div>
+      <div class="s23-card-detail">
+        <div class="s23-evidence">
+          <span class="s23-evidence-icon">✓</span>
+          <span>三维弱：无 sandbox / 无 worktree / 无 step checkpoint；一维强：工具集黑名单 5 项</span>
+        </div>
+        <div class="s23-cost">
+          <span class="s23-cost-icon">⚠</span>
+          <span>代价：信任端押注用户自律</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CE 增强但有代价 -->
+    <div class="s23-card s23-card-warn s23-dim-warn">
+      <div class="s23-card-dim">
+        <span class="s23-dim-name">Context Engineering</span>
+        <span class="s23-dim-zh">上下文工程</span>
+        <span class="s23-dim-source">L1 三支柱</span>
+      </div>
+      <div class="s23-card-pos">
+        <span class="s23-pos s23-pos-warn">增强 · 但有代价</span>
+      </div>
+      <div class="s23-card-detail">
+        <div class="s23-evidence">
+          <span class="s23-evidence-icon">✓</span>
+          <span>热/冷记忆双层 + <code>FTS5</code> 双索引 + <code>LLM</code> 摘要</span>
+        </div>
+        <div class="s23-cost">
+          <span class="s23-cost-icon">⚠</span>
+          <span>代价：热记忆 token 越贵 + 14k schema 固定开销</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 入口治理 偏分治 -->
+    <div class="s23-card s23-card-give s23-dim-give">
+      <div class="s23-card-dim">
+        <span class="s23-dim-name">入口治理</span>
+        <span class="s23-dim-zh">集中 ↔ 分治</span>
+        <span class="s23-dim-source">三支柱外补 1 维</span>
+      </div>
+      <div class="s23-card-pos">
+        <span class="s23-pos s23-pos-give">偏分治端</span>
+      </div>
+      <div class="s23-card-detail">
+        <div class="s23-evidence">
+          <span class="s23-evidence-icon">✓</span>
+          <span>三套独立认证未统一中枢：<code>ACP</code> + <code>Platform per-token</code> + <code>DM 审批</code></span>
+        </div>
+        <div class="s23-cost">
+          <span class="s23-cost-icon">⚠</span>
+          <span>代价：多入口边界缝隙（合规 / 审计风险）</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="s23-summary">
+    <div class="s23-summary-title">📌 一句话总结</div>
+    Hermes 选择了 <em>强 GC 动态化</em> 和 <em>增强的 CE</em>，让 agent 能跨入口复用记忆 / skill 并自动增长；<strong>代价是 AC 偏信任端 + 入口治理偏分治端</strong>，执行环境、工作区、入口认证都更依赖信任与后续治理。
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s015-grid {
+            width: min(1040px, 100%);
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+            align-items: stretch;
+            margin: 0 auto;
+        }
+
+        .s015-card {
+            background: var(--card-bg);
+            border: 1.5px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: left;
+            box-shadow: var(--card-shadow);
+            min-width: 0;
+        }
+
+        .s015-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .s015-tag {
+            margin-top: 8px;
+            padding: 7px 10px;
+            border-radius: 10px;
+            font-size: 0.77em;
+            line-height: 1.55;
+            border: 1px solid rgba(148,163,184,0.24);
+            background: rgba(255,255,255,0.72);
+            color: var(--text-secondary);
+        }
+
+        .s015-list {
+            margin: 10px 0 0 1.1em;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.8em;
+        }
+
+        .s015-list li { margin-bottom: 6px; }
+
+        .s015-code {
+            margin-top: 10px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(124,58,237,0.3);
+            background: rgba(15,23,42,0.88);
+            color: #e2e8f0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.72em;
+            line-height: 1.5;
+            white-space: pre;
+            overflow: hidden;
+        }
+
+        @media (max-width: 1024px) {
+            .s015-grid { grid-template-columns: 1fr; gap: 14px; }
+            .s015-card { padding: 18px; }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">第三章 · 3.4</span></div>
+    <h2 class="page-title animate-ready delay-2" style="margin-bottom:1vh;">TAO vs ReAct：宏观思想 与 微观实现</h2>
+    <p class="page-subtitle animate-ready delay-3" style="margin-bottom:1.8vh;max-width:920px;font-size:clamp(1rem,1.5vw,1.22rem);line-height:1.55;">两者不是对立关系，而是“方法论层级”不同。</p>
+
+    <div class="s015-grid">
+        <div class="s015-card animate-ready delay-4" style="border-color:rgba(37,99,235,0.35);">
+            <div class="s015-title" style="color:#1d4ed8;">🌌 TAO 循环（宏观思想）</div>
+            <div class="s015-tag" style="border-color:rgba(37,99,235,0.28);background:rgba(37,99,235,0.09);color:#1e3a8a;">🍳 类比：学做饭的通用法则（先想、再做、再尝、再改）</div>
+            <ul class="s015-list">
+                <li>强调 Think → Act → Observe 闭环</li>
+                <li>像 PDCA，一种普适方法论</li>
+                <li>不依赖具体 prompt 语法</li>
+            </ul>
+        </div>
+
+        <div class="s015-card animate-ready delay-5" style="border-color:rgba(124,58,237,0.38);">
+            <div class="s015-title" style="color:#7c3aed;">📝 ReAct（微观实现）</div>
+            <div class="s015-tag" style="border-color:rgba(124,58,237,0.3);background:rgba(124,58,237,0.1);color:#6d28d9;">📄 类比：做饭填空题（按格式填写 Thought/Action/Observation）</div>
+            <ul class="s015-list">
+                <li>通过文本格式“逼出”循环过程</li>
+                <li>早期工程落地 TAO 的技巧</li>
+                <li>本质是实现手段，不是思想本体</li>
+            </ul>
+            <div class="s015-code">Thought: 先判断是否需要工具
+Action: get_weather({"city":"北京"})
+Observation: 33°C, 晴</div>
+        </div>
+    </div>
+
+    <div class="animate-ready delay-6" style="margin-top:1.3vh;padding:10px 16px;max-width:980px;border-radius:10px;border:1px solid rgba(22,163,74,0.33);background:rgba(22,163,74,0.1);font-size:0.81em;color:#166534;line-height:1.65;">
+        💡 进化关系：早期常用 ReAct 文本格式实现 TAO；现在更常用 Tool Calling + JSON 实现 TAO，循环思想不变。
+    </div>
+</div>

@@ -1,0 +1,67 @@
+<!-- S020 Subagents + Generator-Evaluator -->
+<style>
+  #s20-wrap { width:100%; max-width:900px; margin:0 auto; }
+  #s20-title { font-family:var(--font-heading); font-size:clamp(1.4rem,2.6vw,2rem); font-weight:700; color:var(--primary); text-align:center; opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s20-pair { display:flex; gap: 1.7rem; margin-top: 1.8rem; flex-wrap:nowrap; }
+  .s20-col { flex:1; min-width:0; background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:12px; padding: 1.2rem 1.4rem; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; }
+  .s20-col.visible { opacity:1; transform:translateY(0); }
+  .s20-col:hover { border-color:var(--accent); }
+  .s20-col-head { display:flex; align-items:center; gap:.4rem; margin-bottom: .55rem; padding-bottom:.3rem; border-bottom:1px solid var(--card-border); }
+  .s20-num { width:1.5rem; height:1.5rem; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:.7rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .s20-name { font-family:var(--font-heading); font-size:clamp(1rem,1.4vw,1.15rem); font-weight:700; color:var(--primary); }
+  .s20-fix { font-size:clamp(.6rem,.9vw,.7rem); color:var(--accent); margin-left:auto; }
+  .s20-def { font-size:clamp(.82rem,1.1vw,.95rem); color:var(--card-text); line-height:1.65; margin-bottom: .65rem; }
+  .s20-ana { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); line-height:1.65; padding:.5rem .6rem; background:rgba(45,90,122,.04); border-radius:6px; margin-bottom: .65rem; }
+  .s20-code { background:rgba(30,35,45,.85); backdrop-filter:blur(8px); border-radius:8px; padding:.8rem 1rem; font-family:'SF Mono',monospace; font-size:clamp(.78rem,1.05vw,.9rem); color:#d4d4d4; line-height:1.7; overflow-x:auto; white-space:pre-wrap; }
+  .s20-code .k { color:#c586c0; } .s20-code .f { color:#dcdcaa; } .s20-code .s { color:#ce9178; } .s20-code .c { color:#6a9955; }
+  @media(max-width:700px){ #s20-pair{ flex-direction:column; } }
+</style>
+
+<div id="s20-wrap">
+  <div id="s20-title">7.7 Subagents + 7.8 Generator-Evaluator</div>
+  <div id="s20-pair">
+    <div class="s20-col">
+      <div class="s20-col-head"><div class="s20-num">7</div><div class="s20-name">Subagents 子代理分治</div><span class="s20-fix">救 ②另一解</span></div>
+      <div class="s20-def">把子任务派发给独立 context 的子 agent，完成后只把结果返回主 agent，主 context 不受污染。</div>
+      <div class="s20-ana"><strong>类比</strong>：外包给顾问——CEO 把专业问题外包，顾问独立项目做几周，只交结论给 CEO。CEO 的主 context 没被中间文档污染。</div>
+      <div class="s20-code">
+<span class="k">def</span> <span class="f">subagent</span>(task, tools):
+    <span class="c"># 独立 messages，不共享主 agent 历史</span>
+    sub_msgs = [
+      {<span class="s">"role"</span>:<span class="s">"system"</span>,
+       <span class="s">"content"</span>:<span class="s">"专注单一子任务"</span>},
+      {<span class="s">"role"</span>:<span class="s">"user"</span>,
+       <span class="s">"content"</span>: task},
+    ]
+    <span class="c"># 内部跑完整 loop，外部看不到中间步骤</span>
+    <span class="k">return</span> <span class="f">run_loop</span>(sub_msgs, tools)
+      </div>
+    </div>
+    <div class="s20-col">
+      <div class="s20-col-head"><div class="s20-num">8</div><div class="s20-name">Generator-Evaluator 生成-评估对抗</div><span class="s20-fix">救 ⑦</span></div>
+      <div class="s20-def">Planner 拆任务 + Generator 写代码 + Evaluator 独立评审。Evaluator 不看过程，只看最终产出。</div>
+      <div class="s20-ana"><strong>类比</strong>：论文评审——作者写论文，审稿人只看论文本身打分；编辑协调修改方向。三角色分离才能保证质量。</div>
+      <div class="s20-code">
+<span class="k">def</span> <span class="f">planner</span>(task): ...
+<span class="k">def</span> <span class="f">generator</span>(subtask): ...
+<span class="k">def</span> <span class="f">evaluator</span>(code, criteria):
+    verdict = <span class="f">call_llm</span>(
+        <span class="s">"批判性审查："</span> + criteria
+        + <span class="s">"\n\n"</span> + code)
+    <span class="k">return</span> {
+        <span class="s">"approved"</span>: <span class="s">"通过"</span> <span class="k">in</span> verdict,
+        <span class="s">"feedback"</span>: verdict}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s20-title');
+  var cols=document.querySelectorAll('.s20-col');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ cols[0].classList.add('visible'); },500);
+  setTimeout(function(){ cols[1].classList.add('visible'); },800);
+})();
+</script>

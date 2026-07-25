@@ -1,0 +1,30 @@
+
+> mini-openclaw-frontend@0.1.0 dev
+> next dev -H 0.0.0.0 --port 3000
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Network:      http://0.0.0.0:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 5.3s
+ ○ Compiling / ...
+ ✓ Compiled / in 2s (1136 modules)
+ GET / 200 in 2143ms
+ ✓ Compiled in 139ms (571 modules)
+ GET / 200 in 30ms
+ ⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ✓ Compiled in 210ms (1136 modules)
+ ✓ Compiled in 222ms (1188 modules)
+ ✓ Compiled in 126ms (1188 modules)
+ ✓ Compiled in 61ms (597 modules)
+ ✓ Compiled in 56ms (597 modules)
+ ✓ Compiled in 62ms (1174 modules)
+ ✓ Compiled in 55ms (597 modules)
+ ✓ Compiled in 68ms (1174 modules)
+ ✓ Compiled in 51ms (597 modules)
+ ✓ Compiled in 63ms (1174 modules)
+ ✓ Compiled in 49ms (597 modules)
+ ✓ Compiled in 56ms (1174 modules)

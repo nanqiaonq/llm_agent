@@ -1,0 +1,60 @@
+<!-- S022 Mechanism x Failure Mode Matrix -->
+<style>
+  #s22-wrap { width:100%; max-width:1080px; margin:0 auto; text-align:center; }
+  #s22-title { font-family:var(--font-heading); font-size:clamp(1.4rem,2.6vw,2rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s22-subtitle { font-size:clamp(.72rem,1vw,.85rem); color:var(--text-dim); margin-top:.3rem; opacity:0; transition:opacity .5s ease; }
+  #s22-table-wrap { margin-top: 1.8rem; overflow-x:auto; opacity:0; transition:opacity .6s ease; }
+  #s22-table { width:100%; border-collapse:collapse; font-size:clamp(1rem, 1.35vw, 1.15rem); background:rgba(255,255,255,0.78); backdrop-filter:blur(12px); border-radius:8px; overflow:hidden; box-shadow:0 4px 20px rgba(45,90,122,0.08); }
+  #s22-table th { background:rgba(45,90,122,.12); color:var(--primary); font-family:var(--font-heading); padding: .85rem .6rem; border:1px solid var(--card-border); font-weight:700; }
+  #s22-table td { padding: .8rem .55rem; border:1px solid var(--card-border); color:var(--card-text); text-align:center; }
+  #s22-table td:first-child { text-align:left; font-weight:700; color:var(--primary); background:rgba(45,90,122,.04); }
+  #s22-table tr:hover td { background:rgba(193,127,89,.04); }
+  .s22-y { color:#27ae60; font-weight:700; }
+  .s22-p { color:var(--accent); font-weight:700; }
+  .s22-n { color:var(--text-dim); }
+  .s22-cn { display:block; font-size:.8em; color:var(--text-dim); font-weight:400; margin-top:.12rem; letter-spacing:.02em; }
+  #s22-note { max-width:680px; margin:.7rem auto 0; font-size:clamp(.68rem,1vw,.78rem); color:var(--text-dim); line-height:1.5; text-align:left; opacity:0; transition:opacity .5s ease; }
+</style>
+
+<div id="s22-wrap">
+  <div id="s22-title">机制 × 故障模式 对照矩阵</div>
+  <div id="s22-subtitle">本课第一张正交矩阵——用来查的，不是用来背的</div>
+  <div id="s22-table-wrap">
+    <table id="s22-table">
+      <thead>
+        <tr>
+          <th>机制 \ 故障</th>
+          <th>① 循环失控</th><th>② Context 溢出</th><th>③ Cache Miss</th>
+          <th>④ Tool 错误吞</th><th>⑤ 状态丢失</th><th>⑥ 缺权限闸</th>
+          <th>⑦ 缺自动化评审</th><th>⑧ 成本失控</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Agent Loop<span class="s22-cn">四相循环</span></td><td class="s22-y">主解</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-p">辅</td><td class="s22-n">-</td><td class="s22-p">辅</td></tr>
+        <tr><td>Tool Use<span class="s22-cn">工具编排</span></td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-y">主解</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td></tr>
+        <tr><td>Progress Tracking<span class="s22-cn">进度追踪</span></td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-y">主解</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td></tr>
+        <tr><td>Context Management<span class="s22-cn">上下文管理</span></td><td class="s22-n">-</td><td class="s22-y">主解</td><td class="s22-y">主解</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-p">辅</td></tr>
+        <tr><td>Feature List<span class="s22-cn">任务拆解</span></td><td class="s22-n">-</td><td class="s22-y">源头</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-p">辅</td></tr>
+        <tr><td>Verification Loop<span class="s22-cn">验证闭环</span></td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-y">下游</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td></tr>
+        <tr><td>Subagents<span class="s22-cn">子代理分治</span></td><td class="s22-n">-</td><td class="s22-y">另一解</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-p">辅</td></tr>
+        <tr><td>Generator-Evaluator<span class="s22-cn">生成-评估对抗</span></td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-n">-</td><td class="s22-y">主解</td><td class="s22-n">-</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="s22-note">
+    <strong style="color:var(--primary);">⑥ 缺权限闸</strong> 和 <strong style="color:var(--primary);">⑧ 成本失控</strong> 在本节仅有部分覆盖，完整主解由第二节课的 <strong>Permission Gate</strong> 和 <strong>Token Budget</strong> 交付。
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s22-title');
+  var subtitle=document.getElementById('s22-subtitle');
+  var table=document.getElementById('s22-table-wrap');
+  var note=document.getElementById('s22-note');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  setTimeout(function(){ table.style.opacity='1'; },700);
+  setTimeout(function(){ note.style.opacity='1'; },1200);
+})();
+</script>

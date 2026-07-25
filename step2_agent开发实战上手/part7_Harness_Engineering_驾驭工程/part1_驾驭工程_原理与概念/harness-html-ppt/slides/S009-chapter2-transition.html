@@ -1,0 +1,26 @@
+<!-- S009 第二章过渡 -->
+<div class="layout-cover" style="text-align:center;width:100%;">
+
+  <div class="chapter-badge anim-fade-in" style="animation-delay:0.2s;opacity:0;background:rgba(231,76,60,0.1);color:#c0392b;">第二章</div>
+
+  <h1 class="slide-title anim-fade-in" style="animation-delay:0.5s;opacity:0;font-size:clamp(2.2rem,4.5vw,3.5rem);margin-top: 1.8rem;">
+    失效坐标系
+  </h1>
+
+  <p class="slide-subtitle anim-fade-in" style="animation-delay:0.8s;opacity:0;margin-top:0.5rem;">
+    看 naive agent 如何以八种方式失效
+  </p>
+
+  <div class="anim-fade-in" style="animation-delay:1.1s;opacity:0;margin-top:2.5rem;max-width:600px;margin-left:auto;margin-right:auto;">
+    <div style="background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.15);border-radius:0.8rem;padding:1.2rem 1.5rem;font-size:0.9rem;color:var(--card-text);line-height:1.7;text-align:left;">
+      <strong style="color:#c0392b;">接下来你会看到：</strong><br>
+      一段 <strong>~100 行</strong> 的 naive agent——它没有任何 harness 保护，所有的 LLM + tool calling 就是教科书式的 while True + JSON schema。<br><br>
+      然后我们会把它放到一个非常朴素的任务里："读一个 Python 测试文件、修 bug、跑 pytest 确认通过"。<br><br>
+      这个任务在 Claude Code 里 2 分钟能做完，在 naive agent 里——你会看到它用<strong>三种不同的方式失效</strong>。
+    </div>
+  </div>
+
+  <div class="anim-fade-in" style="animation-delay:1.5s;opacity:0;margin-top:2rem;font-size:0.85rem;color:var(--text-dim);">
+    它们不是从天上掉下来的"最佳实践"，它们是被一次次实战教训打磨出来的工程经验。
+  </div>
+</div>

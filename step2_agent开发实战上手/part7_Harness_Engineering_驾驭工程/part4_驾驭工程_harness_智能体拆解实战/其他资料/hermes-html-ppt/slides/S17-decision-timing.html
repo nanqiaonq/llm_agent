@@ -1,0 +1,542 @@
+<style>
+/* =====================================================
+   S17 · 判定时机：turn-end vs mid-tool（🔴🔴 toggle 时序对比）
+   FM 清单：
+     FM-1: 入口默认 state=correct，cleanup 重置 state
+     FM-2: 切换 toggle 不重建 DOM，只切 .active class
+     FM-3: timerIds + click handler 全部解绑（cleanup）
+   ===================================================== */
+
+/* ── 居中铁律（HARD GATE）── */
+.s17d-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.5rem 3rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  color: var(--text-primary);
+  position: relative;
+}
+
+/* 蓝图网格背景 */
+.s17d-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(91,140,184,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91,140,184,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+.s17d-wrap > * { position: relative; z-index: 1; }
+
+/* ── 头部 ── */
+.s17d-header {
+  text-align: center;
+  margin-bottom: 1.1rem;
+}
+.s17d-chapter-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--secondary);
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.s17d-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.3rem;
+  letter-spacing: -0.01em;
+}
+.s17d-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-subtle);
+  margin: 0;
+}
+
+/* ── Toggle 标签按钮 ── */
+.s17d-toggle-row {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+  margin-bottom: 1.1rem;
+}
+.s17d-toggle-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1.3rem;
+  border-radius: 6px;
+  border: 1.5px solid var(--card-border);
+  background: var(--card-bg-soft);
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  letter-spacing: 0.02em;
+}
+.s17d-toggle-btn:hover {
+  transform: translateY(-1px);
+}
+.s17d-toggle-btn.active.correct {
+  border-color: var(--secondary);
+  background: rgba(125,211,192,0.13);
+  color: var(--secondary);
+}
+.s17d-toggle-btn.active.wrong {
+  border-color: var(--accent-red);
+  background: rgba(229,115,115,0.14);
+  color: var(--accent-red);
+}
+
+/* ── 时序图主体容器 ── */
+.s17d-timeline-wrap {
+  width: 100%;
+  max-width: 1100px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem 1.2rem;
+  position: relative;
+}
+.s17d-timeline-svg {
+  width: 100%;
+  height: 280px;
+  display: block;
+  overflow: visible;
+}
+
+/* SVG 节点样式 */
+.s17d-node-rect {
+  rx: 5;
+  ry: 5;
+  stroke-width: 1.5;
+  transition: opacity 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
+}
+.s17d-node-rect.user-zone {
+  fill: rgba(212,165,116,0.12);
+  stroke: var(--accent-amber);
+}
+.s17d-node-rect.bg-zone {
+  fill: rgba(91,140,184,0.08);
+  stroke: rgba(91,140,184,0.4);
+}
+.s17d-node-rect.spawn-correct {
+  fill: rgba(125,211,192,0.14);
+  stroke: var(--secondary);
+}
+.s17d-node-rect.spawn-wrong {
+  fill: rgba(229,115,115,0.14);
+  stroke: var(--accent-red);
+}
+.s17d-node-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  fill: var(--text-body);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.s17d-node-text.title {
+  font-weight: 700;
+  font-size: 12px;
+  fill: var(--text-primary);
+}
+.s17d-node-text.amber { fill: var(--accent-amber); }
+.s17d-node-text.cyan  { fill: var(--secondary); }
+.s17d-node-text.red   { fill: var(--accent-red); }
+.s17d-node-text.dim   { fill: var(--text-dim); font-size: 10px; }
+
+/* SVG 连线 */
+.s17d-arrow {
+  stroke: rgba(91,140,184,0.5);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+/* 红色虚线分界 */
+.s17d-divider {
+  stroke: var(--accent-red);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+  fill: none;
+  opacity: 0.7;
+}
+.s17d-divider-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  fill: var(--accent-red);
+  text-anchor: middle;
+  opacity: 0.85;
+}
+
+/* 区段标签 */
+.s17d-zone-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  fill: var(--text-subtle);
+  text-anchor: start;
+  letter-spacing: 0.04em;
+}
+.s17d-zone-label.amber { fill: var(--accent-amber); }
+.s17d-zone-label.dim   { fill: var(--text-dim); }
+
+/* spawn 触发节点（动态位置切换，opacity 控制显隐） */
+.s17d-spawn-node {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.s17d-spawn-node.visible {
+  opacity: 1;
+}
+
+/* LLM 流量脉冲线（mid-tool 模式专用） */
+.s17d-conflict-line {
+  stroke: var(--accent-red);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+  fill: none;
+  opacity: 0;
+}
+.s17d-conflict-line.visible {
+  opacity: 1;
+  animation: s17d-pulse-stroke 1.6s ease-in-out infinite;
+}
+@keyframes s17d-pulse-stroke {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* 冲突警示标签（仅 wrong 模式） */
+.s17d-conflict-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  fill: var(--accent-red);
+  text-anchor: middle;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.s17d-conflict-tag.visible { opacity: 1; }
+
+/* ── 底部说明区（正确/错误警示） ── */
+.s17d-callout {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 0.95rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  border-left: 3px solid var(--secondary);
+  background: rgba(125,211,192,0.08);
+  color: var(--text-body);
+  display: none;
+}
+.s17d-callout.visible { display: block; }
+.s17d-callout.wrong {
+  border-left-color: var(--accent-red);
+  background: rgba(229,115,115,0.09);
+}
+.s17d-callout-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--secondary);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+.s17d-callout.wrong .s17d-callout-title {
+  color: var(--accent-red);
+}
+.s17d-callout-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.s17d-callout-list li {
+  margin-bottom: 0.15rem;
+}
+.s17d-callout-accent {
+  color: var(--accent-amber);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+.s17d-callout.wrong .s17d-callout-accent {
+  color: var(--accent-red);
+}
+
+/* ── 折叠源码 ── */
+.s17d-code-wrap {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 0.85rem;
+}
+.s17d-code-toggle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--secondary);
+  background: none;
+  border: 1px dashed var(--card-border-strong);
+  border-radius: 5px;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.s17d-code-toggle:hover {
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+}
+.s17d-code-toggle .s17d-arrow-icon {
+  display: inline-block;
+  margin-right: 0.3rem;
+  transition: transform 0.2s ease;
+}
+.s17d-code-toggle.expanded .s17d-arrow-icon {
+  transform: rotate(90deg);
+}
+.s17d-code-block {
+  display: none;
+  margin-top: 0.55rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 0.85rem 1.1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  color: var(--text-body);
+  line-height: 1.55;
+  white-space: pre;
+  overflow-x: auto;
+}
+.s17d-code-block.visible { display: block; }
+.s17d-code-comment { color: var(--text-dim); }
+.s17d-code-key     { color: var(--accent-amber); }
+.s17d-code-cyan    { color: var(--secondary); }
+
+/* ── 底部结论 pill ── */
+.s17d-pill {
+  margin-top: 0.85rem;
+  padding: 0.5rem 1.2rem;
+  background: rgba(212,165,116,0.1);
+  border: 1.5px solid rgba(212,165,116,0.35);
+  border-radius: 22px;
+  font-size: 0.82rem;
+  color: var(--accent-amber);
+  font-weight: 600;
+  text-align: center;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+}
+.s17d-pill .s17d-pill-accent {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+}
+
+/* ── prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .s17d-conflict-line.visible { animation: none !important; opacity: 0.85 !important; }
+  .s17d-spawn-node, .s17d-conflict-tag, .s17d-conflict-line {
+    transition: none !important;
+  }
+}
+
+/* ── 低高屏响应 ── */
+@media (max-height: 760px) {
+  .s17d-wrap { padding: 1.6rem 2.2rem; }
+  .s17d-title { font-size: 1.35rem; }
+  .s17d-subtitle { font-size: 0.8rem; }
+  .s17d-timeline-svg { height: 240px; }
+}
+@media (max-height: 640px) {
+  .s17d-wrap { padding: 1rem 1.5rem; }
+  .s17d-title { font-size: 1.2rem; }
+  .s17d-timeline-svg { height: 210px; }
+  .s17d-callout, .s17d-code-block { font-size: 0.78rem; }
+}
+</style>
+
+<div class="slide s17d-wrap" data-slide-id="S17">
+
+  <!-- 头部 -->
+  <div class="s17d-header">
+    <span class="s17d-chapter-tag">C02 · §2.3 判定时机</span>
+    <h1 class="s17d-title">判定时机：turn-end vs mid-tool</h1>
+    <p class="s17d-subtitle">为什么 nudge 不能在 tool 调用中间触发？</p>
+  </div>
+
+  <!-- Toggle 切换按钮 -->
+  <div class="s17d-toggle-row" id="s17d-toggle-row">
+    <button class="s17d-toggle-btn correct active" id="s17d-btn-correct" data-mode="correct" type="button">
+      ✅ 正确做法：turn-end 触发
+    </button>
+    <button class="s17d-toggle-btn wrong" id="s17d-btn-wrong" data-mode="wrong" type="button">
+      ❌ 错误做法：mid-tool 触发
+    </button>
+  </div>
+
+  <!-- 时序图主体（SVG） -->
+  <div class="s17d-timeline-wrap">
+    <svg class="s17d-timeline-svg" id="s17d-timeline-svg"
+         viewBox="0 0 1040 280" preserveAspectRatio="xMidYMid meet"
+         role="img" aria-label="判定时机时序图：turn-end 与 mid-tool 对比">
+
+      <defs>
+        <marker id="s17d-arrowhead" markerWidth="8" markerHeight="8"
+                refX="7" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="rgba(91,140,184,0.6)" />
+        </marker>
+        <marker id="s17d-arrowhead-red" markerWidth="8" markerHeight="8"
+                refX="7" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="var(--accent-red)" />
+        </marker>
+      </defs>
+
+      <!-- 区段标签（顶部） -->
+      <text class="s17d-zone-label amber" x="20" y="28">用户可见区 — agent 主流</text>
+      <text class="s17d-zone-label dim"   x="720" y="28">后台区 — runs AFTER, never competes with attention</text>
+
+      <!-- ① user 输入 -->
+      <rect class="s17d-node-rect user-zone" x="30"  y="55" width="120" height="56"/>
+      <text class="s17d-node-text title amber" x="90" y="75">① user 输入</text>
+      <text class="s17d-node-text dim"          x="90" y="95">user message</text>
+
+      <!-- 箭头 ① → tool loop -->
+      <path class="s17d-arrow" d="M 150,83 L 200,83" marker-end="url(#s17d-arrowhead)"/>
+
+      <!-- tool 循环框（T1/T2/T3） -->
+      <rect class="s17d-node-rect user-zone" x="200" y="50" width="290" height="66"/>
+      <text class="s17d-node-text title amber" x="345" y="69">tool 循环</text>
+      <!-- T1 / T2 / T3 子格 -->
+      <rect class="s17d-node-rect user-zone" x="215" y="80" width="55" height="28" id="s17d-t1"/>
+      <text class="s17d-node-text amber" x="242.5" y="94">T1</text>
+      <rect class="s17d-node-rect user-zone" x="282" y="80" width="55" height="28" id="s17d-t2"/>
+      <text class="s17d-node-text amber" x="309.5" y="94">T2</text>
+      <rect class="s17d-node-rect user-zone" x="349" y="80" width="55" height="28" id="s17d-t3"/>
+      <text class="s17d-node-text amber" x="376.5" y="94">T3</text>
+      <text class="s17d-node-text dim" x="447" y="94">+iter</text>
+
+      <!-- 箭头 tool 循环 → ② -->
+      <path class="s17d-arrow" d="M 490,83 L 540,83" marker-end="url(#s17d-arrowhead)"/>
+
+      <!-- ② final_response 生成 -->
+      <rect class="s17d-node-rect user-zone" x="540" y="55" width="140" height="56"/>
+      <text class="s17d-node-text title amber" x="610" y="75">② final_response</text>
+      <text class="s17d-node-text dim"          x="610" y="95">response delivered</text>
+
+      <!-- 红色虚线分界（在 ② 之后） -->
+      <line class="s17d-divider" x1="700" y1="35" x2="700" y2="245"/>
+      <text class="s17d-divider-label" x="700" y="22">turn 边界</text>
+
+      <!-- 箭头 ② → ③（跨过分界） -->
+      <path class="s17d-arrow" d="M 680,83 L 740,83" marker-end="url(#s17d-arrowhead)"/>
+
+      <!-- ③ turn 末判定 -->
+      <rect class="s17d-node-rect bg-zone" x="740" y="55" width="135" height="56"/>
+      <text class="s17d-node-text title cyan" x="807.5" y="74">③ turn 末判定</text>
+      <text class="s17d-node-text dim"         x="807.5" y="94">_iters &gt;= interval ?</text>
+
+      <!-- 箭头 ③ → ④（正确路径，cyan，默认显示） -->
+      <path class="s17d-arrow" id="s17d-arrow-correct"
+            d="M 875,83 L 920,83" marker-end="url(#s17d-arrowhead)"/>
+
+      <!-- ④ spawn_background_review（后台 / turn-end 路径） -->
+      <g class="s17d-spawn-node visible" id="s17d-spawn-correct">
+        <rect class="s17d-node-rect spawn-correct" x="920" y="55" width="115" height="56"/>
+        <text class="s17d-node-text title cyan" x="977.5" y="74">④ spawn</text>
+        <text class="s17d-node-text cyan"        x="977.5" y="92">background_review</text>
+        <text class="s17d-node-text dim"         x="977.5" y="106">quiet=True</text>
+      </g>
+
+      <!-- ────── mid-tool 错位演示元素（默认隐藏） ────── -->
+
+      <!-- 错位 spawn 节点：插在 T2 中间下方 -->
+      <g class="s17d-spawn-node" id="s17d-spawn-wrong">
+        <rect class="s17d-node-rect spawn-wrong" x="252" y="160" width="115" height="56"/>
+        <text class="s17d-node-text title red" x="309.5" y="179">spawn_review</text>
+        <text class="s17d-node-text red"        x="309.5" y="197">在 T2 中间触发</text>
+        <text class="s17d-node-text dim"        x="309.5" y="211">mid-tool</text>
+      </g>
+
+      <!-- T2 → spawn 的红色虚线连接 -->
+      <path class="s17d-conflict-line" id="s17d-line-t2-spawn"
+            d="M 309.5,108 L 309.5,160"
+            marker-end="url(#s17d-arrowhead-red)"/>
+
+      <!-- T2 LLM 流量脉冲（向上箭头 — 抢主线 attention） -->
+      <path class="s17d-conflict-line" id="s17d-line-pulse-t2"
+            d="M 309.5,80 L 309.5,38"/>
+
+      <!-- spawn → 同时调 LLM API 的脉冲 -->
+      <path class="s17d-conflict-line" id="s17d-line-pulse-spawn"
+            d="M 367,188 C 460,188 540,200 620,210"/>
+
+      <!-- 冲突警示标签 1：T2 LLM 调用 -->
+      <text class="s17d-conflict-tag" id="s17d-tag-llm-1" x="180" y="40">
+        LLM 调用 #1
+      </text>
+
+      <!-- 冲突警示标签 2：review LLM 调用 -->
+      <text class="s17d-conflict-tag" id="s17d-tag-llm-2" x="640" y="225">
+        LLM 调用 #2 — 并发！
+      </text>
+
+      <!-- 冲突中央警示 -->
+      <text class="s17d-conflict-tag" id="s17d-tag-conflict" x="500" y="252">
+        ⚠ 两个 LLM API 调用并发 → rate limit / context confusion
+      </text>
+
+    </svg>
+  </div>
+
+  <!-- 底部说明区（两套 callout，互斥显示） -->
+  <div class="s17d-callout visible" id="s17d-callout-correct">
+    <div class="s17d-callout-title">✅ turn-end 触发：错位避免</div>
+    <ul class="s17d-callout-list">
+      <li><span class="s17d-callout-accent">turn 末是天然完整事件点</span>——nudge 拿得到完整 tool 调用历史，prompt 才有信息可总结</li>
+      <li><span class="s17d-callout-accent">不抢 user-facing 模型 attention</span>——`spawn_review` 在 response delivered 之后，主链路无干扰</li>
+    </ul>
+  </div>
+
+  <div class="s17d-callout wrong" id="s17d-callout-wrong">
+    <div class="s17d-callout-title">❌ mid-tool 触发：错位演示 → 资源争抢</div>
+    <ul class="s17d-callout-list">
+      <li><span class="s17d-callout-accent">两个 LLM API 调用并发</span>——T2 还在跑，review agent 又同时调 model API</li>
+      <li><span class="s17d-callout-accent">rate limit / context confusion 风险</span>——同账户并发命中限流；review 拿到的对话不完整（T3 还没发生）</li>
+    </ul>
+  </div>
+
+  <!-- 折叠源码摘要 -->
+  <div class="s17d-code-wrap">
+    <button class="s17d-code-toggle" id="s17d-code-toggle" type="button" aria-expanded="false">
+      <span class="s17d-arrow-icon">▶</span> 展开源码：run_agent.py:13918-13941
+    </button>
+    <pre class="s17d-code-block" id="s17d-code-block"><span class="s17d-code-comment"># Check skill trigger NOW — based on how many tool iterations THIS turn used.</span>
+_should_review_skills = <span class="s17d-code-cyan">False</span>
+<span class="s17d-code-key">if</span> (self._skill_nudge_interval &gt; 0
+        <span class="s17d-code-key">and</span> self._iters_since_skill &gt;= self._skill_nudge_interval
+        <span class="s17d-code-key">and</span> <span class="s17d-code-cyan">"skill_manage"</span> <span class="s17d-code-key">in</span> self.valid_tool_names):
+    _should_review_skills = <span class="s17d-code-cyan">True</span>
+    self._iters_since_skill = 0   <span class="s17d-code-comment"># 触发后归零</span>
+
+<span class="s17d-code-comment"># Background memory/skill review — runs AFTER the response is delivered</span>
+<span class="s17d-code-comment"># so it never competes with the user's task for model attention.</span>
+<span class="s17d-code-key">if</span> final_response <span class="s17d-code-key">and not</span> interrupted <span class="s17d-code-key">and</span> (_should_review_memory <span class="s17d-code-key">or</span> _should_review_skills):
+    self._spawn_background_review(...)</pre>
+  </div>
+
+  <!-- 结论 pill -->
+  <div class="s17d-pill">
+    判定 = <span class="s17d-pill-accent">守门人</span> · 时机 = <span class="s17d-pill-accent">不抢 attention</span> — 错位会引发结构性 bug
+  </div>
+
+</div>

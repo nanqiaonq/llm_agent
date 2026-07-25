@@ -1,0 +1,373 @@
+<style>
+/* ── S27 · 入口治理 · ACP vs Gateway 双入口认证（v2 静态简化版）── */
+.s22-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.2rem 2rem;
+  overflow-y: auto;
+  gap: 0.7rem;
+}
+
+.s22-header {
+  text-align: left;
+  flex-shrink: 0;
+}
+.s22-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--accent-amber);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.s22-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.25;
+  font-style: normal;
+}
+.s22-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}
+.s22-subtitle strong { color: var(--accent-amber); font-weight: 600; }
+
+/* 概念条 */
+.s22-concept {
+  background: rgba(125, 211, 192, 0.06);
+  border: 1px solid var(--rule-line);
+  border-left: 3px solid var(--secondary);
+  border-radius: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-body);
+  flex-shrink: 0;
+}
+.s22-concept strong { color: var(--accent-amber); font-weight: 600; }
+
+/* 主体三栏：左 panel + 中央 hermes + 右 panel */
+.s22-main {
+  display: grid;
+  grid-template-columns: 1fr 0.55fr 1fr;
+  gap: 0.7rem;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+/* 双 panel 通用 */
+.s22-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.7rem;
+  padding: 0.85rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+}
+.s22-panel-acp { border-left: 3px solid var(--secondary); }
+.s22-panel-gw  { border-left: 3px solid var(--accent-amber); }
+
+.s22-panel-file {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.s22-panel-file-sub {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--text-dim);
+  margin-top: 0.05rem;
+}
+.s22-panel-tag {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  align-self: flex-start;
+  letter-spacing: 0.04em;
+}
+.s22-panel-tag-acp {
+  background: rgba(125, 211, 192, 0.15);
+  color: var(--secondary);
+  border: 1px solid rgba(125, 211, 192, 0.35);
+}
+.s22-panel-tag-gw {
+  background: rgba(212, 165, 116, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid rgba(212, 165, 116, 0.35);
+}
+
+.s22-section-label {
+  font-size: 0.66rem;
+  color: var(--text-subtle);
+  font-weight: 600;
+  margin-top: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.s22-auth-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-body);
+  margin-bottom: 0.22rem;
+}
+.s22-auth-row::before {
+  content: "·";
+  color: var(--text-dim);
+  font-weight: 700;
+  margin-top: -1px;
+}
+.s22-auth-row strong { color: var(--text-primary); font-weight: 600; }
+.s22-auth-row code {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent-amber);
+  background: rgba(212, 165, 116, 0.1);
+  padding: 0.04rem 0.3rem;
+  border-radius: 0.2rem;
+}
+
+.s22-clients-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+}
+.s22-client-chip {
+  font-size: 0.68rem;
+  padding: 0.16rem 0.5rem;
+  border-radius: 0.3rem;
+  background: var(--card-bg-soft);
+  border: 1px solid var(--rule-line);
+  color: var(--text-body);
+}
+
+/* 中央 Hermes 共享实例 */
+.s22-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 0.5rem;
+  position: relative;
+}
+.s22-hermes-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,165,116,0.18) 0%, rgba(36,49,66,0.85) 70%);
+  border: 2px solid rgba(212, 165, 116, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  box-shadow: 0 0 30px rgba(212, 165, 116, 0.18);
+}
+.s22-hermes-name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+}
+.s22-hermes-sub {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-subtle);
+  text-align: center;
+  line-height: 1.2;
+}
+.s22-shared-note {
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+  text-align: center;
+  line-height: 1.5;
+}
+.s22-shared-note strong { color: var(--accent-amber); font-weight: 600; }
+.s22-shared-files {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-body);
+  margin-top: 0.15rem;
+}
+
+/* 警示行（替代红色虚线 pulse） */
+.s22-warning-line {
+  background: rgba(229, 115, 115, 0.07);
+  border: 1px solid rgba(229, 115, 115, 0.3);
+  border-radius: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.85rem;
+  color: #e5a8a8;
+  line-height: 1.55;
+  flex-shrink: 0;
+}
+.s22-warning-line strong { color: #e57373; font-weight: 600; }
+
+/* 底部 callout */
+.s22-callout {
+  background: linear-gradient(135deg, rgba(91, 140, 184, 0.08), rgba(212, 165, 116, 0.06));
+  border: 1px solid var(--rule-line);
+  border-radius: 0.55rem;
+  padding: 0.65rem 0.95rem;
+  flex-shrink: 0;
+}
+.s22-callout-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  margin-bottom: 0.4rem;
+}
+.s22-callout-row {
+  font-size: 0.82rem;
+  color: var(--text-body);
+  line-height: 1.55;
+  margin-bottom: 0.22rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.s22-callout-tag {
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 5rem;
+}
+.s22-callout-tag-data { color: var(--accent-amber); }
+.s22-callout-tag-auth { color: var(--secondary); }
+.s22-callout-row strong { color: var(--text-primary); font-weight: 600; }
+
+.s22-source-ref {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--rule-line-dashed);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.s22-source-ref strong { color: var(--text-subtle); }
+
+/* 中精简版底部单行源码 footnote */
+.s22-source-ref-line {
+  margin-top: 0.6rem;
+  padding: 0.4rem 0.85rem;
+  border-top: 1px dashed var(--rule-line-dashed);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  text-align: center;
+}
+.s22-source-ref-line strong { color: var(--text-subtle); margin-right: 0.3rem; }
+.s22-source-ref-line code {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--secondary);
+  background: rgba(125, 211, 192, 0.08);
+  padding: 0.04rem 0.32rem;
+  border-radius: 3px;
+  margin: 0 0.2rem;
+}
+</style>
+
+<div class="s22-wrap">
+  <div class="s22-header">
+    <div class="s22-chapter-label">§3.4 &nbsp;—&nbsp; 入口怎么组织 · Hermes 偏分治端</div>
+    <h2 class="s22-title">三路独立认证 · 同一 Hermes 实例下没有统一身份中枢</h2>
+    <div class="s22-subtitle">
+      <strong>三套认证 = ACP runtime credential + per-platform bot token/OAuth + 用户级 DM 审批</strong> · 互相不交叉验证
+    </div>
+  </div>
+
+  <div class="s22-main">
+    <!-- 左：ACP 入口 -->
+    <div class="s22-panel s22-panel-acp">
+      <div class="s22-panel-file">
+        acp_adapter/server.py
+        <div class="s22-panel-file-sub">1428 行 · ACP 协议（stdio + local-trust）</div>
+      </div>
+      <div class="s22-panel-tag s22-panel-tag-acp">IDE 入口</div>
+
+      <div class="s22-section-label">认证机制</div>
+      <div class="s22-auth-row"><div><code>authenticate(method_id)</code> 仅检测 LLM provider 配置（<strong>不做用户身份认证</strong>）</div></div>
+      <div class="s22-auth-row"><div>每次 tool call 弹 ACP <code>request_permission</code>：<strong>allow_once / allow_always / deny</strong></div></div>
+      <div class="s22-auth-row"><div>信任模型：<strong>stdio 本地通信</strong>，假设 IDE 客户端身份可信</div></div>
+
+      <div class="s22-section-label">客户端</div>
+      <div class="s22-clients-list">
+        <span class="s22-client-chip">VS Code</span>
+        <span class="s22-client-chip">Zed</span>
+        <span class="s22-client-chip">JetBrains</span>
+      </div>
+    </div>
+
+    <!-- 中：Hermes 共享实例 -->
+    <div class="s22-center">
+      <div class="s22-hermes-circle">
+        <div class="s22-hermes-name">Hermes</div>
+        <div class="s22-hermes-name" style="font-size:0.78rem;">Agent</div>
+        <div class="s22-hermes-sub">shared instance</div>
+      </div>
+      <div class="s22-shared-note">
+        <strong>同一份数据</strong>
+        <div class="s22-shared-files">MEMORY.md · USER.md · skills/</div>
+      </div>
+    </div>
+
+    <!-- 右：Gateway 入口 -->
+    <div class="s22-panel s22-panel-gw">
+      <div class="s22-panel-file">
+        gateway/pairing.py
+        <div class="s22-panel-file-sub">310 行 · 统一 DM Pairing System（19 平台共用）</div>
+      </div>
+      <div class="s22-panel-tag s22-panel-tag-gw">聊天平台入口</div>
+
+      <div class="s22-section-label">认证机制</div>
+      <div class="s22-auth-row"><div>未知用户 DM bot → <strong>8 字符随机 code</strong>（去 0/O/1/I 防混淆）</div></div>
+      <div class="s22-auth-row"><div>bot owner CLI 批准：<code>hermes pair approve &lt;code&gt;</code></div></div>
+      <div class="s22-auth-row"><div>每平台独立 <code>{platform}-approved.json</code>（chmod 0600）</div></div>
+      <div class="s22-auth-row"><div>1 小时过期 / 10 分钟限频 / 5 次失败锁定 1 小时</div></div>
+
+      <div class="s22-section-label">客户端（19 平台）</div>
+      <div class="s22-clients-list">
+        <span class="s22-client-chip">Telegram</span>
+        <span class="s22-client-chip">飞书</span>
+        <span class="s22-client-chip">Slack</span>
+        <span class="s22-client-chip">Discord</span>
+        <span class="s22-client-chip">微信</span>
+        <span class="s22-client-chip">钉钉</span>
+        <span class="s22-client-chip">…等 19 个</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="s22-warning-line">
+    <strong>⚠ 边界缝隙（3 套互不交叉）：</strong>ACP 的 <code style="color:#e5a8a8;background:rgba(229,115,115,0.1);padding:0.04rem 0.3rem;border-radius:0.2rem;font-family:var(--font-mono);font-size:0.72rem;">allow_always</code> ≠ 飞书 OAuth 已授权用户 ≠ DM 已审批用户 · <strong>互相不同步、不交叉验证</strong>
+  </div>
+
+  <div class="s22-source-ref-line">
+    <strong>源码：</strong>
+    <code>acp_adapter/server.py:495-507</code>（ACP authenticate）·
+    <code>gateway/platforms/*.py</code>（per-platform 认证）·
+    <code>gateway/pairing.py:151-218</code>（用户级 DM 审批层）
+  </div>
+</div>

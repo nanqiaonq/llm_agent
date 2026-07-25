@@ -1,0 +1,92 @@
+<!-- S012 Failure Timeline - vertical timeline of 8 faults -->
+<style>
+  #s12-wrap { width:100%; max-width:780px; margin:0 auto; }
+  #s12-title { font-family:var(--font-heading); font-size:clamp(1.6rem,3vw,2.4rem); font-weight:700; color:var(--primary); text-align:center; opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s12-subtitle { text-align:center; font-size:clamp(.78rem,1.1vw,.9rem); color:var(--text-dim); margin-top:.3rem; opacity:0; transition:opacity .5s ease; }
+  .s12-timeline { position:relative; margin:1.2rem 0 0 1.5rem; padding-left:1.2rem; border-left:2px solid var(--card-border); }
+  .s12-node { position:relative; margin-bottom: 1rem; opacity:0; transform:translateX(-12px); transition:opacity .5s ease, transform .5s ease; }
+  .s12-node.visible { opacity:1; transform:translateX(0); }
+  .s12-dot { position:absolute; left:-1.55rem; top:.35rem; width:.7rem; height:.7rem; border-radius:50%; background:var(--accent); border:2px solid var(--bg); }
+  .s12-card { background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:10px; padding: 1rem 1.2rem; }
+  .s12-card:hover { border-color:var(--accent); }
+  .s12-head { display:flex; align-items:center; gap:.4rem; margin-bottom:.2rem; }
+  .s12-num { width:1.4rem; height:1.4rem; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:.7rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .s12-name { font-family:var(--font-heading); font-size:clamp(.82rem,1.2vw,.95rem); font-weight:700; color:var(--primary); }
+  .s12-tag { font-size:clamp(.65rem,.9vw,.75rem); color:var(--accent); margin-left:auto; }
+  .s12-desc { font-size:clamp(.7rem,1vw,.82rem); color:var(--card-text); line-height:1.55; }
+</style>
+
+<div id="s12-wrap">
+  <div id="s12-title">naive agent 失效时间线</div>
+  <div id="s12-subtitle">从启动到崩溃，8 个故障按发生顺序排列</div>
+
+  <div class="s12-timeline">
+    <div class="s12-node" data-t="0">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">1</div><div class="s12-name">循环失控</div><span class="s12-tag">第 1 轮</span></div>
+        <div class="s12-desc">while True 无终止验证，模型以为任务没完一直跑，API 额度无限消耗。</div>
+      </div>
+    </div>
+    <div class="s12-node" data-t="1">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">2</div><div class="s12-name">Context 溢出</div><span class="s12-tag">第 3 轮</span></div>
+        <div class="s12-desc">messages 无限 append，轮次越多 prompt 越长，Token 费用失控。</div>
+      </div>
+    </div>
+    <div class="s12-node" data-t="2">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">3</div><div class="s12-name">Cache Miss</div><span class="s12-tag">每轮触发</span></div>
+        <div class="s12-desc">system prompt 每轮被改写，前缀不稳定导致 prompt cache 全部作废，延迟翻倍。</div>
+      </div>
+    </div>
+    <div class="s12-node" data-t="3">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">4</div><div class="s12-name">Tool 错误吞</div><span class="s12-tag">第 2 轮</span></div>
+        <div class="s12-desc">except 吞掉异常返回空字符串，agent 以为成功，继续在错误基础上操作。</div>
+      </div>
+    </div>
+    <div class="s12-node" data-t="4">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">5</div><div class="s12-name">状态丢失</div><span class="s12-tag">Session 结束</span></div>
+        <div class="s12-desc">无 progress 文件，关闭窗口后所有进度清零，长任务无法跨天续传。</div>
+      </div>
+    </div>
+    <div class="s12-node" data-t="5">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">6</div><div class="s12-name">缺权限闸</div><span class="s12-tag">任意时刻</span></div>
+        <div class="s12-desc">无 Permission Gate，rm -rf / sudo 可直接执行，数据毁损、生产事故。</div>
+      </div>
+    </div>
+    <div class="s12-node" data-t="6">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">7</div><div class="s12-name">缺自动化评审</div><span class="s12-tag">任务完成时</span></div>
+        <div class="s12-desc">agent 自己说"做完了"就退出，没有独立 Evaluator 把关，发现问题时产物已交付。</div>
+      </div>
+    </div>
+    <div class="s12-node" data-t="7">
+      <div class="s12-dot"></div>
+      <div class="s12-card">
+        <div class="s12-head"><div class="s12-num">8</div><div class="s12-name">成本失控</div><span class="s12-tag">全程累积</span></div>
+        <div class="s12-desc">无 token budget，循环跑多久 API 烧多少，一个长任务可能耗尽整月预算。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s12-title');
+  var subtitle=document.getElementById('s12-subtitle');
+  var nodes=document.querySelectorAll('.s12-node');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  nodes.forEach(function(n,i){ setTimeout(function(){ n.classList.add('visible'); },700+i*200); });
+})();
+</script>

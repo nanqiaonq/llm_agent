@@ -1,0 +1,674 @@
+<style>
+/* === S03 局部样式 === */
+#S03 {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+.s03-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.8rem 2rem;
+  box-sizing: border-box;
+  width: 100%;
+  overflow-wrap: anywhere;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 标题 */
+.s03-headline {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  transform: translateY(-16px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.s03-headline.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.s03-headline h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+.s03-headline h2 span.hl-amber {
+  color: var(--accent-amber);
+}
+
+/* 两栏主体 */
+.s03-main {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(420px, 1.3fr);
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  align-items: start;
+}
+
+/* ========================
+   左侧：行业共识时间线
+   ======================== */
+.s03-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 1.2rem;
+}
+
+/* 垂直连线 */
+.s03-timeline::before {
+  content: '';
+  position: absolute;
+  left: 1.55rem;
+  top: 1.6rem;
+  bottom: 1.6rem;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent-amber), var(--accent-teal), var(--accent-amber));
+  opacity: 0.5;
+}
+
+.tl-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.85rem 0.8rem 0.85rem 2.4rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  opacity: 0;
+  transform: translateX(-20px);
+}
+.tl-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.tl-item:hover {
+  background: var(--hover-bg);
+  transform: translateX(4px);
+}
+
+/* 节点圆点 */
+.tl-dot {
+  position: absolute;
+  left: 0.9rem;
+  top: 1.05rem;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-amber);
+  background: var(--bg-mid);
+  transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  z-index: 1;
+  flex-shrink: 0;
+}
+.tl-item.tl-teal .tl-dot {
+  border-color: var(--accent-teal);
+}
+.tl-item:hover .tl-dot {
+  transform: scale(1.45);
+  background: var(--accent-amber);
+}
+.tl-item.tl-teal:hover .tl-dot {
+  background: var(--accent-teal);
+  border-color: var(--accent-teal);
+}
+
+.tl-content {
+  flex: 1;
+  min-width: 0;
+}
+.tl-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+.tl-date {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+.tl-who {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+}
+.tl-item.tl-teal .tl-who {
+  color: var(--accent-teal);
+}
+.tl-title {
+  font-size: clamp(0.82rem, 1.1vw, 0.9rem);
+  font-weight: 500;
+  color: var(--text-body);
+  line-height: 1.35;
+  margin-bottom: 0;
+}
+.tl-title .tl-title-zh {
+  display: block;
+  margin-top: 0.18rem;
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  font-size: clamp(0.76rem, 1vw, 0.82rem);
+  font-weight: 500;
+  color: var(--text-subtle);
+  line-height: 1.35;
+}
+
+/* quote 滑出（右侧） */
+.tl-quote {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.32s ease, opacity 0.28s ease, margin 0.28s ease;
+  margin-top: 0;
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  background: var(--card-bg-soft);
+  border-left: 2px solid var(--accent-amber);
+  padding: 0 0.7rem;
+  border-radius: 0 0.35rem 0.35rem 0;
+}
+.tl-item.tl-teal .tl-quote {
+  border-left-color: var(--accent-teal);
+}
+.tl-item:hover .tl-quote {
+  max-height: 3rem;
+  opacity: 1;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.7rem;
+}
+
+/* ========================
+   右侧：6 卡工具谱系
+   ======================== */
+.s03-tools-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.s03-tools-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.s03-tools-label.visible {
+  opacity: 1;
+}
+
+.s03-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.1s;
+}
+.s03-tools-grid.visible {
+  opacity: 1;
+}
+
+/* flip 卡片 */
+.tool-card {
+  perspective: 1000px;
+  height: 115px;
+}
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+.tool-card:hover .card-inner {
+  transform: rotateY(180deg);
+}
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card-back {
+  transform: rotateY(180deg);
+  background: var(--bg-surface);
+  border-color: var(--card-border-strong);
+}
+
+.card-name {
+  font-family: var(--font-mono);
+  font-size: clamp(0.74rem, 1vw, 0.88rem);
+  font-weight: 600;
+  color: var(--accent-amber);
+  line-height: 1.25;
+}
+.card-by {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 0.15rem;
+}
+.card-focus {
+  font-size: clamp(0.72rem, 0.95vw, 0.82rem);
+  color: var(--text-body);
+  line-height: 1.35;
+  margin-top: auto;
+}
+
+/* 卡片背面 */
+.card-back-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent-teal);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.card-back-data {
+  font-size: clamp(0.7rem, 0.95vw, 0.8rem);
+  color: var(--text-body);
+  line-height: 1.45;
+  flex: 1;
+}
+.card-back-data .mono-val {
+  font-family: var(--font-mono);
+  color: var(--accent-amber);
+  font-weight: 600;
+}
+
+/* 钩子标签 */
+.s03-hook {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 2rem;
+  background: var(--card-bg-soft);
+  border: 1px solid var(--card-border);
+  display: inline-block;
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-weight: 600;
+  color: var(--accent-amber);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.s03-hook.visible {
+  opacity: 1;
+}
+
+/* pulse 动画 */
+@keyframes s03-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 165, 116, 0); }
+  50% { box-shadow: 0 0 0 6px rgba(212, 165, 116, 0.22); }
+}
+.s03-hook.pulse {
+  animation: s03-pulse 2.4s ease-in-out infinite;
+}
+
+/* 底部居中包裹 */
+.s03-hook-wrap {
+  width: 100%;
+  text-align: center;
+  margin-top: 0.8rem;
+}
+
+/* Hashimoto 公式 callout（时间线顶部） */
+.s03-formula {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem;
+  background: rgba(212, 165, 116, 0.08);
+  border: 1px solid rgba(212, 165, 116, 0.28);
+  border-radius: 0.5rem;
+  margin-bottom: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.78rem, 1.05vw, 0.92rem);
+  font-weight: 600;
+  color: var(--accent-amber);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.s03-formula.visible {
+  opacity: 1;
+}
+.s03-formula-label {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+/* 钩子行（附 → 箭头） */
+.hook-arrow {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+/* 响应式缩放 */
+@media (max-height: 700px) {
+  .s03-main {
+    gap: 1.2rem;
+  }
+  .tl-item {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
+  .tool-card {
+    height: 98px;
+  }
+  .card-front, .card-back {
+    padding: 0.55rem 0.7rem;
+  }
+  .card-name {
+    font-size: 0.72rem;
+  }
+  .card-focus {
+    font-size: 0.7rem;
+  }
+}
+@media (max-height: 600px) {
+  .s03-headline h2 {
+    font-size: 1.25rem;
+  }
+  .tool-card {
+    height: 86px;
+  }
+  .s03-wrap {
+    padding: 1rem 1.5rem;
+  }
+  .s03-tools-grid {
+    gap: 0.6rem;
+  }
+}
+</style>
+
+<div class="slide" id="S03" data-slide-id="S03">
+  <div class="s03-wrap">
+
+    <!-- 标题 -->
+    <div class="s03-headline" id="s03-headline">
+      <h2>Harness Engineering · <span class="hl-amber">已成行业共识</span></h2>
+    </div>
+
+    <!-- 两栏主体 -->
+    <div class="s03-main">
+
+      <!-- 左列：行业共识时间线 -->
+      <div>
+        <!-- Hashimoto 公式 callout -->
+        <div class="s03-formula" id="s03-formula">
+          <span>Agent = Model + Harness</span>
+          <span class="s03-formula-label">— Hashimoto 公式</span>
+        </div>
+
+        <div class="s03-timeline">
+
+          <!-- 节点 1 -->
+          <div class="tl-item tl-amber" id="tl-0">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-meta">
+                <span class="tl-date">2026-02-05</span>
+                <span class="tl-who">Hashimoto / HashiCorp 联创</span>
+              </div>
+              <div class="tl-title">My AI Adoption Journey<span class="tl-title-zh">我的 AI 应用之旅</span></div>
+              <div class="tl-quote">"Agent = Model + Harness"</div>
+            </div>
+          </div>
+
+          <!-- 节点 2 -->
+          <div class="tl-item tl-amber" id="tl-1">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-meta">
+                <span class="tl-date">2026-02-11</span>
+                <span class="tl-who">OpenAI</span>
+              </div>
+              <div class="tl-title">Harness engineering in agent-first world<span class="tl-title-zh">智能体优先世界中的驾驭工程</span></div>
+              <div class="tl-quote">"5 个月 100 万行代码，没有一行人工编写"</div>
+            </div>
+          </div>
+
+          <!-- 节点 3 (teal) -->
+          <div class="tl-item tl-teal" id="tl-2">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-meta">
+                <span class="tl-date">2026-02-17</span>
+                <span class="tl-who">LangChain (实证)</span>
+              </div>
+              <div class="tl-title">Improving Deep Agents with harness engineering<span class="tl-title-zh">用驾驭工程改进 Deep Agents（实证 +13.7 跳涨）</span></div>
+              <div class="tl-quote">"得分 52.8 → 66.5（+13.7 百分点跳涨，Top 30 → Top 5）"</div>
+            </div>
+          </div>
+
+          <!-- 节点 4 -->
+          <div class="tl-item tl-amber" id="tl-3">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <div class="tl-meta">
+                <span class="tl-date">2026-03-24</span>
+                <span class="tl-who">Anthropic</span>
+              </div>
+              <div class="tl-title">Harness design for long-running development<span class="tl-title-zh">面向长任务运行的驾驭设计</span></div>
+              <div class="tl-quote">"三阶段架构：planner / generator / evaluator"</div>
+            </div>
+          </div>
+
+        </div><!-- /s03-timeline -->
+      </div><!-- /左列 -->
+
+      <!-- 右列：6 卡工具谱系 -->
+      <div class="s03-tools-section">
+        <div class="s03-tools-label" id="s03-tools-label">工具谱系 · 百花齐放</div>
+
+        <div class="s03-tools-grid" id="s03-tools-grid">
+
+          <!-- Gstack -->
+          <div class="tool-card">
+            <div class="card-inner">
+              <div class="card-front">
+                <div>
+                  <div class="card-name">Gstack</div>
+                  <div class="card-by">Garry Tan / YC CEO</div>
+                </div>
+                <div class="card-focus">角色编排<br>（CEO / Designer / QA）</div>
+              </div>
+              <div class="card-back">
+                <div class="card-back-label">关键数据</div>
+                <div class="card-back-data">
+                  <span class="mono-val">67.6K</span> stars<br>
+                  发布后 <span class="mono-val">48h</span> 破 2 万 stars
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Claude Managed Agents -->
+          <div class="tool-card">
+            <div class="card-inner">
+              <div class="card-front">
+                <div>
+                  <div class="card-name">Claude Managed Agents</div>
+                  <div class="card-by">Anthropic</div>
+                </div>
+                <div class="card-focus">云端托管基础设施</div>
+              </div>
+              <div class="card-back">
+                <div class="card-back-label">关键数据</div>
+                <div class="card-back-data">
+                  公测日 <span class="mono-val">2026-04-08</span><br>
+                  Notion / Rakuten 首批用户
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AutoHarness -->
+          <div class="tool-card">
+            <div class="card-inner">
+              <div class="card-front">
+                <div>
+                  <div class="card-name">AutoHarness</div>
+                  <div class="card-by">Google DeepMind</div>
+                </div>
+                <div class="card-focus">模型自生成约束规则</div>
+              </div>
+              <div class="card-back">
+                <div class="card-back-label">关键数据</div>
+                <div class="card-back-data">
+                  <span class="mono-val">ICLR 2026</span><br>
+                  145 TextArena 游戏<br>
+                  Gemini-Flash 超 Pro
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Letta -->
+          <div class="tool-card">
+            <div class="card-inner">
+              <div class="card-front">
+                <div>
+                  <div class="card-name">Letta (前 MemGPT)</div>
+                  <div class="card-by">—</div>
+                </div>
+                <div class="card-focus">OS 级三层记忆</div>
+              </div>
+              <div class="card-back">
+                <div class="card-back-label">三层架构</div>
+                <div class="card-back-data">
+                  <span class="mono-val">Core</span>（类比 RAM）<br>
+                  <span class="mono-val">Archival</span>（类比磁盘）<br>
+                  <span class="mono-val">Recall</span>（类比索引）
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- mem0 -->
+          <div class="tool-card">
+            <div class="card-inner">
+              <div class="card-front">
+                <div>
+                  <div class="card-name">mem0</div>
+                  <div class="card-by">—</div>
+                </div>
+                <div class="card-focus">跨会话记忆</div>
+              </div>
+              <div class="card-back">
+                <div class="card-back-label">关键数据</div>
+                <div class="card-back-data">
+                  <span class="mono-val">48K</span> stars<br>
+                  融资 <span class="mono-val">$24.5M</span><br>
+                  AWS Strands SDK 集成
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- OpenClaw v2026.3.7 -->
+          <div class="tool-card">
+            <div class="card-inner">
+              <div class="card-front">
+                <div>
+                  <div class="card-name">OpenClaw v2026.3.7</div>
+                  <div class="card-by">OpenAI 基金会</div>
+                </div>
+                <div class="card-focus">ContextEngine 7 钩子全开放</div>
+              </div>
+              <div class="card-back">
+                <div class="card-back-label">7 钩子</div>
+                <div class="card-back-data" style="font-size:0.66rem; line-height:1.5;">
+                  bootstrap · ingest · assemble<br>
+                  compact · afterTurn<br>
+                  prepareSubagentSpawn<br>
+                  onSubagentEnded
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /s03-tools-grid -->
+      </div><!-- /右列 -->
+
+    </div><!-- /s03-main -->
+
+    <!-- 底部钩子 -->
+    <div class="s03-hook-wrap">
+      <div class="s03-hook" id="s03-hook">
+        百花齐放中，谁把所有维度都做了？<span class="hook-arrow"> →</span>
+      </div>
+    </div>
+
+  </div><!-- /s03-wrap -->
+</div><!-- /slide#S03 -->
+
+<script>
+(function () {
+  var headline   = document.getElementById('s03-headline');
+  var formula    = document.getElementById('s03-formula');
+  var tlItems    = [
+    document.getElementById('tl-0'),
+    document.getElementById('tl-1'),
+    document.getElementById('tl-2'),
+    document.getElementById('tl-3')
+  ];
+  var toolsLabel = document.getElementById('s03-tools-label');
+  var toolsGrid  = document.getElementById('s03-tools-grid');
+  var hook       = document.getElementById('s03-hook');
+
+  // t=0: 标题
+  headline.classList.add('visible');
+
+  // t=100: 公式
+  setTimeout(function () { formula.classList.add('visible'); }, 100);
+
+  // t=400ms: 时间线节点 stagger（间隔 280ms）
+  var baseDelay = 400;
+  var interval  = 200;
+  for (var i = 0; i < tlItems.length; i++) {
+    (function (el, delay) {
+      setTimeout(function () { el.classList.add('visible'); }, delay);
+    })(tlItems[i], baseDelay + i * interval);
+  }
+
+  // t=1500ms（但压缩到 baseDelay+4*interval+内: 实际 1000ms）右侧工具区
+  setTimeout(function () {
+    toolsLabel.classList.add('visible');
+  }, baseDelay + tlItems.length * interval + 100);
+
+  setTimeout(function () {
+    toolsGrid.classList.add('visible');
+  }, baseDelay + tlItems.length * interval + 200);
+
+  // t=底部钩子 + pulse
+  setTimeout(function () {
+    hook.classList.add('visible');
+    setTimeout(function () { hook.classList.add('pulse'); }, 300);
+  }, baseDelay + tlItems.length * interval + 500);
+})();
+</script>

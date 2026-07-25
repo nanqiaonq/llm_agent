@@ -1,0 +1,12 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">技术层 · 3.1</span></div>
+    <h2 class="page-title animate-ready delay-2">tool_choice：控制 LLM 的工具调用行为</h2>
+
+    <div class="card-grid cols-3 animate-ready delay-3" style="max-width:1080px;">
+        <div class="card" style="text-align:left;border-color:rgba(37,99,235,0.35);"><div style="font-size:1.7em;margin-bottom:8px;">🔄</div><div style="font-size:1em;font-weight:700;color:#2563eb;margin-bottom:6px;">auto</div><div style="font-size:0.83em;color:var(--text-secondary);line-height:1.7;">LLM 自主判断是否调用，适用于 90% 场景。</div></div>
+        <div class="card" style="text-align:left;border-color:rgba(124,58,237,0.35);"><div style="font-size:1.7em;margin-bottom:8px;">🔒</div><div style="font-size:1em;font-weight:700;color:#7c3aed;margin-bottom:6px;">required</div><div style="font-size:0.83em;color:var(--text-secondary);line-height:1.7;">强制至少调用一个工具，适合必执行链路。</div></div>
+        <div class="card" style="text-align:left;border-color:rgba(8,145,178,0.35);"><div style="font-size:1.7em;margin-bottom:8px;">🚫</div><div style="font-size:1em;font-weight:700;color:#0891b2;margin-bottom:6px;">none</div><div style="font-size:0.83em;color:var(--text-secondary);line-height:1.7;">禁止工具调用，只输出纯文本结果。</div></div>
+    </div>
+
+    <div class="animate-ready delay-4" style="margin-top:12px;padding:10px 20px;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.3);border-radius:10px;max-width:930px;font-size:0.84em;color:#92400e;">注意：required 要谨慎使用，可能导致“为了调用而调用”的异常行为。</div>
+</div>

@@ -1,0 +1,171 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s020-grid {
+            width: min(1040px, 96%);
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 0 auto 1.2vh;
+        }
+
+        .s020-card {
+            position: relative;
+            background: rgba(255,255,255,0.82);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px 14px 12px;
+            text-align: left;
+            min-height: 345px;
+            box-shadow: 0 10px 26px rgba(15,23,42,0.08);
+        }
+
+        .s020-card.wf {
+            border-color: rgba(37,99,235,0.32);
+            background: linear-gradient(180deg, rgba(239,246,255,0.78), rgba(255,255,255,0.84));
+        }
+
+        .s020-card.agent {
+            border-color: rgba(124,58,237,0.32);
+            background: linear-gradient(180deg, rgba(245,243,255,0.8), rgba(255,255,255,0.84));
+        }
+
+        .s020-card.hybrid {
+            border: 2px solid rgba(22,163,74,0.46);
+            background: linear-gradient(180deg, rgba(236,253,245,0.84), rgba(255,255,255,0.88));
+            box-shadow: 0 12px 30px rgba(22,163,74,0.14);
+        }
+
+        .s020-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #166534;
+            background: rgba(22,163,74,0.16);
+            border: 1px solid rgba(22,163,74,0.35);
+            border-radius: 999px;
+            padding: 2px 8px;
+            letter-spacing: 0.02em;
+        }
+
+        .s020-icon { font-size: 1.7rem; line-height: 1; margin-bottom: 7px; }
+        .s020-title { font-size: 1.02rem; font-weight: 700; color: var(--text-primary); margin-bottom: 5px; }
+        .s020-desc { font-size: 0.84rem; color: var(--text-secondary); line-height: 1.55; min-height: 42px; }
+
+        .s020-divider {
+            height: 1px;
+            border-top: 1px dashed rgba(148,163,184,0.45);
+            margin: 9px 0;
+        }
+
+        .s020-sec-title {
+            font-size: 0.81rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .s020-list {
+            margin: 0;
+            padding-left: 16px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.58;
+        }
+
+        .s020-pros {
+            margin-top: 4px;
+            font-size: 0.79rem;
+            color: var(--text-secondary);
+            line-height: 1.58;
+        }
+
+        .s020-pros div { margin-bottom: 3px; }
+
+        .s020-flow {
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px dashed rgba(22,163,74,0.45);
+            background: rgba(22,163,74,0.08);
+            font-size: 0.76rem;
+            color: #166534;
+            letter-spacing: 0.01em;
+        }
+
+        @media (max-width: 1180px) {
+            .s020-grid { gap: 10px; }
+            .s020-card { padding: 12px 12px 10px; min-height: 332px; }
+            .s020-title { font-size: 0.96rem; }
+            .s020-desc { font-size: 0.8rem; min-height: 40px; }
+            .s020-list, .s020-pros { font-size: 0.75rem; }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">第五章 · 5.2</span></div>
+    <h2 class="page-title animate-ready delay-2" style="margin-bottom:0.7vh;">Agent vs Workflow：如何选？</h2>
+    <p class="page-subtitle animate-ready delay-3" style="margin-bottom:1.4vh;font-size:clamp(0.95rem,1.45vw,1.2rem);">三种架构同时对比：一眼看出适配场景与取舍</p>
+
+    <div class="s020-grid">
+        <div class="s020-card wf animate-ready delay-4">
+            <div class="s020-icon">🔧</div>
+            <div class="s020-title">Workflow</div>
+            <div class="s020-desc">路径固定，步骤可预测，适合确定性流程自动化。</div>
+            <div class="s020-divider"></div>
+            <div class="s020-sec-title">📋 适用场景</div>
+            <ul class="s020-list">
+                <li>每日定时报表</li>
+                <li>ETL 数据清洗</li>
+                <li>CI/CD 发布流程</li>
+            </ul>
+            <div class="s020-divider"></div>
+            <div class="s020-pros">
+                <div>✅ 可靠稳定，易监控</div>
+                <div>⚠️ 灵活性弱，难处理未知问题</div>
+            </div>
+        </div>
+
+        <div class="s020-card agent animate-ready delay-5">
+            <div class="s020-icon">🤖</div>
+            <div class="s020-title">Agent</div>
+            <div class="s020-desc">路径不固定，需动态决策，适合高不确定任务。</div>
+            <div class="s020-divider"></div>
+            <div class="s020-sec-title">📋 适用场景</div>
+            <ul class="s020-list">
+                <li>竞品调研与报告</li>
+                <li>多约束订票决策</li>
+                <li>漏洞扫描与修复建议</li>
+            </ul>
+            <div class="s020-divider"></div>
+            <div class="s020-pros">
+                <div>✅ 灵活智能，覆盖复杂问题</div>
+                <div>⚠️ 成本更高，行为可控性较弱</div>
+            </div>
+        </div>
+
+        <div class="s020-card hybrid animate-ready delay-6">
+            <div class="s020-badge">⭐ 推荐</div>
+            <div class="s020-icon">🔧+🤖</div>
+            <div class="s020-title">混合架构</div>
+            <div class="s020-desc">Workflow 提供稳定骨架，Agent 处理关键智能节点。</div>
+            <div class="s020-divider"></div>
+            <div class="s020-sec-title">📋 适用场景</div>
+            <ul class="s020-list">
+                <li>复杂业务流 + 智能决策</li>
+                <li>多系统审批与异常处理</li>
+                <li>需要兼顾可靠性与智能性</li>
+            </ul>
+            <div class="s020-flow">Data → Validate → 🤖 Decide → Approve → Execute</div>
+            <div class="s020-divider"></div>
+            <div class="s020-pros">
+                <div>✅ 兼顾稳定与灵活，企业落地最佳实践</div>
+                <div>⚠️ 架构设计复杂度更高</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="animate-ready delay-6" style="margin-top:1vh;padding:10px 20px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.24);border-radius:10px;max-width:960px;font-size:0.84em;color:var(--text-secondary);">
+        选型原则：确定性高用 Workflow，不确定性高用 Agent，生产环境优先混合架构。
+    </div>
+</div>

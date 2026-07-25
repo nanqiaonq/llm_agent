@@ -1,0 +1,585 @@
+<style>
+/* =====================================================
+   S10 · FTS5 双索引 · Dual-query parallel pipeline
+   ===================================================== */
+
+.s10-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 4rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ── 顶部标题区 ── */
+.s10-header {
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.s10-title {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--text-primary, #e8ecf0);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.35rem;
+}
+
+.s10-title .s10-badge-fts {
+  display: inline-block;
+  background: rgba(91, 140, 184, 0.18);
+  border: 1px solid var(--primary, #5b8cb8);
+  color: var(--primary, #5b8cb8);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.95rem;
+  padding: 0.1em 0.55em;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-left: 0.4rem;
+}
+
+.s10-subtitle {
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  font-size: 1rem;
+  color: var(--text-subtle, #8a96a8);
+  margin-bottom: 1rem;
+}
+
+.s10-subtitle span {
+  color: var(--accent-amber, #d4a574);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.9rem;
+}
+
+.s10-user-query {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--card-bg, rgba(36,49,66,0.85));
+  border: 1px solid var(--card-border, rgba(91,140,184,0.22));
+  border-radius: 8px;
+  padding: 0.55rem 1.1rem;
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  font-size: 0.95rem;
+  color: var(--text-body, #c5cdd8);
+}
+
+.s10-user-query .s10-qicon {
+  font-size: 1.1rem;
+}
+
+.s10-user-query .s10-qtext {
+  color: var(--text-primary, #e8ecf0);
+}
+
+.s10-user-query .s10-mono {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  color: var(--accent-amber, #d4a574);
+}
+
+/* ── 双栏 pipeline grid ── */
+.s10-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 1200px;
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+
+.s10-lane {
+  background: var(--card-bg, rgba(36,49,66,0.85));
+  border: 1px solid var(--card-border, rgba(91,140,184,0.22));
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  position: relative;
+  transition: border-color var(--transition-base, 0.28s ease);
+}
+
+.s10-lane.s10-lit-left {
+  border-color: rgba(212, 165, 116, 0.5);
+  box-shadow: 0 0 12px rgba(212, 165, 116, 0.1);
+}
+
+.s10-lane.s10-lit-right {
+  border-color: rgba(125, 211, 192, 0.5);
+  box-shadow: 0 0 12px rgba(125, 211, 192, 0.1);
+}
+
+.s10-lane-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--rule-line, rgba(91,140,184,0.22));
+}
+
+.s10-lane-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.s10-lane-left .s10-lane-dot  { background: var(--accent-amber, #d4a574); }
+.s10-lane-right .s10-lane-dot { background: var(--secondary, #7dd3c0); }
+
+.s10-lane-title {
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary, #e8ecf0);
+}
+
+.s10-lane-title .s10-tag {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.78rem;
+  color: var(--text-subtle, #8a96a8);
+  margin-left: 0.35rem;
+}
+
+/* ── 查询输入行 ── */
+.s10-query-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.88rem;
+  color: var(--text-subtle, #8a96a8);
+}
+
+.s10-query-val {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  background: var(--bg-code, #15202e);
+  border-radius: 4px;
+  padding: 0.18em 0.55em;
+  color: var(--text-primary, #e8ecf0);
+  font-size: 0.85rem;
+}
+
+/* ── tokenizer 标签 ── */
+.s10-tokenizer {
+  margin-bottom: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-subtle, #8a96a8);
+}
+
+.s10-tokenizer .s10-tok-name {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.83rem;
+  font-weight: 600;
+  padding: 0.12em 0.5em;
+  border-radius: 4px;
+  margin-right: 0.35rem;
+}
+
+.s10-lane-left .s10-tok-name {
+  background: rgba(212, 165, 116, 0.15);
+  color: var(--accent-amber, #d4a574);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+}
+
+.s10-lane-right .s10-tok-name {
+  background: rgba(125, 211, 192, 0.15);
+  color: var(--secondary, #7dd3c0);
+  border: 1px solid rgba(125, 211, 192, 0.3);
+}
+
+/* ── 切分结果 badges ── */
+.s10-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+  min-height: 2.2rem;
+}
+
+.s10-token-badge {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.28em 0.65em;
+  border-radius: 5px;
+  border: 1.5px solid;
+  opacity: 0;
+}
+
+.s10-lane-left .s10-token-badge {
+  background: rgba(212, 165, 116, 0.12);
+  color: var(--accent-amber, #d4a574);
+  border-color: rgba(212, 165, 116, 0.45);
+}
+
+/* ── trigram 滑窗区 ── */
+.s10-trigram-area {
+  position: relative;
+  margin-bottom: 0.85rem;
+  min-height: 176px; /* 4 * 44px */
+}
+
+.s10-trigram-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.s10-trigram-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.28em 0.65em;
+  border-radius: 5px;
+  background: rgba(125, 211, 192, 0.12);
+  color: var(--secondary, #7dd3c0);
+  border: 1.5px solid rgba(125, 211, 192, 0.45);
+  opacity: 0;
+  width: fit-content;
+  min-width: 90px;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+.s10-trigram-badge .s10-idx {
+  font-size: 0.72rem;
+  color: var(--text-dim, #6b7689);
+  margin-left: 0.4rem;
+}
+
+/* 滑窗高亮框 */
+.s10-slider {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  width: calc(100% + 8px);
+  height: 36px;
+  border: 2px solid var(--secondary, #7dd3c0);
+  border-radius: 7px;
+  box-shadow: 0 0 10px rgba(125, 211, 192, 0.25);
+  pointer-events: none;
+  opacity: 0;
+  transition: top 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── 索引名称行 ── */
+.s10-index-row {
+  margin-bottom: 0.85rem;
+  padding: 0.5rem 0.8rem;
+  background: rgba(45, 59, 80, 0.5);
+  border-radius: 6px;
+  border-left: 3px solid;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.s10-lane-left .s10-index-row {
+  border-left-color: var(--accent-amber, #d4a574);
+  color: var(--accent-amber, #d4a574);
+}
+
+.s10-lane-right .s10-index-row {
+  border-left-color: var(--secondary, #7dd3c0);
+  color: var(--secondary, #7dd3c0);
+}
+
+.s10-index-row .s10-idx-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim, #6b7689);
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  margin-left: 0.4rem;
+}
+
+/* ── 数据库查询脉冲行 ── */
+.s10-db-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.84rem;
+  color: var(--text-subtle, #8a96a8);
+  opacity: 0;
+}
+
+.s10-db-icon {
+  font-size: 1.3rem;
+  display: inline-block;
+}
+
+/* ── 命中结果行 ── */
+.s10-result-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  opacity: 0;
+  transition: background var(--transition-base, 0.28s ease), border-color var(--transition-base, 0.28s ease);
+}
+
+.s10-result-row.s10-hit {
+  border-color: rgba(212, 165, 116, 0.35);
+  background: rgba(212, 165, 116, 0.08);
+}
+
+.s10-lane-right .s10-result-row.s10-hit {
+  border-color: rgba(125, 211, 192, 0.35);
+  background: rgba(125, 211, 192, 0.08);
+}
+
+.s10-result-num {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.s10-lane-left  .s10-result-num { color: var(--accent-amber, #d4a574); }
+.s10-lane-right .s10-result-num { color: var(--secondary, #7dd3c0); }
+
+.s10-result-label {
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  font-size: 0.88rem;
+  color: var(--text-body, #c5cdd8);
+}
+
+/* ── 底部区域 ── */
+.s10-bottom {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* callout */
+.s10-callout {
+  background: rgba(91, 140, 184, 0.08);
+  border: 1px solid var(--primary, #5b8cb8);
+  border-radius: 8px;
+  padding: 0.65rem 1.2rem;
+  text-align: center;
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  font-size: 0.95rem;
+  color: var(--primary, #5b8cb8);
+  font-weight: 600;
+  opacity: 0;
+}
+
+.s10-callout .s10-callout-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary, #5b8cb8);
+  margin: 0 0.5rem;
+  vertical-align: middle;
+}
+
+/* LIKE 警告行 */
+.s10-like-warn {
+  background: rgba(229, 115, 115, 0.06);
+  border: 1px solid rgba(229, 115, 115, 0.3);
+  border-radius: 6px;
+  padding: 0.55rem 1rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.82rem;
+  opacity: 0;
+}
+
+.s10-like-code {
+  color: var(--text-subtle, #8a96a8);
+  margin-bottom: 0.3rem;
+}
+
+.s10-like-warn-text {
+  color: var(--accent-red, #e57373);
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+  font-size: 0.8rem;
+  font-family: var(--font-zh, 'Noto Sans SC', sans-serif);
+}
+
+/* 注脚 */
+.s10-footnote {
+  text-align: right;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  color: var(--text-dim, #6b7689);
+  opacity: 0;
+}
+
+/* ── 初始动画元素（opacity 0 类）── */
+.s10-anim-header,
+.s10-anim-query,
+.s10-anim-lane {
+  opacity: 0;
+}
+
+/* ── prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .s10-slider { transition: none; }
+  .s10-lane   { transition: none; }
+  .s10-result-row { transition: none; }
+}
+</style>
+
+<div class="slide" data-slide-id="S10">
+  <div class="s10-wrap">
+
+    <!-- 顶部标题区 -->
+    <div class="s10-header s10-anim-header">
+      <div class="s10-title">
+        冷记忆②<span class="s10-badge-fts">FTS5</span> 双索引
+      </div>
+      <div class="s10-subtitle">
+        <span>unicode61</span> + <span>trigram</span>，CJK 子串友好
+      </div>
+    </div>
+
+    <!-- User Query 气泡 -->
+    <div class="s10-user-query s10-anim-query" style="margin-bottom:1.4rem;">
+      <span class="s10-qicon">🔍</span>
+      <span class="s10-qtext">用户搜索历史对话：</span>
+      <span class="s10-mono">kafka rebalance</span>
+      <span class="s10-qtext">/ </span>
+      <span class="s10-mono">卡夫卡再平衡</span>
+    </div>
+
+    <!-- 双栏 pipeline grid -->
+    <div class="s10-grid" style="margin-bottom:1.2rem;">
+
+      <!-- 左栏：英文路径 -->
+      <div class="s10-lane s10-lane-left s10-anim-lane" id="s10-lane-left">
+        <div class="s10-lane-header">
+          <div class="s10-lane-dot"></div>
+          <div class="s10-lane-title">
+            路径 A · 英文查询
+            <span class="s10-tag">unicode61</span>
+          </div>
+        </div>
+
+        <div class="s10-query-row">
+          <span>query:</span>
+          <span class="s10-query-val">"kafka rebalance"</span>
+        </div>
+
+        <div class="s10-tokenizer">
+          <span class="s10-tok-name">unicode61</span>
+          tokenizer · 词级切分
+        </div>
+
+        <!-- token badges -->
+        <div class="s10-tokens" id="s10-tokens-left">
+          <span class="s10-token-badge" id="s10-tok-kafka">[kafka]</span>
+          <span class="s10-token-badge" id="s10-tok-rebalance">[rebalance]</span>
+        </div>
+
+        <div class="s10-index-row">
+          messages_fts
+          <span class="s10-idx-sub">主索引 · 默认</span>
+        </div>
+
+        <div class="s10-db-row" id="s10-db-left">
+          <span class="s10-db-icon" id="s10-db-icon-left">🗄</span>
+          <span>倒排索引查询中…</span>
+        </div>
+
+        <div class="s10-result-row" id="s10-result-left">
+          <span class="s10-result-num">5</span>
+          <span class="s10-result-label">个 session 命中</span>
+          <span style="margin-left:auto;font-size:1rem;">✅</span>
+        </div>
+      </div>
+
+      <!-- 右栏：CJK 路径 -->
+      <div class="s10-lane s10-lane-right s10-anim-lane" id="s10-lane-right">
+        <div class="s10-lane-header">
+          <div class="s10-lane-dot"></div>
+          <div class="s10-lane-title">
+            路径 B · CJK 查询
+            <span class="s10-tag">trigram</span>
+          </div>
+        </div>
+
+        <div class="s10-query-row">
+          <span>query:</span>
+          <span class="s10-query-val">"卡夫卡再平衡"</span>
+        </div>
+
+        <div class="s10-tokenizer">
+          <span class="s10-tok-name">trigram</span>
+          tokenizer · 3 字符滑窗
+        </div>
+
+        <!-- trigram 滑窗区 -->
+        <div class="s10-trigram-area" id="s10-trigram-area">
+          <div class="s10-trigram-list" id="s10-trigram-list">
+            <span class="s10-trigram-badge" id="s10-tg-0">[卡夫卡]<span class="s10-idx">n=1</span></span>
+            <span class="s10-trigram-badge" id="s10-tg-1">[夫卡再]<span class="s10-idx">n=2</span></span>
+            <span class="s10-trigram-badge" id="s10-tg-2">[卡再平]<span class="s10-idx">n=3</span></span>
+            <span class="s10-trigram-badge" id="s10-tg-3">[再平衡]<span class="s10-idx">n=4</span></span>
+          </div>
+          <!-- 滑窗高亮框 -->
+          <div class="s10-slider" id="s10-slider"></div>
+        </div>
+
+        <div class="s10-index-row">
+          messages_fts_trigram
+          <span class="s10-idx-sub">CJK 兜底索引</span>
+        </div>
+
+        <div class="s10-db-row" id="s10-db-right">
+          <span class="s10-db-icon" id="s10-db-icon-right">🗄</span>
+          <span>倒排索引查询中…</span>
+        </div>
+
+        <div class="s10-result-row" id="s10-result-right">
+          <span class="s10-result-num">3</span>
+          <span class="s10-result-label">个 session 命中</span>
+          <span style="margin-left:auto;font-size:1rem;">✅</span>
+        </div>
+      </div>
+
+    </div><!-- /.s10-grid -->
+
+    <!-- 底部区域 -->
+    <div class="s10-bottom">
+
+      <!-- callout -->
+      <div class="s10-callout" id="s10-callout">
+        <span class="s10-callout-dot"></span>
+        两套索引并存
+        <span class="s10-callout-dot"></span>
+        自动路由
+        <span class="s10-callout-dot"></span>
+        CJK 子串原生支持
+        <span class="s10-callout-dot"></span>
+      </div>
+
+      <!-- LIKE 警告 -->
+      <div class="s10-like-warn" id="s10-like-warn">
+        <div class="s10-like-code">SELECT WHERE content LIKE '%kafka%'</div>
+        <div class="s10-like-warn-text">⚠ 1000 条慢 / 10000 条不可接受（全表扫描，无索引）</div>
+      </div>
+
+      <!-- 注脚 -->
+      <div class="s10-footnote" id="s10-footnote">
+        v0.12.0 (2026-04-30) trigram 替换 LIKE 兜底（PR @alt-glitch）
+      </div>
+
+    </div><!-- /.s10-bottom -->
+
+  </div><!-- /.s10-wrap -->
+</div><!-- /.slide -->

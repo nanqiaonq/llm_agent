@@ -1,0 +1,123 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s022-vs {
+            width: min(1000px, 96%);
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin: 0 auto 1.2vh;
+        }
+
+        .s022-panel {
+            position: relative;
+            border-radius: 14px;
+            padding: 16px 16px 14px;
+            text-align: left;
+            min-height: 260px;
+            overflow: hidden;
+            box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+        }
+
+        .s022-myth {
+            border: 2px solid rgba(239,68,68,0.4);
+            background: rgba(239,68,68,0.06);
+            opacity: 0.78;
+        }
+
+        .s022-myth::after {
+            content: '';
+            position: absolute;
+            left: -12%;
+            top: 49%;
+            width: 124%;
+            height: 14px;
+            background: rgba(239,68,68,0.45);
+            border-radius: 999px;
+            transform: rotate(-12deg) scaleX(0.5);
+            transform-origin: center;
+            opacity: 0;
+            transition: all 0.35s ease;
+            pointer-events: none;
+        }
+
+        .s022-panel.animate-in.s022-myth::after {
+            transform: rotate(-12deg) scaleX(1);
+            opacity: 1;
+            transition-delay: 0.3s;
+        }
+
+        .s022-truth {
+            border: 2px solid rgba(22,163,74,0.42);
+            background: rgba(22,163,74,0.06);
+            opacity: 1;
+        }
+
+        .s022-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .s022-icon { font-size: 1.7rem; line-height: 1; }
+        .s022-title {
+            font-size: 1.02rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        .s022-title.bad { color: #b91c1c; }
+        .s022-title.good { color: #166534; }
+
+        .s022-main {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .s022-flow {
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            line-height: 1.62;
+            border: 1px dashed rgba(148,163,184,0.42);
+            background: rgba(255,255,255,0.62);
+            color: var(--text-secondary);
+        }
+
+        .s022-flow.bad { border-color: rgba(239,68,68,0.35); color: #b91c1c; }
+        .s022-flow.good { border-color: rgba(22,163,74,0.42); color: #166534; }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">技术层 · 1.1</span></div>
+    <h2 class="page-title animate-ready delay-2" style="margin-bottom:1.2vh;">破除最大误解</h2>
+
+    <div class="s022-vs">
+        <div class="s022-panel s022-myth animate-ready delay-3">
+            <div class="s022-head">
+                <div class="s022-icon">❌</div>
+                <div class="s022-title bad">误解</div>
+            </div>
+            <div class="s022-main">LLM 自己执行了函数</div>
+            <div class="s022-flow bad">🤖 LLM ──→ 🔧 工具执行</div>
+        </div>
+
+        <div class="s022-panel s022-truth animate-ready delay-5">
+            <div class="s022-head">
+                <div class="s022-icon">✅</div>
+                <div class="s022-title good">真相</div>
+            </div>
+            <div class="s022-main">LLM 只输出了一段 JSON 文本</div>
+            <div class="s022-flow good">🤖 LLM → 📄 JSON → 你的代码 → 🔧 执行</div>
+        </div>
+    </div>
+
+    <div class="animate-ready delay-6" style="margin-top:0.8vh;max-width:940px;width:100%;background:var(--card-bg);border:1px solid rgba(37,99,235,0.26);border-radius:12px;padding:11px 16px;text-align:left;">
+        <div style="font-size:0.85rem;color:var(--text-secondary);line-height:1.72;">
+            🧑‍💼 调度员类比：LLM 像一个聪明调度员，告诉你“给张三打电话并说这些”；真正拨号的人始终是你。
+        </div>
+    </div>
+
+    <div class="animate-ready delay-6" style="margin-top:10px;font-size:0.86rem;font-weight:700;color:#b91c1c;">LLM 永远不会真正执行任何代码——记住这句话。</div>
+</div>

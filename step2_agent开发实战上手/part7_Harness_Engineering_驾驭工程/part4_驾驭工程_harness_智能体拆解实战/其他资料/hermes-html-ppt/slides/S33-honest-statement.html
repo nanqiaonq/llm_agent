@@ -1,0 +1,337 @@
+<!-- slide: S28-honest-statement.html | page 28/28 -->
+<!-- chapter: 第4章：收束与收尾 -->
+<!-- interaction_level: 🟢 | pattern: Static + 警示块 -->
+<!-- assignee: slide-writer -->
+<style>
+/* ── S28 scoped styles ── */
+#s28 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#s28 .s28-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-red);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+  opacity: 0.9;
+}
+
+#s28 .s28-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+#s28 .s28-subtitle {
+  font-size: 0.83rem;
+  color: var(--text-subtle);
+  margin-bottom: 1rem;
+}
+
+/* ── 警示外框 ── */
+#s28 .s28-warning-frame {
+  border: 1px solid rgba(229, 115, 115, 0.25);
+  border-radius: 10px;
+  padding: 0.75rem 1rem 1rem;
+  background: rgba(229, 115, 115, 0.03);
+  margin-bottom: 0.8rem;
+}
+
+#s28 .s28-warning-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(229, 115, 115, 0.2);
+}
+
+#s28 .warning-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent-red);
+  background: rgba(229, 115, 115, 0.1);
+  border: 1px solid rgba(229, 115, 115, 0.3);
+  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#s28 .warning-header-text {
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+}
+
+/* ── 两个诚实条目 ── */
+#s28 .s28-honest-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+#s28 .s28-honest-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+}
+
+/* 声明行 */
+#s28 .honest-claim-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.9rem;
+  background: rgba(229, 115, 115, 0.05);
+  border-bottom: 1px solid var(--rule-line);
+}
+
+#s28 .claim-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--accent-red);
+  background: rgba(229, 115, 115, 0.1);
+  border: 1px solid rgba(229, 115, 115, 0.25);
+  border-radius: 3px;
+  padding: 0.1rem 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+#s28 .claim-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+/* 真相行 */
+#s28 .honest-truth-row {
+  padding: 0.6rem 0.9rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+#s28 .truth-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.1);
+  border: 1px solid rgba(125, 211, 192, 0.2);
+  border-radius: 3px;
+  padding: 0.1rem 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+#s28 .truth-content {
+  flex: 1;
+}
+
+#s28 .truth-text {
+  font-size: 0.8rem;
+  color: var(--text-body);
+  line-height: 1.6;
+  margin-bottom: 0.25rem;
+}
+
+#s28 .truth-text code {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.08);
+  border: 1px solid rgba(125, 211, 192, 0.18);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+}
+
+#s28 .truth-status {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  background: rgba(212, 165, 116, 0.08);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: 3px;
+  padding: 0.1rem 0.45rem;
+}
+
+/* GEPA 项目标识 */
+#s28 .gepa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-body);
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 4px;
+  padding: 0.2rem 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+#s28 .gepa-badge .star {
+  color: var(--accent-amber);
+  font-size: 0.75rem;
+}
+
+/* ── 底部声明 pill ── */
+#s28 .s28-disclaimer {
+  background: var(--card-bg-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#s28 .disclaimer-icon {
+  font-size: 0.9rem;
+  color: var(--accent-amber);
+  flex-shrink: 0;
+}
+
+#s28 .disclaimer-text {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+#s28 .disclaimer-text code {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--accent-teal);
+  background: rgba(125, 211, 192, 0.08);
+  border: 1px solid rgba(125, 211, 192, 0.18);
+  border-radius: 3px;
+  padding: 0.05rem 0.3rem;
+}
+
+#s28 .disclaimer-date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+/* ── 下节课衔接句 ── */
+#s28 .s28-bridge {
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  text-align: center;
+  margin-top: 0.6rem;
+  opacity: 0.8;
+}
+
+#s28 .s28-bridge .highlight {
+  color: var(--accent-amber);
+}
+</style>
+
+<div id="s28" data-slide-id="S28">
+
+  <!-- Header -->
+  <div class="s28-chapter-label">第4章 · 收束 · 诚实声明</div>
+  <div class="s28-title">诚实声明 · GEPA + 四层记忆边界</div>
+  <div class="s28-subtitle">源码是最终判据——区分「真东西 / 夸大表述 / 待核实」</div>
+
+  <!-- 警示外框 -->
+  <div class="s28-warning-frame">
+
+    <div class="s28-warning-header">
+      <span class="warning-badge">&#9888; 营销 PDF 表述澄清</span>
+      <span class="warning-header-text">以下两个说法在社区博客 / 营销 PDF 中出现，真实状态分别如下</span>
+    </div>
+
+    <div class="s28-honest-items">
+
+      <!-- 条目 1：GEPA -->
+      <div class="s28-honest-card">
+        <div class="honest-claim-row">
+          <span class="claim-label">宣传说法</span>
+          <span class="claim-text">GEPA Skill Evolution——Hermes 具备「自进化」能力</span>
+        </div>
+        <div class="honest-truth-row">
+          <span class="truth-label">实际状态</span>
+          <div class="truth-content">
+            <div class="truth-text">
+              <div class="gepa-badge">
+                <span>NousResearch/hermes-agent-self-evolution</span>
+                <span class="star">&#9733;</span>
+                <span>2.8k &nbsp;·&nbsp; MIT &nbsp;·&nbsp; 2026-03-09</span>
+              </div>
+              GEPA 是<strong>真实存在的独立子项目</strong>：Phase 1 ✅ 已实现，Phase 2-5 计划中。
+              但<strong>不在 <code>hermes-agent</code> 主仓库默认链路</strong>——需 <code>pip install -e .</code> + <code>export HERMES_AGENT_REPO=...</code> 显式关联；
+              输出走 PR 流程，不是热更新；本节 Nudge 五阶段闭环与 GEPA 是两件事。
+            </div>
+            <span class="truth-status">本节铺垫钩子 · L5 完整核实</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 条目 2：四层记忆 -->
+      <div class="s28-honest-card">
+        <div class="honest-claim-row">
+          <span class="claim-label">宣传说法</span>
+          <span class="claim-text">「四层记忆是默认架构」</span>
+        </div>
+        <div class="honest-truth-row">
+          <span class="truth-label">实际状态</span>
+          <div class="truth-content">
+            <div class="truth-text">
+              外部 Memory Provider（含 <code>Holographic</code>）全部 opt-in，均默认关闭（<code>run_agent.py:1729-1737</code>）。
+              <strong>默认架构</strong> = 热层 <code>MEMORY.md</code>/<code>USER.md</code> + 冷层 <code>SQLite</code>/<code>FTS5</code>/<code>LLM 摘要</code>；
+              <code>Holographic</code> 只是 8 种 Provider 之一，非默认顶层。
+              「四层记忆」夸大了 opt-in Memory Provider 的默认可用性（详见 §1.6）。
+            </div>
+            <span class="truth-status">本节已澄清边界 · 完整 8 Provider 分析见 L5</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 底部声明 -->
+  <div class="s28-disclaimer">
+    <div class="disclaimer-icon">&#128273;</div>
+    <div class="disclaimer-text">
+      本节结论基于源码核查，不依赖营销 PDF。源码是最终判据。
+      所有 file:line 引用可 <code>git clone</code> 后 <code>vim run_agent.py +3613</code> 定位核查。
+    </div>
+    <div class="disclaimer-date">2026-05-07 · Hermes Agent main branch</div>
+  </div>
+
+  <div class="s28-bridge">
+    完整的「PDF 表述 vs 源码真相」逐条对比留给下一节 &nbsp;·&nbsp;
+    <span class="highlight">L5 · Curator + GEPA + 四家四维横评收束</span>
+  </div>
+
+</div>

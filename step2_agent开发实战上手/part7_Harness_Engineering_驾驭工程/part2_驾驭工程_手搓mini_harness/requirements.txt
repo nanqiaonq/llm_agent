@@ -1,0 +1,27 @@
+# ========================================
+# 课件依赖包（与 lesson.md 时效性说明对齐：2026-04）
+# ========================================
+#
+# 安装方式：
+#   pip install -r requirements.txt
+#
+# 国内镜像加速：
+#   pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+#
+# ========================================
+
+# ── Jupyter Notebook 环境 ──
+jupyter==1.1.1
+notebook==7.2.2
+ipykernel==6.29.5
+
+# ── 课件依赖包（lesson.md 第 9 行 pin 版本声明）──
+openai==2.26.0
+python-dotenv==1.2.2
+pytest==9.0.3
+httpx==0.28.1
+
+# ── 说明 ──
+# 1. harness 是课件本地模块（mini_harness/harness/），不需要 pip 安装
+# 2. dataclasses / inspect / json / tempfile / types / re / subprocess / pathlib / typing 是 Python 标准库，无需安装
+# 3. 如果要运行 9.4 节示例，需要先 `cd mini_harness && pip install -e .` 把 harness 包加入 path

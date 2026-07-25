@@ -1,0 +1,17 @@
+{
+    "python_version": "3.11",
+    "dockerfile_lines": [],
+    "dependencies": [
+        "./"
+    ],
+    "graphs": {
+        "before_model": "./summarization_middleware_demo.py:graph",
+        "after_model": "./manual_hitl_demo.py:graph",
+        "wrap_model_call": "./llm_tool_emulator_demo.py:graph",
+        "wrap_tool_call_test": "./tool_emulator_wrap_demo.py:graph",
+        "before_agent": "./content_filter_middleware_demo.py:graph",
+        "after_agent": "./persistence_middleware_demo.py:graph",
+        "all_middleware": "./all_middleware_demo.py:graph"
+    },
+    "env": ".env"
+}

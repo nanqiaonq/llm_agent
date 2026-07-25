@@ -1,0 +1,36 @@
+{
+  "slides": [
+    {"id": "S001", "file": "S001-cover.html", "layout": "cover", "pattern": "title-subtitle-meta", "content_summary": "课程标题、4章26页、前置要求", "ia_ref": "ia-S001", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S002", "file": "S002-three-acts.html", "layout": "three-column", "pattern": "staggered-cards", "content_summary": "破/立/实三卡片递进，箭头动画", "ia_ref": "ia-S002", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S003", "file": "S003-three-tier.html", "layout": "full-table", "pattern": "progressive-reveal", "content_summary": "ChatGPT裸对话 vs Code Interpreter vs Claude Code，6维度表格，渐进揭示", "ia_ref": "ia-S003", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S004", "file": "S004-formula.html", "layout": "center-focus", "pattern": "big-formula", "content_summary": "Agent = Model + Harness 公式，F1赛车类比，底部+13.7pp硬数据", "ia_ref": "ia-S004", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S005", "file": "S005-three-modes.html", "layout": "three-column", "pattern": "comparison-abc", "content_summary": "画面A/B/C纵向对比（裸API只写字→沙箱跑→本地commit）", "ia_ref": "ia-S005", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S007", "file": "S007-three-generations.html", "layout": "center-focus", "pattern": "concentric-circles", "content_summary": "PE⊂CE⊂HE同心圆动画，强调「包含而非替代」", "ia_ref": "ia-S007", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S008", "file": "S008-terminology.html", "layout": "two-row", "pattern": "table-plus-diagram", "content_summary": "Agent/Scaffolding/Framework/Runtime四术语表格 + Framework/Runtime/Harness三层塔", "ia_ref": "ia-S008", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S013", "file": "S013-karpathy-timeline.html", "layout": "timeline", "pattern": "interactive-timeline", "content_summary": "2025-09到2026-03，前4社群孵化后4大厂定调，8节点时间轴", "ia_ref": "ia-S013", "assignee": "interactive-eng", "chapter": "第一章 认知升维"},
+    {"id": "S014", "file": "S014-hard-evidence.html", "layout": "two-column", "pattern": "big-number-cards", "content_summary": "大数字卡片：52.8%→66.5%（+13.7pp）、~100万行零人工", "ia_ref": "ia-S014", "assignee": "slide-writer", "chapter": "第一章 认知升维"},
+    {"id": "S009", "file": "S009-chapter2-transition.html", "layout": "center-focus", "pattern": "chapter-transition", "content_summary": "第二章过渡页，悬念导语「50行naive agent的8种死法」", "ia_ref": "ia-S009", "assignee": "slide-writer", "chapter": "第二章 失效坐标系"},
+    {"id": "S010", "file": "S010-naive-agent.html", "layout": "code-focus", "pattern": "code-highlight-tooltip", "content_summary": "91行naive agent代码，8个故障点行内高亮（#故障①~⑧），hover/click显示故障弹窗", "ia_ref": "ia-S010", "assignee": "interactive-eng", "chapter": "第二章 失效坐标系"},
+    {"id": "S011", "file": "S011-failure-modes.html", "layout": "card-grid", "pattern": "2x4-grid", "content_summary": "2×4卡片网格：编号+名称+现场表现+后果", "ia_ref": "ia-S011", "assignee": "slide-writer", "chapter": "第二章 失效坐标系"},
+    {"id": "S012", "file": "S012-failure-timeline.html", "layout": "timeline", "pattern": "execution-flow", "content_summary": "naive agent执行流程，3轮迭代标注故障触发点", "ia_ref": "ia-S012", "assignee": "slide-writer", "chapter": "第二章 失效坐标系"},
+    {"id": "S015", "file": "S015-chapter3-transition.html", "layout": "center-focus", "pattern": "chapter-transition", "content_summary": "第三章过渡页，「立」的部分，4+4两组消化", "ia_ref": "ia-S015", "assignee": "slide-writer", "chapter": "第三章 机制与支柱"},
+    {"id": "S016", "file": "S016-mechanisms-map.html", "layout": "card-grid", "pattern": "staggered-8-cards", "content_summary": "8个staggered卡片：编号+机制名+解哪条故障+类比", "ia_ref": "ia-S016", "assignee": "slide-writer", "chapter": "第三章 机制与支柱"},
+    {"id": "S017", "file": "S017-agent-loop.html", "layout": "center-focus", "pattern": "four-phase-cycle", "content_summary": "四相循环动画（Gather→Action→Verify→Iterate）+ USB-C类比", "ia_ref": "ia-S017", "assignee": "interactive-eng", "chapter": "第三章 机制与支柱"},
+    {"id": "S018", "file": "S018-progress-context.html", "layout": "two-column", "pattern": "comparison-parallel", "content_summary": "游戏存档 vs 工位清理，左右分栏", "ia_ref": "ia-S018", "assignee": "slide-writer", "chapter": "第三章 机制与支柱"},
+    {"id": "S019", "file": "S019-feature-verification.html", "layout": "two-row", "pattern": "comparison-stacked", "content_summary": "待办清单 vs QA验收闸，上下两层", "ia_ref": "ia-S019", "assignee": "slide-writer", "chapter": "第三章 机制与支柱"},
+    {"id": "S020", "file": "S020-subagents-gen-eval.html", "layout": "three-column", "pattern": "three-role-switch", "content_summary": "外包顾问 vs 论文评审三角色，GAN对抗架构", "ia_ref": "ia-S020", "assignee": "interactive-eng", "chapter": "第三章 机制与支柱"},
+    {"id": "S022", "file": "S022-mechanism-failure-matrix.html", "layout": "full-table", "pattern": "matrix-hover-highlight", "content_summary": "8机制×8故障，行列交叉单元格，hover高亮整行整列", "ia_ref": "ia-S022", "assignee": "interactive-eng", "chapter": "第三章 机制与支柱"},
+    {"id": "S023", "file": "S023-three-pillars.html", "layout": "center-focus", "pattern": "three-pillars-svg", "content_summary": "Context Engineering / Architectural Constraints / Garbage Collection三柱鼎立，SVG动态连线到8机制", "ia_ref": "ia-S023", "assignee": "interactive-eng", "chapter": "第三章 机制与支柱"},
+    {"id": "S024", "file": "S024-mechanism-pillar-matrix.html", "layout": "full-table", "pattern": "matrix-hover-highlight", "content_summary": "8机制×3支柱，观察GC列「基本为空」的刻意留白", "ia_ref": "ia-S024", "assignee": "interactive-eng", "chapter": "第三章 机制与支柱"},
+    {"id": "S025", "file": "S025-chapter4-transition.html", "layout": "center-focus", "pattern": "chapter-transition", "content_summary": "第四章过渡页，「实」的部分，坐标套到真实产品", "ia_ref": "ia-S025", "assignee": "slide-writer", "chapter": "第四章 决策内化"},
+    {"id": "S026", "file": "S026-ecosystem-radar.html", "layout": "center-focus", "pattern": "quadrant-radar", "content_summary": "CLI-first / IDE-native / Cloud-sandbox / SDK-harness四象限，11+产品分布", "ia_ref": "ia-S026", "assignee": "interactive-eng", "chapter": "第四章 决策内化"},
+    {"id": "S028", "file": "S028-official-warnings.html", "layout": "three-column", "pattern": "quote-cards", "content_summary": "harness会过时 / Build to Delete / 三大开放争议，三卡片含原文引用", "ia_ref": "ia-S028", "assignee": "slide-writer", "chapter": "第四章 决策内化"},
+    {"id": "S030", "file": "S030-summary-map.html", "layout": "center-focus", "pattern": "knowledge-graph-svg", "content_summary": "中心「Harness Engineering」→ 八大故障+八大机制+三支柱+四系家族，四向辐射SVG", "ia_ref": "ia-S030", "assignee": "interactive-eng", "chapter": "第四章 决策内化"}
+  ],
+  "chapters": [
+    {"title": "第一章 认知升维", "slides": ["S001", "S002", "S003", "S004", "S005", "S007", "S008", "S013", "S014"]},
+    {"title": "第二章 失效坐标系", "slides": ["S009", "S010", "S011", "S012"]},
+    {"title": "第三章 机制与支柱", "slides": ["S015", "S016", "S017", "S018", "S019", "S020", "S022", "S023", "S024"]},
+    {"title": "第四章 决策内化", "slides": ["S025", "S026", "S028", "S030"]}
+  ]
+}

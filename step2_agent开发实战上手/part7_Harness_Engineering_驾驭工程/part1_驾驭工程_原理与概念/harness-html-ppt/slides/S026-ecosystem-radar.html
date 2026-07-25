@@ -1,0 +1,114 @@
+<!-- S026 Ecosystem Radar - Four Families -->
+<style>
+  #s26-wrap { width:100%; max-width:1100px; margin:0 auto; text-align:center; }
+  #s26-title { font-family:var(--font-heading); font-size:clamp(1.5rem,2.8vw,2.15rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s26-subtitle { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); margin-top:.35rem; opacity:0; transition:opacity .5s ease; }
+  #s26-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:1.5rem; }
+  .s26-card { background:rgba(255,255,255,0.78); backdrop-filter:blur(12px); border:1.5px solid var(--card-border); border-radius:12px; padding:1.1rem 1.1rem .9rem; box-shadow:0 4px 20px rgba(45,90,122,.06); opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; text-align:left; display:flex; flex-direction:column; }
+  .s26-card.visible { opacity:1; transform:translateY(0); }
+  .s26-card:hover { border-color:var(--accent); }
+  .s26-head { display:flex; align-items:center; gap:.55rem; margin-bottom:.55rem; }
+  .s26-icon { font-size:clamp(1.4rem,2vw,1.7rem); flex-shrink:0; }
+  .s26-name { font-family:var(--font-heading); font-size:clamp(.98rem,1.35vw,1.12rem); font-weight:700; color:var(--primary); flex:1; line-height:1.2; }
+  .s26-badge { font-size:clamp(.66rem,.85vw,.74rem); font-weight:700; padding:.2rem .55rem; border-radius:10px; white-space:nowrap; letter-spacing:.02em; }
+  .s26-b-cli { background:rgba(45,90,122,.14); color:var(--primary); }
+  .s26-b-ide { background:rgba(193,127,89,.16); color:var(--accent); }
+  .s26-b-cloud { background:rgba(39,174,96,.14); color:#1f7a44; }
+  .s26-b-sdk { background:rgba(155,89,182,.14); color:#7b4994; }
+  .s26-tag { font-size:clamp(.78rem,1vw,.88rem); color:var(--card-text); line-height:1.55; margin-bottom:.55rem; font-style:italic; border-left:2.5px solid var(--accent); padding-left:.6rem; }
+  .s26-ex { background:rgba(45,90,122,.04); border-radius:8px; padding:.55rem .65rem .45rem; margin-bottom:.55rem; flex:1; }
+  .s26-ex ul { list-style:none; padding:0; margin:0; }
+  .s26-ex li { font-size:clamp(.76rem,1vw,.85rem); color:var(--card-text); line-height:1.58; padding:.12rem 0 .12rem 1rem; position:relative; }
+  .s26-ex li::before { content:"·"; position:absolute; left:.35rem; color:var(--accent); font-weight:700; }
+  .s26-ex li strong { color:var(--primary); font-weight:700; }
+  .s26-reps { font-size:clamp(.74rem,.95vw,.82rem); color:var(--text-primary); font-weight:600; padding:.4rem .6rem; background:rgba(193,127,89,.08); border-radius:6px; line-height:1.5; }
+  .s26-reps strong { color:var(--primary); font-weight:700; }
+  @media(max-width:820px){ #s26-grid{ grid-template-columns:1fr; } }
+</style>
+
+<div id="s26-wrap">
+  <div id="s26-title">生态雷达：四系家族</div>
+  <div id="s26-subtitle">10+ 主流 Harness 产品的工程架构归类——每系都有自己的使用场景和典型踩坑</div>
+  <div id="s26-grid">
+
+    <div class="s26-card">
+      <div class="s26-head">
+        <span class="s26-icon">🖥</span>
+        <div class="s26-name">CLI-first 命令行系</div>
+        <div class="s26-badge s26-b-cli">终端</div>
+      </div>
+      <div class="s26-tag">长任务放进去，走人泡咖啡回来看成果</div>
+      <div class="s26-ex">
+        <ul>
+          <li><strong>最擅长</strong>：长任务自主运行、脚本化流水线、CI/CD 集成</li>
+          <li><strong>典型踩坑</strong>：无人值守时错误被吞没；中间状态不可见</li>
+          <li><strong>适合场景</strong>：批量改造、autorun 迁移、夜跑任务</li>
+        </ul>
+      </div>
+      <div class="s26-reps"><strong>代表</strong>：Claude Code · Codex CLI · Amp · Aider</div>
+    </div>
+
+    <div class="s26-card">
+      <div class="s26-head">
+        <span class="s26-icon">🧩</span>
+        <div class="s26-name">IDE-native 客户端系</div>
+        <div class="s26-badge s26-b-ide">编辑器</div>
+      </div>
+      <div class="s26-tag">边写边改，光标在哪它就在哪</div>
+      <div class="s26-ex">
+        <ul>
+          <li><strong>最擅长</strong>：行内补全、diff 可视化、即时 accept/reject</li>
+          <li><strong>典型踩坑</strong>：交互密集导致 context 碎片化；大范围改动受限</li>
+          <li><strong>适合场景</strong>：日常写代码、pair programming、轻量重构</li>
+        </ul>
+      </div>
+      <div class="s26-reps"><strong>代表</strong>：Cursor · Windsurf · GitHub Copilot Chat</div>
+    </div>
+
+    <div class="s26-card">
+      <div class="s26-head">
+        <span class="s26-icon">☁</span>
+        <div class="s26-name">Cloud-Sandbox 云端沙盒系</div>
+        <div class="s26-badge s26-b-cloud">云端</div>
+      </div>
+      <div class="s26-tag">给它一个云上的房间，钥匙你拿着</div>
+      <div class="s26-ex">
+        <ul>
+          <li><strong>最擅长</strong>：全托管环境、隔离安全、异步长任务</li>
+          <li><strong>典型踩坑</strong>：冷启动慢；本地文件上云合规复杂</li>
+          <li><strong>适合场景</strong>：企业合规、远程 agent、跨设备协作</li>
+        </ul>
+      </div>
+      <div class="s26-reps"><strong>代表</strong>：Devin · Replit Agent · E2B</div>
+    </div>
+
+    <div class="s26-card">
+      <div class="s26-head">
+        <span class="s26-icon">📦</span>
+        <div class="s26-name">SDK-Harness 库系</div>
+        <div class="s26-badge s26-b-sdk">库</div>
+      </div>
+      <div class="s26-tag">不给现成产品，给你积木自己搭</div>
+      <div class="s26-ex">
+        <ul>
+          <li><strong>最擅长</strong>：深度定制、嵌入自有产品、研究原型</li>
+          <li><strong>典型踩坑</strong>：要自己实现 observability；学习曲线陡</li>
+          <li><strong>适合场景</strong>：构建自有 agent 产品、研究实验</li>
+        </ul>
+      </div>
+      <div class="s26-reps"><strong>代表</strong>：DeepAgents · LangGraph · AutoGen</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s26-title');
+  var subtitle=document.getElementById('s26-subtitle');
+  var cards=document.querySelectorAll('.s26-card');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  cards.forEach(function(c,i){ setTimeout(function(){ c.classList.add('visible'); },700+i*180); });
+})();
+</script>

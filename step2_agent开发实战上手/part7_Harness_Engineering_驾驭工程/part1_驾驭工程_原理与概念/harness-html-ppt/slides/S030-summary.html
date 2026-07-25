@@ -1,0 +1,82 @@
+<!-- S030 Course Summary - 5 Merged Rows (Scheme A) -->
+<style>
+  #s30-wrap { width:100%; max-width:1080px; margin:0 auto; text-align:center; }
+  #s30-title { font-family:var(--font-heading); font-size:clamp(1.6rem,2.8vw,2.15rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; letter-spacing:.01em; }
+  #s30-subtitle { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); margin-top:.35rem; opacity:0; transition:opacity .5s ease; }
+  #s30-list { max-width:960px; margin:1.4rem auto 0; text-align:left; display:flex; flex-direction:column; gap:.55rem; }
+  .s30-row { display:flex; align-items:center; gap:.9rem; background:rgba(255,255,255,0.78); backdrop-filter:blur(12px); border:1.5px solid var(--card-border); border-radius:10px; padding:.6rem .9rem; opacity:0; transform:translateX(-10px); transition:opacity .45s ease, transform .45s ease, border-color .3s ease; box-shadow:0 3px 14px rgba(45,90,122,.05); }
+  .s30-row.visible { opacity:1; transform:translateX(0); }
+  .s30-row:hover { border-color:var(--accent); }
+  .s30-num { width:2.4rem; height:2.4rem; border-radius:50%; background:linear-gradient(135deg,var(--primary),rgba(45,90,122,.72)); color:#fff; font-family:var(--font-heading); font-size:clamp(1.1rem,1.5vw,1.35rem); font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 2px 8px rgba(45,90,122,.2); }
+  .s30-label { font-family:var(--font-heading); font-size:clamp(.88rem,1.2vw,1rem); font-weight:700; color:var(--primary); white-space:nowrap; flex-shrink:0; min-width:5.5rem; }
+  .s30-detail { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--card-text); line-height:1.6; flex:1; }
+  .s30-detail strong { color:var(--accent); font-weight:700; }
+  #s30-footer { display:flex; gap:1rem; margin-top:1.4rem; opacity:0; transition:opacity .5s ease; align-items:stretch; }
+  .s30-foot-l, .s30-foot-r { flex:1; text-align:left; padding:.8rem 1rem; border-radius:10px; line-height:1.55; }
+  .s30-foot-l { background:rgba(45,90,122,.06); border-left:3px solid var(--primary); }
+  .s30-foot-r { background:rgba(193,127,89,.08); border-left:3px solid var(--accent); }
+  .s30-foot-title { font-family:var(--font-heading); font-size:clamp(.78rem,1vw,.88rem); font-weight:700; margin-bottom:.3rem; letter-spacing:.02em; }
+  .s30-foot-l .s30-foot-title { color:var(--primary); }
+  .s30-foot-r .s30-foot-title { color:var(--accent); }
+  .s30-foot-body { font-size:clamp(.78rem,1.02vw,.88rem); color:var(--card-text); }
+  .s30-foot-body strong { color:var(--primary); font-weight:700; }
+  .s30-foot-r .s30-foot-body strong { color:var(--accent); }
+  @media(max-width:700px){ #s30-footer{ flex-direction:column; } }
+</style>
+
+<div id="s30-wrap">
+  <div id="s30-title">全课总结</div>
+  <div id="s30-subtitle">Harness Engineering 驾驭工程 · 第一节：原理与概念</div>
+
+  <div id="s30-list">
+    <div class="s30-row">
+      <div class="s30-num">1</div>
+      <div class="s30-label">一个公式</div>
+      <div class="s30-detail"><strong>Agent = Model + Harness</strong>（Vivek Trivedy 原创；Bockeler 传播）</div>
+    </div>
+    <div class="s30-row">
+      <div class="s30-num">8</div>
+      <div class="s30-label">八大故障</div>
+      <div class="s30-detail">①循环失控 ②context 溢出 ③cache miss ④tool 错误吞 ⑤状态丢失 ⑥缺权限闸 ⑦缺自动化评审 ⑧成本失控</div>
+    </div>
+    <div class="s30-row">
+      <div class="s30-num">8</div>
+      <div class="s30-label">八大机制</div>
+      <div class="s30-detail">Agent Loop / Tool Use / Progress Tracking / Context Management / Feature List / Verification Loop / Subagents / Generator-Evaluator</div>
+    </div>
+    <div class="s30-row">
+      <div class="s30-num">3</div>
+      <div class="s30-label">三大支柱</div>
+      <div class="s30-detail"><strong>Context Engineering</strong>（输入端）/ <strong>Architectural Constraints</strong>（控制流）/ <strong>Garbage Collection</strong>（状态流）正交坐标</div>
+    </div>
+    <div class="s30-row">
+      <div class="s30-num">4</div>
+      <div class="s30-label">四系家族</div>
+      <div class="s30-detail">CLI-first / IDE-native / Cloud-sandbox / SDK-harness</div>
+    </div>
+  </div>
+
+  <div id="s30-footer">
+    <div class="s30-foot-l">
+      <div class="s30-foot-title">下节课预告</div>
+      <div class="s30-foot-body">补全 <strong>⑥缺权限闸</strong>（Permission Gate）和 <strong>⑧成本失控</strong>（Token Budget），走进真实 harness 项目</div>
+    </div>
+    <div class="s30-foot-r">
+      <div class="s30-foot-title">带走三样东西</div>
+      <div class="s30-foot-body"><strong>一套坐标系</strong> · <strong>一张生态地图</strong> · <strong>一种工程理性</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s30-title');
+  var subtitle=document.getElementById('s30-subtitle');
+  var rows=document.querySelectorAll('.s30-row');
+  var footer=document.getElementById('s30-footer');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  rows.forEach(function(r,i){ setTimeout(function(){ r.classList.add('visible'); },700+i*160); });
+  setTimeout(function(){ footer.style.opacity='1'; },1700);
+})();
+</script>

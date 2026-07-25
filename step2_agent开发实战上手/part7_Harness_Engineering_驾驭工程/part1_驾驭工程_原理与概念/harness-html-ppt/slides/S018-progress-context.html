@@ -1,0 +1,65 @@
+<!-- S018 Progress Tracking + Context Management -->
+<style>
+  #s18-wrap { width:100%; max-width:900px; margin:0 auto; }
+  #s18-title { font-family:var(--font-heading); font-size:clamp(1.4rem,2.6vw,2rem); font-weight:700; color:var(--primary); text-align:center; opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s18-pair { display:flex; gap: 1.7rem; margin-top: 1.8rem; flex-wrap:nowrap; }
+  .s18-col { flex:1; min-width:0; background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:12px; padding: 1.2rem 1.4rem; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; }
+  .s18-col.visible { opacity:1; transform:translateY(0); }
+  .s18-col:hover { border-color:var(--accent); }
+  .s18-col-head { display:flex; align-items:center; gap:.4rem; margin-bottom: .55rem; padding-bottom:.3rem; border-bottom:1px solid var(--card-border); }
+  .s18-num { width:1.5rem; height:1.5rem; border-radius:50%; background:var(--primary); color:#fff; font-family:var(--font-heading); font-size:.7rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .s18-name { font-family:var(--font-heading); font-size:clamp(1rem,1.4vw,1.15rem); font-weight:700; color:var(--primary); }
+  .s18-fix { font-size:clamp(.6rem,.9vw,.7rem); color:var(--accent); margin-left:auto; }
+  .s18-def { font-size:clamp(.82rem,1.1vw,.95rem); color:var(--card-text); line-height:1.65; margin-bottom: .65rem; }
+  .s18-ana { font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); line-height:1.65; padding:.5rem .6rem; background:rgba(45,90,122,.04); border-radius:6px; margin-bottom: .65rem; }
+  .s18-code { background:rgba(30,35,45,.85); backdrop-filter:blur(8px); border-radius:8px; padding:.8rem 1rem; font-family:'SF Mono',monospace; font-size:clamp(.78rem,1.05vw,.9rem); color:#d4d4d4; line-height:1.7; overflow-x:auto; white-space:pre-wrap; }
+  .s18-code .k { color:#c586c0; } .s18-code .f { color:#dcdcaa; } .s18-code .s { color:#ce9178; } .s18-code .c { color:#6a9955; }
+  @media(max-width:700px){ #s18-pair{ flex-direction:column; } }
+</style>
+
+<div id="s18-wrap">
+  <div id="s18-title">7.3 Progress Tracking + 7.4 Context Management</div>
+  <div id="s18-pair">
+    <div class="s18-col">
+      <div class="s18-col-head"><div class="s18-num">3</div><div class="s18-name">Progress Tracking 进度追踪</div><span class="s18-fix">救 ⑤</span></div>
+      <div class="s18-def">每步进度写到持久文件 + git commit，session 断了能从断点续传。</div>
+      <div class="s18-ana"><strong>类比</strong>：游戏存档——每过一个小任务自动存档，断了能"读档"接着跑。</div>
+      <div class="s18-code">
+<span class="k">def</span> <span class="f">save_progress</span>(state):
+    <span class="f">PROGRESS_FILE</span>.write_text(
+        json.<span class="f">dumps</span>(state, indent=<span class="s">2</span>))
+
+<span class="k">def</span> <span class="f">load_progress</span>():
+    <span class="k">if</span> <span class="f">PROGRESS_FILE</span>.exists():
+        <span class="k">return</span> json.<span class="f">loads</span>(
+            <span class="f">PROGRESS_FILE</span>.read_text())
+    <span class="k">return</span> <span class="k">None</span>
+      </div>
+    </div>
+    <div class="s18-col">
+      <div class="s18-col-head"><div class="s18-num">4</div><div class="s18-name">Context Management 上下文管理</div><span class="s18-fix">救 ②③</span></div>
+      <div class="s18-def">监控 token 数，超阈值触发压缩/重置；system prompt 前缀永远不动以保 cache。</div>
+      <div class="s18-ana"><strong>类比</strong>：工位清理——文件堆到爬不动时，归档成摘要或从空桌开始；但工位名牌（system prompt）永远不动。</div>
+      <div class="s18-code">
+<span class="k">if</span> token_count <= <span class="s">THRESHOLD</span>:
+    <span class="k">return</span> messages
+<span class="c"># system prompt（messages[0]）永远不动</span>
+summary = <span class="f">call_llm_for_summary</span>(
+    messages[<span class="s">1</span>:])
+<span class="k">return</span> [messages[<span class="s">0</span>],
+    {<span class="s">"role"</span>:<span class="s">"assistant"</span>,
+     <span class="s">"content"</span>: summary}]
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s18-title');
+  var cols=document.querySelectorAll('.s18-col');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ cols[0].classList.add('visible'); },500);
+  setTimeout(function(){ cols[1].classList.add('visible'); },800);
+})();
+</script>

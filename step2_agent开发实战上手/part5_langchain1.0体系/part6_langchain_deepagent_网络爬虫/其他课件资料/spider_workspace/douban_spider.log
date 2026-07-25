@@ -1,0 +1,34 @@
+2025-12-24 14:04:22,147 - DoubanMovieSpider - INFO - spider.py:80 - 豆瓣电影爬虫初始化完成，目标URL: https://movie.douban.com/
+2025-12-24 14:04:22,147 - DoubanMovieSpider - INFO - spider.py:80 - 豆瓣电影爬虫初始化完成，目标URL: https://movie.douban.com/
+2025-12-24 14:15:14,708 - DoubanMovieSpider - INFO - spider.py:80 - 豆瓣电影爬虫初始化完成，目标URL: https://movie.douban.com/
+2025-12-24 14:15:14,708 - DoubanMovieSpider - INFO - spider.py:360 - 开始运行豆瓣电影爬虫...
+2025-12-24 14:15:16,122 - DoubanMovieSpider - INFO - spider.py:143 - 正在请求页面: https://movie.douban.com/
+2025-12-24 14:15:16,433 - DoubanMovieSpider - INFO - spider.py:151 - 页面请求成功，状态码: 200
+2025-12-24 14:15:16,458 - DoubanMovieSpider - INFO - spider.py:290 - 找到 55 个电影项目
+2025-12-24 14:15:16,465 - DoubanMovieSpider - INFO - spider.py:305 - 成功解析 55 部电影
+2025-12-24 14:15:16,467 - DoubanMovieSpider - INFO - spider.py:345 - 成功保存 55 部电影数据到 /workspace/douban_movies.json
+2025-12-24 14:15:16,467 - DoubanMovieSpider - INFO - spider.py:379 - 爬虫运行完成，共获取 55 部电影
+2025-12-25 07:50:26,250 - DoubanMovieSpider - INFO - spider.py:80 - 豆瓣电影爬虫初始化完成，目标URL: https://movie.douban.com/
+2025-12-25 07:50:26,250 - DoubanMovieSpider - INFO - spider.py:360 - 开始运行豆瓣电影爬虫...
+2025-12-25 07:50:28,416 - DoubanMovieSpider - INFO - spider.py:143 - 正在请求页面: https://movie.douban.com/
+2025-12-25 07:50:28,668 - DoubanMovieSpider - INFO - spider.py:151 - 页面请求成功，状态码: 200
+2025-12-25 07:50:28,699 - DoubanMovieSpider - INFO - spider.py:290 - 找到 65 个电影项目
+2025-12-25 07:50:28,707 - DoubanMovieSpider - INFO - spider.py:305 - 成功解析 65 部电影
+2025-12-25 07:50:28,709 - DoubanMovieSpider - INFO - spider.py:345 - 成功保存 65 部电影数据到 /workspace/douban_movies.json
+2025-12-25 07:50:28,709 - DoubanMovieSpider - INFO - spider.py:379 - 爬虫运行完成，共获取 65 部电影
+2025-12-25 07:55:42,418 - DoubanMovieSpider - INFO - spider.py:80 - 豆瓣电影爬虫初始化完成，目标URL: https://movie.douban.com/
+2025-12-25 07:55:42,418 - DoubanMovieSpider - INFO - spider.py:360 - 开始运行豆瓣电影爬虫...
+2025-12-25 07:55:45,303 - DoubanMovieSpider - INFO - spider.py:143 - 正在请求页面: https://movie.douban.com/
+2025-12-25 07:55:45,627 - DoubanMovieSpider - INFO - spider.py:151 - 页面请求成功，状态码: 200
+2025-12-25 07:55:45,649 - DoubanMovieSpider - INFO - spider.py:290 - 找到 65 个电影项目
+2025-12-25 07:55:45,656 - DoubanMovieSpider - INFO - spider.py:305 - 成功解析 65 部电影
+2025-12-25 07:55:45,657 - DoubanMovieSpider - INFO - spider.py:345 - 成功保存 65 部电影数据到 /workspace/douban_movies.json
+2025-12-25 07:55:45,658 - DoubanMovieSpider - INFO - spider.py:379 - 爬虫运行完成，共获取 65 部电影
+2025-12-25 07:57:07,823 - DoubanMovieSpider - INFO - spider.py:80 - 豆瓣电影爬虫初始化完成，目标URL: https://movie.douban.com/
+2025-12-25 07:57:07,823 - DoubanMovieSpider - INFO - spider.py:360 - 开始运行豆瓣电影爬虫...
+2025-12-25 07:57:09,151 - DoubanMovieSpider - INFO - spider.py:143 - 正在请求页面: https://movie.douban.com/
+2025-12-25 07:57:09,464 - DoubanMovieSpider - INFO - spider.py:151 - 页面请求成功，状态码: 200
+2025-12-25 07:57:09,502 - DoubanMovieSpider - INFO - spider.py:290 - 找到 65 个电影项目
+2025-12-25 07:57:09,512 - DoubanMovieSpider - INFO - spider.py:305 - 成功解析 65 部电影
+2025-12-25 07:57:09,514 - DoubanMovieSpider - INFO - spider.py:345 - 成功保存 65 部电影数据到 /workspace/douban_movies.json
+2025-12-25 07:57:09,514 - DoubanMovieSpider - INFO - spider.py:379 - 爬虫运行完成，共获取 65 部电影

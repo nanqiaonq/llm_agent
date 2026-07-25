@@ -1,0 +1,287 @@
+<style>
+/* ── S26 · 约束轴四维度对比（v3 简化版）── */
+.s21-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.2rem 2rem;
+  overflow-y: auto;
+  gap: 0.7rem;
+}
+
+.s21-header {
+  text-align: left;
+  flex-shrink: 0;
+}
+.s21-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--accent-amber);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.s21-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.3vw, 1.85rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.25;
+  font-style: normal;
+}
+.s21-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}
+.s21-subtitle strong { color: var(--accent-amber); font-weight: 600; }
+
+/* 概念条（去 emoji） */
+.s21-concept {
+  background: rgba(125, 211, 192, 0.06);
+  border: 1px solid var(--rule-line);
+  border-left: 3px solid var(--secondary);
+  border-radius: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-body);
+  flex-shrink: 0;
+}
+.s21-concept strong { color: var(--accent-amber); font-weight: 600; }
+
+/* 主体表格（不强制 flex: 1，让自然高度）*/
+.s21-table {
+  display: grid;
+  grid-template-columns: 1.3fr 1.35fr 1.35fr;
+  gap: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.7rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.s21-th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.6rem 0.95rem;
+  background: rgba(91, 140, 184, 0.12);
+  border-bottom: 2px solid var(--card-border);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+.s21-th-hermes {
+  border-left: 3px solid var(--accent-amber);
+  color: var(--accent-amber);
+}
+.s21-th-claude {
+  border-left: 3px solid var(--secondary);
+  color: var(--secondary);
+}
+
+.s21-cell {
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid var(--rule-line);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text-body);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;     /* ← 改 flex-start 让 evidence 不被压缩 */
+  gap: 0.3rem;
+}
+.s21-cell:nth-last-child(-n+3) { border-bottom: none; }
+
+/* 维度列（去 emoji） */
+.s21-cell-dim {
+  background: rgba(91, 140, 184, 0.04);
+}
+.s21-dim-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+.s21-dim-def {
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+  line-height: 1.4;
+}
+
+/* Hermes / Claude Code 列 */
+.s21-cell-hermes { border-left: 3px solid rgba(212, 165, 116, 0.25); }
+.s21-cell-claude { border-left: 3px solid rgba(125, 211, 192, 0.25); }
+
+/* 强弱 chip（纯文字 + 色块，去 emoji） */
+.s21-strength {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  align-self: flex-start;
+  letter-spacing: 0.05em;
+}
+.s21-strength-weak {
+  background: rgba(229, 115, 115, 0.18);
+  color: #e57373;
+  border: 1px solid rgba(229, 115, 115, 0.4);
+}
+.s21-strength-mid {
+  background: rgba(212, 165, 116, 0.18);
+  color: var(--accent-amber);
+  border: 1px solid rgba(212, 165, 116, 0.4);
+}
+.s21-strength-strong {
+  background: rgba(125, 211, 192, 0.18);
+  color: var(--secondary);
+  border: 1px solid rgba(125, 211, 192, 0.4);
+}
+
+.s21-evidence {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* 底部对比卡（去 emoji） */
+.s21-callout {
+  background: linear-gradient(135deg, rgba(91, 140, 184, 0.08), rgba(212, 165, 116, 0.06));
+  border: 1px solid var(--rule-line);
+  border-radius: 0.55rem;
+  padding: 0.65rem 0.95rem;
+  flex-shrink: 0;
+}
+.s21-callout-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  margin-bottom: 0.4rem;
+}
+.s21-callout-row {
+  font-size: 0.76rem;
+  color: var(--text-body);
+  line-height: 1.55;
+  margin-bottom: 0.18rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.s21-callout-tag {
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 5.5rem;
+}
+.s21-callout-tag-hermes { color: var(--accent-amber); }
+.s21-callout-tag-claude { color: var(--secondary); }
+.s21-callout-row strong { color: var(--text-primary); font-weight: 600; }
+.s21-callout-final {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--rule-line-dashed);
+  font-size: 0.74rem;
+  color: var(--text-subtle);
+  line-height: 1.5;
+}
+.s21-callout-final strong { color: var(--accent-amber); font-weight: 600; }
+</style>
+
+<div class="s21-wrap">
+  <div class="s21-header">
+    <div class="s21-chapter-label">§3.3 &nbsp;—&nbsp; 风险怎么控制 · Hermes 偏信任端的证据</div>
+    <h2 class="s21-title">约束轴四维度对比</h2>
+    <div class="s21-subtitle">
+      <strong>Hermes 三维弱一维强</strong> · Claude Code 四维都强（代价：动态弱、仅单点 IDE）
+    </div>
+  </div>
+
+  <div class="s21-concept">
+    <strong>约束维度 = agent 跑代码时被工程边界锁住的程度</strong>（高 = 安全但慢；低 = 快但押注信任）
+  </div>
+
+  <div class="s21-table">
+    <!-- 表头 -->
+    <div class="s21-th">维度</div>
+    <div class="s21-th s21-th-hermes">Hermes Agent</div>
+    <div class="s21-th s21-th-claude">Claude Code</div>
+
+    <!-- 沙盒强度 -->
+    <div class="s21-cell s21-cell-dim">
+      <div class="s21-dim-name">沙盒强度</div>
+      <div class="s21-dim-def">agent 执行命令的隔离层级</div>
+    </div>
+    <div class="s21-cell s21-cell-hermes">
+      <div class="s21-strength s21-strength-weak">弱</div>
+      <div class="s21-evidence">仅 Docker 用户态容器（与宿主同一内核）</div>
+    </div>
+    <div class="s21-cell s21-cell-claude">
+      <div class="s21-strength s21-strength-strong">强</div>
+      <div class="s21-evidence">macOS 系统级 sandbox-exec（内核拦截系统调用 + 文件白名单）</div>
+    </div>
+
+    <!-- 工作目录隔离 -->
+    <div class="s21-cell s21-cell-dim">
+      <div class="s21-dim-name">工作目录隔离</div>
+      <div class="s21-dim-def">多个子 agent 是否在独立目录跑</div>
+    </div>
+    <div class="s21-cell s21-cell-hermes">
+      <div class="s21-strength s21-strength-weak">弱</div>
+      <div class="s21-evidence">仅 <strong style="color:var(--text-body);">delegate subagent</strong> 不自动隔离；系统层<strong style="color:var(--text-body);">有</strong> <code style="font-family:var(--font-mono);font-size:0.66rem;color:var(--secondary);">hermes -w</code> CLI worktree + kanban dispatcher worktree</div>
+    </div>
+    <div class="s21-cell s21-cell-claude">
+      <div class="s21-strength s21-strength-strong">强</div>
+      <div class="s21-evidence">每个子 agent 独立 worktree（git 工作树天然隔离）</div>
+    </div>
+
+    <!-- 对话 checkpoint -->
+    <div class="s21-cell s21-cell-dim">
+      <div class="s21-dim-name">对话 checkpoint</div>
+      <div class="s21-dim-def">出错后能否回滚到任意中间步</div>
+    </div>
+    <div class="s21-cell s21-cell-hermes">
+      <div class="s21-strength s21-strength-weak">弱</div>
+      <div class="s21-evidence"><strong style="color:var(--text-body);">有</strong> filesystem checkpoint（mutating-op 边界 snapshot + <code style="font-family:var(--font-mono);font-size:0.66rem;color:var(--secondary);">/rollback</code>）；<strong style="color:var(--text-body);">无</strong>每步 LLM 推理无条件 step checkpoint</div>
+    </div>
+    <div class="s21-cell s21-cell-claude">
+      <div class="s21-strength s21-strength-mid">中</div>
+      <div class="s21-evidence">步骤级回滚（LangGraph checkpointer 风格）</div>
+    </div>
+
+    <!-- 工具集隔离 -->
+    <div class="s21-cell s21-cell-dim">
+      <div class="s21-dim-name">工具集隔离</div>
+      <div class="s21-dim-def">子 agent 能调用哪些工具</div>
+    </div>
+    <div class="s21-cell s21-cell-hermes">
+      <div class="s21-strength s21-strength-strong">强</div>
+      <div class="s21-evidence">47 工具切到 2 个（memory + skills）+ 5 项黑名单</div>
+    </div>
+    <div class="s21-cell s21-cell-claude">
+      <div class="s21-strength s21-strength-mid">中</div>
+      <div class="s21-evidence">Permission Gate（每次工具调用前 approval hook）</div>
+    </div>
+  </div>
+
+  <div class="s21-callout">
+    <div class="s21-callout-title">约束不是越强越好——每个维度都有代价</div>
+    <div class="s21-callout-row">
+      <span class="s21-callout-tag s21-callout-tag-hermes">Hermes</span>
+      <div>三维弱 + 一维强 → 押注「<strong>信任</strong> + <strong>工具集精控</strong>」→ 换来强动态（19 平台 + Nudge 自学）</div>
+    </div>
+    <div class="s21-callout-row">
+      <span class="s21-callout-tag s21-callout-tag-claude">Claude Code</span>
+      <div>四维都强 → 代价是「<strong>动态弱</strong>」（仅 IDE 单点 / 跨平台一致性差）</div>
+    </div>
+    <div class="s21-callout-final">
+      <strong>没有完美选择</strong>——每家都在「约束 ↔ 动态 ↔ 入口治理」三个工程问题上押了不同筹码
+    </div>
+  </div>
+</div>

@@ -1,0 +1,535 @@
+<style>
+/* ═══════════════════════════════════════════════
+   S09 · 冷记忆① · SQLite 持久化
+   Process lifecycle dual-column comparison animation
+   Architect Blueprint theme · 12+ CSS variables
+   ═══════════════════════════════════════════════ */
+
+.slide[data-slide-id="S09"] {
+  --s09-bg:          var(--bg-main, #1a2332);
+  --s09-bg-mid:      var(--bg-mid, #243142);
+  --s09-bg-surface:  var(--bg-surface, #2d3b50);
+  --s09-primary:     var(--primary, #5b8cb8);
+  --s09-secondary:   var(--secondary, #7dd3c0);
+  --s09-amber:       var(--accent-warm, #d4a574);
+  --s09-red:         var(--accent-red, #e57373);
+  --s09-text:        var(--text-primary, #e8ecf0);
+  --s09-text-body:   var(--text-body, #c5cdd8);
+  --s09-text-subtle: var(--text-subtle, #8a96a8);
+  --s09-border:      var(--card-border, rgba(91,140,184,0.22));
+  --s09-mono:        var(--family-mono, 'JetBrains Mono', 'IBM Plex Mono', monospace);
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--s09-bg);
+  overflow: hidden;
+  font-style: normal;
+}
+
+/* ── Flash overlay（进程退出黑屏特效）←FM-3 ── */
+.s09-flash-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ── 主容器：居中铁律 ── */
+.s09-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.8rem 3rem 1.4rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ── 标题区 ── */
+.s09-header {
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+
+.s09-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--s09-text);
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.01em;
+}
+
+.s09-subtitle {
+  font-size: 1rem;
+  color: var(--s09-text-subtle);
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+  margin: 0;
+}
+
+/* ── vs 标签行 ── */
+.s09-vs-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1100px;
+  margin-bottom: 0.7rem;
+  position: relative;
+}
+
+.s09-col-label {
+  flex: 1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.35rem 1rem;
+  border-radius: 4px 4px 0 0;
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+}
+
+.s09-col-label-left {
+  color: var(--s09-red);
+  background: rgba(229,115,115,0.07);
+  border: 1px dashed rgba(229,115,115,0.35);
+  border-bottom: none;
+}
+
+.s09-col-label-right {
+  color: var(--s09-secondary);
+  background: rgba(125,211,192,0.07);
+  border: 1px solid rgba(125,211,192,0.35);
+  border-bottom: none;
+}
+
+.s09-vs-badge {
+  flex: 0 0 3rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--s09-primary);
+  font-family: var(--s09-mono);
+  font-style: normal;
+}
+
+/* ── 双栏 Grid ── */
+.s09-cols-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  max-width: 1100px;
+  width: 100%;
+  align-items: start;
+}
+
+/* ── 栏容器 ── */
+.s09-left-col,
+.s09-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.s09-left-col {
+  background: rgba(229,115,115,0.04);
+  border: 1px dashed rgba(229,115,115,0.35);
+  border-radius: 0 0 0 6px;
+  padding: 0.4rem 0.85rem;
+}
+
+.s09-right-col {
+  background: rgba(125,211,192,0.04);
+  border: 1px solid rgba(125,211,192,0.35);
+  border-radius: 0 0 6px 0;
+  padding: 0.4rem 0.85rem;
+}
+
+/* ── 阶段卡片 ── */
+.s09-stage-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  padding: 0.32rem 0.65rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  background: var(--s09-bg-mid);
+  border: 1px solid var(--s09-border);
+  opacity: 0;
+}
+
+.s09-stage-card:last-child {
+  margin-bottom: 0;
+}
+
+.s09-stage-icon-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.s09-stage-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.s09-stage-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--s09-text);
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+}
+
+.s09-stage-code {
+  font-family: var(--s09-mono);
+  font-size: 0.77rem;
+  color: var(--s09-secondary);
+  background: var(--s09-bg);
+  border-radius: 3px;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid rgba(125,211,192,0.18);
+  font-style: normal;
+  line-height: 1.55;
+}
+
+/* ── Stage 2 list ── */
+.s09-list-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.s09-list-item {
+  font-family: var(--s09-mono);
+  font-size: 0.76rem;
+  color: var(--s09-text-body);
+  padding: 0.15rem 0.4rem;
+  font-style: normal;
+}
+
+.s09-list-note {
+  font-size: 0.73rem;
+  color: var(--s09-text-subtle);
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+  margin-top: 0.1rem;
+}
+
+/* ── Stage 2 右栏 INSERT 字段 ── */
+.s09-fields-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  margin-top: 0.2rem;
+}
+
+.s09-field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-family: var(--s09-mono);
+  font-style: normal;
+}
+
+.s09-field-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--s09-amber);
+  flex-shrink: 0;
+}
+
+.s09-field-name {
+  color: var(--s09-amber);
+  font-weight: 500;
+}
+
+/* ── 进程退出卡 ── */
+.s09-stage-3-exit {
+  background: rgba(45,59,80,0.6);
+  border: 1px solid rgba(229,115,115,0.25);
+}
+
+/* ── Stage 4 对照：丢失卡（红色） ── */
+.s09-loss-card {
+  border: 1px solid rgba(229,115,115,0.45);
+  background: rgba(229,115,115,0.06);
+}
+
+.s09-label-loss {
+  color: var(--s09-red) !important;
+}
+
+.s09-loss-desc {
+  font-size: 0.73rem;
+  color: var(--s09-red);
+  opacity: 0.8;
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+}
+
+/* ── Stage 4 对照：持久化卡（amber） ── */
+.s09-persist-card {
+  border: 1px solid rgba(212,165,116,0.45);
+  background: rgba(212,165,116,0.06);
+}
+
+.s09-label-persist {
+  color: var(--s09-amber) !important;
+}
+
+.s09-persist-desc {
+  font-size: 0.73rem;
+  color: var(--s09-amber);
+  opacity: 0.85;
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+}
+
+/* ── Stage 5 重启 ── */
+.s09-code-gray {
+  color: var(--s09-text-subtle) !important;
+  border-color: rgba(138,150,168,0.2) !important;
+}
+
+.s09-code-amber {
+  color: var(--s09-amber) !important;
+  border-color: rgba(212,165,116,0.3) !important;
+  background: rgba(212,165,116,0.06) !important;
+}
+
+.s09-label-gray {
+  color: var(--s09-text-subtle) !important;
+}
+
+.s09-label-amber {
+  color: var(--s09-amber) !important;
+}
+
+/* ── 底部 Callout ── */
+.s09-callout {
+  max-width: 1100px;
+  width: 100%;
+  margin-top: 0.7rem;
+  padding: 0.55rem 1rem;
+  background: rgba(45,59,80,0.7);
+  border: 1px solid var(--s09-border);
+  border-left: 3px solid var(--s09-amber);
+  border-radius: 0 6px 6px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  opacity: 0;
+  font-style: normal;
+}
+
+.s09-callout-key {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--s09-amber);
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  white-space: nowrap;
+  font-style: normal;
+}
+
+.s09-callout-text {
+  font-size: 0.82rem;
+  color: var(--s09-text-body);
+  font-family: 'Noto Sans SC', 'Inter', sans-serif;
+  font-style: normal;
+}
+
+.s09-callout-accent {
+  font-size: 0.82rem;
+  color: var(--s09-secondary);
+  font-family: var(--s09-mono);
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* ── 左右栏初始不可见（hookFn 控制） ── */
+.s09-left-col,
+.s09-right-col {
+  /* opacity 初始值由 hookFn gsap.set 控制 */
+}
+
+/* ── prefers-reduced-motion：直接显示终态 ── */
+@media (prefers-reduced-motion: reduce) {
+  .s09-flash-overlay { display: none !important; }
+  .s09-stage-card    { opacity: 1 !important; transform: none !important; }
+  .s09-left-col,
+  .s09-right-col,
+  .s09-title,
+  .s09-subtitle,
+  .s09-callout       { opacity: 1 !important; transform: none !important; }
+}
+</style>
+
+<div class="slide" data-slide-id="S09">
+
+  <!-- 进程退出黑屏特效 overlay ←FM-3 -->
+  <div class="s09-flash-overlay" id="s09-flash"></div>
+
+  <div class="s09-wrap">
+
+    <!-- 标题区 -->
+    <div class="s09-header">
+      <h1 class="s09-title">冷记忆① · SQLite 持久化</h1>
+      <p class="s09-subtitle">跨 session 持久化的"账本"</p>
+    </div>
+
+    <!-- 栏标题 + vs 标签 -->
+    <div class="s09-vs-row">
+      <div class="s09-col-label s09-col-label-left">DeepAgents（内存）</div>
+      <span class="s09-vs-badge">vs</span>
+      <div class="s09-col-label s09-col-label-right">Hermes（SQLite 文件）</div>
+    </div>
+
+    <!-- 双栏 Grid -->
+    <div class="s09-cols-grid">
+
+      <!-- ====== 左栏：DeepAgents 内存 ====== -->
+      <div class="s09-left-col" id="s09-left-col">
+
+        <!-- Stage 1: Session 启动 -->
+        <div class="s09-stage-card s09-stage-1" id="s09-l1">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">📋</span>
+            <span class="s09-stage-label">Session 启动</span>
+          </div>
+          <div class="s09-stage-code">messages = []</div>
+        </div>
+
+        <!-- Stage 2: user 发消息 -->
+        <div class="s09-stage-card s09-stage-2" id="s09-l2">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">📋</span>
+            <span class="s09-stage-label">user 发消息</span>
+          </div>
+          <div class="s09-list-group">
+            <span class="s09-list-item">▸ [user, agent]</span>
+            <span class="s09-list-item">▸ [user, agent, user, agent]</span>
+          </div>
+          <div class="s09-list-note">list 在内存中增长</div>
+        </div>
+
+        <!-- Stage 3: 进程退出 -->
+        <div class="s09-stage-card s09-stage-3-exit" id="s09-l3">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">💀</span>
+            <span class="s09-stage-label">进程退出</span>
+          </div>
+        </div>
+
+        <!-- Stage 4: 对照结果 - 丢失 -->
+        <div class="s09-stage-card s09-stage-4-result s09-loss-card" id="s09-l4">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">💨</span>
+            <span class="s09-stage-label s09-label-loss">全部丢失</span>
+          </div>
+          <div class="s09-loss-desc">内存清零</div>
+        </div>
+
+        <!-- Stage 5: 重启 -->
+        <div class="s09-stage-card s09-stage-5" id="s09-l5">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">🔄</span>
+            <span class="s09-stage-label s09-label-gray">重启</span>
+          </div>
+          <div class="s09-stage-code s09-code-gray">messages = []<br>从零开始</div>
+        </div>
+
+      </div><!-- /s09-left-col -->
+
+      <!-- ====== 右栏：Hermes SQLite 文件 ====== -->
+      <div class="s09-right-col" id="s09-right-col">
+
+        <!-- Stage 1: Session 启动 -->
+        <div class="s09-stage-card s09-stage-1" id="s09-r1">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">📦</span>
+            <span class="s09-stage-label">Session 启动</span>
+          </div>
+          <div class="s09-stage-code">hermes.db — 持久化文件</div>
+        </div>
+
+        <!-- Stage 2: user 发消息 INSERT 落盘 -->
+        <div class="s09-stage-card s09-stage-2" id="s09-r2">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">📦</span>
+            <span class="s09-stage-label">user 发消息 — INSERT 落盘</span>
+          </div>
+          <div class="s09-fields-group">
+            <div class="s09-field-row">
+              <span class="s09-field-dot"></span>
+              <span class="s09-field-name">session_id</span>
+            </div>
+            <div class="s09-field-row">
+              <span class="s09-field-dot"></span>
+              <span class="s09-field-name">role</span>
+            </div>
+            <div class="s09-field-row">
+              <span class="s09-field-dot"></span>
+              <span class="s09-field-name">content</span>
+            </div>
+            <div class="s09-field-row">
+              <span class="s09-field-dot"></span>
+              <span class="s09-field-name">timestamp</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3: 进程退出 -->
+        <div class="s09-stage-card s09-stage-3-exit" id="s09-r3">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">💀</span>
+            <span class="s09-stage-label">进程退出</span>
+          </div>
+        </div>
+
+        <!-- Stage 4: 对照结果 - 持久化 -->
+        <div class="s09-stage-card s09-stage-4-result s09-persist-card" id="s09-r4">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">📦</span>
+            <span class="s09-stage-label s09-label-persist">文件还在</span>
+          </div>
+          <div class="s09-persist-desc">数据完整</div>
+        </div>
+
+        <!-- Stage 5: 重启 -->
+        <div class="s09-stage-card s09-stage-5" id="s09-r5">
+          <div class="s09-stage-icon-label">
+            <span class="s09-stage-icon">📦</span>
+            <span class="s09-stage-label s09-label-amber">重启 — SELECT 加载</span>
+          </div>
+          <div class="s09-stage-code s09-code-amber">历史完整恢复</div>
+        </div>
+
+      </div><!-- /s09-right-col -->
+
+    </div><!-- /s09-cols-grid -->
+
+    <!-- 底部 Callout -->
+    <div class="s09-callout" id="s09-callout">
+      <span class="s09-callout-key">关键差别</span>
+      <span class="s09-callout-text">list 在 Python 进程内存里 / .db 是磁盘文件</span>
+      <span class="s09-callout-accent">Hermes 重启后，10000 条历史 session 仍在原地</span>
+    </div>
+
+  </div><!-- /s09-wrap -->
+
+</div><!-- /slide -->

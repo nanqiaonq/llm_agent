@@ -1,0 +1,525 @@
+<style>
+  /* ── S01 · 课程封面 · T-COVER · Architect Blueprint ── */
+
+  /* ── 入场动画 keyframes ── */
+  @keyframes s01-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes s01-line-expand {
+    from {
+      width: 0;
+      opacity: 0;
+    }
+    to {
+      width: 100%;
+      opacity: 1;
+    }
+  }
+
+  @keyframes s01-node-in {
+    from {
+      opacity: 0;
+      transform: scale(0.7) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @keyframes s01-pulse-amber {
+    0%   { box-shadow: 0 0 0 0 rgba(212, 165, 116, 0.7); }
+    50%  { box-shadow: 0 0 0 12px rgba(212, 165, 116, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 165, 116, 0); }
+  }
+
+  /* prefers-reduced-motion: 关闭所有 S01 动画 */
+  @media (prefers-reduced-motion: reduce) {
+    .s01-wrap * {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ── 主容器：占满 .slide，内容垂直居中 ── */
+  .s01-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow-wrap: anywhere;
+  min-height: 100vh;
+}
+
+  /* ── 主标题 ── */
+  .s01-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    text-align: center;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    max-width: 80%;
+    margin-bottom: 0.6rem;
+
+    opacity: 0;
+    animation: s01-fade-up 500ms ease forwards;
+    animation-delay: 0ms;
+  }
+
+  .s01-title-en {
+    color: var(--accent-amber);
+  }
+
+  /* ── 琥珀分隔线 ── */
+  .s01-divider {
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--accent-amber) 20%,
+      var(--accent-amber) 80%,
+      transparent 100%
+    );
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 0.7rem;
+    border-radius: 1px;
+
+    opacity: 0;
+    width: 0;
+    animation: s01-line-expand 500ms ease forwards;
+    animation-delay: 400ms;
+  }
+
+  /* ── 副标题 ── */
+  .s01-subtitle {
+    font-family: var(--font-zh);
+    font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+    font-weight: 500;
+    color: var(--text-body);
+    text-align: center;
+    max-width: 80%;
+    line-height: 1.5;
+    margin-bottom: 3rem;
+
+    opacity: 0;
+    animation: s01-fade-up 400ms ease forwards;
+    animation-delay: 500ms;
+  }
+
+  .s01-subtitle-accent {
+    color: var(--secondary);
+    font-weight: 600;
+  }
+
+  /* ── 时间轴容器 ── */
+  .s01-timeline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    max-width: 90%;
+    width: 100%;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  /* ── 时间轴节点（通用）── */
+  .s01-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: default;
+    z-index: 1;
+    opacity: 0;
+    animation: s01-node-in 350ms ease forwards;
+  }
+
+  .s01-node:nth-child(1) { animation-delay: 900ms; }
+  .s01-node:nth-child(3) { animation-delay: 1100ms; }
+  .s01-node:nth-child(5) { animation-delay: 1300ms; }
+  .s01-node:nth-child(7) { animation-delay: 1500ms; }
+  .s01-node:nth-child(9) { animation-delay: 1700ms; }
+
+  .s01-node-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-subtle);
+    transition: background var(--transition-base), border-color var(--transition-base);
+    backdrop-filter: blur(8px);
+  }
+
+  .s01-node-label {
+    font-family: var(--font-zh);
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+    text-align: center;
+    line-height: 1.3;
+    max-width: 64px;
+    white-space: nowrap;
+  }
+
+  /* ── L4 节点高亮（琥珀）── */
+  .s01-node.is-current .s01-node-dot {
+    background: rgba(212, 165, 116, 0.18);
+    border-color: var(--accent-amber);
+    color: var(--accent-amber);
+    font-weight: 700;
+    animation: s01-pulse-amber 800ms ease-in-out 1900ms 1 forwards;
+  }
+
+  .s01-node.is-current .s01-node-label {
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+
+  .s01-node.is-current .s01-node-sublabel {
+    color: var(--accent-amber);
+    font-weight: 500;
+  }
+
+  .s01-node-sublabel {
+    font-family: var(--font-zh);
+    font-size: 0.63rem;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.2;
+    max-width: 68px;
+  }
+
+  /* ── 时间轴连线 ── */
+  .s01-connector {
+    flex: 1;
+    height: 2px;
+    background: var(--rule-line);
+    min-width: 24px;
+    max-width: 80px;
+    align-self: flex-start;
+    margin-top: 19px; /* 对齐圆圈中心 */
+    opacity: 0;
+    animation: s01-fade-up 300ms ease forwards;
+  }
+
+  /* 已完成段（L1→L2→L3→L4）用实线琥珀 */
+  .s01-connector.done {
+    background: var(--accent-amber);
+    animation-delay: 1200ms;
+  }
+
+  /* L4→L5 段虚线 */
+  .s01-connector.next {
+    background: repeating-linear-gradient(
+      90deg,
+      var(--card-border) 0px,
+      var(--card-border) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+    animation-delay: 1800ms;
+  }
+
+  /* ── 前置标记 ── */
+  .s01-prereq {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--card-bg-soft, rgba(45,59,80,0.55));
+    border: 1px solid var(--card-border);
+    border-radius: 0.5rem;
+    padding: 0.45rem 1rem;
+    font-family: var(--font-zh);
+    font-size: 0.82rem;
+    color: var(--text-subtle);
+    margin-bottom: 2rem;
+    backdrop-filter: blur(8px);
+    max-width: 80%;
+
+    opacity: 0;
+    animation: s01-fade-up 300ms ease forwards;
+    animation-delay: 2700ms;
+  }
+
+  .s01-prereq-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .s01-prereq-text strong {
+    color: var(--secondary);
+    font-weight: 600;
+  }
+
+  /* ── 灵魂 callout（F5 三对张力）── */
+  .s01-callout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(212, 165, 116, 0.07);
+    border: 1.5px solid rgba(212, 165, 116, 0.4);
+    border-radius: 0.75rem;
+    padding: 0.9rem 2rem;
+    max-width: 70%;
+    backdrop-filter: blur(12px);
+
+    opacity: 0;
+    animation: s01-fade-up 500ms ease forwards;
+    animation-delay: 3000ms;
+  }
+
+  .s01-callout-title {
+    font-family: var(--font-zh);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-amber);
+    letter-spacing: 0.03em;
+    text-align: center;
+  }
+
+  .s01-callout-axes {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .s01-axis-item {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-body);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+
+  .s01-axis-item .axis-label {
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+
+  .s01-axis-sep {
+    width: 1px;
+    height: 1.1rem;
+    background: var(--card-border);
+    flex-shrink: 0;
+  }
+
+  /* ── 底部信息（右下角绝对定位）── */
+  .s01-meta {
+    position: absolute;
+    bottom: 0.2rem;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .s01-meta-sep {
+    color: var(--card-border);
+  }
+
+  .s01-meta-accent {
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+
+  /* ── 响应式：窄屏 ── */
+  @media (max-width: 600px) {
+    .s01-title {
+      font-size: clamp(1.4rem, 6vw, 2rem);
+      max-width: 95%;
+    }
+    .s01-subtitle {
+      font-size: 0.85rem;
+      max-width: 95%;
+    }
+    .s01-callout {
+      max-width: 95%;
+      padding: 0.7rem 1rem;
+    }
+    .s01-timeline {
+      max-width: 98%;
+    }
+    .s01-node-dot {
+      width: 32px;
+      height: 32px;
+      font-size: 0.6rem;
+    }
+    .s01-connector {
+      min-width: 12px;
+    }
+    .s01-callout-axes {
+      gap: 0.6rem;
+    }
+    .s01-axis-sep {
+      display: none;
+    }
+  }
+
+  /* ── 响应式：低高度屏 ── */
+  @media (max-height: 700px) {
+    .s01-subtitle {
+      margin-bottom: 1rem;
+    }
+    .s01-timeline {
+      margin-bottom: 1rem;
+    }
+    .s01-prereq {
+      margin-bottom: 0.7rem;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+    }
+    .s01-callout {
+      padding: 0.6rem 1.2rem;
+    }
+    .s01-title {
+      font-size: clamp(1.6rem, 3vw, 2.5rem);
+      margin-bottom: 0.4rem;
+    }
+  }
+
+  @media (max-height: 600px) {
+    .s01-prereq { display: none; }
+    .s01-subtitle { margin-bottom: 0.6rem; }
+    .s01-callout { padding: 0.45rem 0.9rem; gap: 0.3rem; }
+    .s01-title { font-size: clamp(1.3rem, 3vw, 2rem); }
+  }
+</style>
+
+<div class="slide" id="s01" data-slide-id="S01" role="main" aria-label="课程封面：Harness Engineering 驾驭工程 第四节">
+  <div class="s01-wrap">
+
+    <!-- 主标题 -->
+    <h1 class="s01-title">
+      <span class="s01-title-en">Harness Engineering</span>
+      &nbsp;驾驭工程
+    </h1>
+
+    <!-- 琥珀分隔线 -->
+    <div class="s01-divider" aria-hidden="true"></div>
+
+    <!-- 副标题 -->
+    <p class="s01-subtitle">
+      <span class="s01-subtitle-accent">第四节</span>
+      &nbsp;·&nbsp;
+      Hermes 记忆系统&nbsp;+&nbsp;Nudge 机制&nbsp;+&nbsp;F5 取舍分析
+    </p>
+
+    <!-- 时间轴（5 节点 + 4 连线）-->
+    <nav class="s01-timeline" aria-label="课程系列时间轴">
+
+      <!-- L1 -->
+      <div class="s01-node" role="listitem" aria-label="第一节">
+        <div class="s01-node-dot">L1</div>
+        <div class="s01-node-label">认知地图</div>
+      </div>
+
+      <div class="s01-connector done" aria-hidden="true"></div>
+
+      <!-- L2 -->
+      <div class="s01-node" role="listitem" aria-label="第二节">
+        <div class="s01-node-dot">L2</div>
+        <div class="s01-node-label">mini Harness</div>
+      </div>
+
+      <div class="s01-connector done" aria-hidden="true"></div>
+
+      <!-- L3 -->
+      <div class="s01-node" role="listitem" aria-label="第三节">
+        <div class="s01-node-dot">L3</div>
+        <div class="s01-node-label">DeepAgents</div>
+        <div class="s01-node-sublabel">实战</div>
+      </div>
+
+      <div class="s01-connector done" aria-hidden="true"></div>
+
+      <!-- L4 当前节（高亮）-->
+      <div class="s01-node is-current" role="listitem" aria-label="第四节（当前）" aria-current="true">
+        <div class="s01-node-dot">L4</div>
+        <div class="s01-node-label">Hermes</div>
+        <div class="s01-node-sublabel">取舍</div>
+      </div>
+
+      <div class="s01-connector next" aria-hidden="true"></div>
+
+      <!-- L5 -->
+      <div class="s01-node" role="listitem" aria-label="第五节">
+        <div class="s01-node-dot">L5</div>
+        <div class="s01-node-label">Curator</div>
+        <div class="s01-node-sublabel">四家横评</div>
+      </div>
+
+    </nav>
+
+    <!-- 前置标记 -->
+    <div class="s01-prereq" role="note" aria-label="前置学习内容">
+      <span class="s01-prereq-icon">📚</span>
+      <span class="s01-prereq-text">
+        已学：<strong>三支柱</strong> / <strong>11 机制（8 核心+3 扩展）</strong> / <strong>4 大组件</strong>
+      </span>
+    </div>
+
+    <!-- 灵魂 callout：F5 三对张力 -->
+    <div class="s01-callout" role="note" aria-label="本节核心框架 F5 三对张力">
+      <div class="s01-callout-title">🎯&nbsp;F5 三对张力评价框架</div>
+      <div class="s01-callout-axes">
+        <span class="s01-axis-item">
+          <span class="axis-label">静态</span>↔<span class="axis-label">动态</span>
+        </span>
+        <div class="s01-axis-sep" aria-hidden="true"></div>
+        <span class="s01-axis-item">
+          <span class="axis-label">信任</span>↔<span class="axis-label">约束</span>
+        </span>
+        <div class="s01-axis-sep" aria-hidden="true"></div>
+        <span class="s01-axis-item">
+          <span class="axis-label">集中</span>↔<span class="axis-label">分治</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- 底部右下角元数据 -->
+    <div class="s01-meta" aria-label="课程信息">
+      <span>90 分钟</span>
+      <span class="s01-meta-sep">·</span>
+      <span class="s01-meta-accent">L4</span>
+      <span class="s01-meta-sep">·</span>
+      <span>自研</span>
+    </div>
+
+  </div>
+</div>

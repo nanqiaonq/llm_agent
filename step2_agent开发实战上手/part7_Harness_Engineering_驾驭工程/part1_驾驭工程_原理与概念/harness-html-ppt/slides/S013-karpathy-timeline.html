@@ -1,0 +1,106 @@
+<!-- S013 Karpathy Timeline - 8 milestones (interactive) -->
+<style>
+  #s13-wrap { width:100%; max-width:900px; margin:0 auto; text-align:center; }
+  #s13-title { font-family:var(--font-heading); font-size:clamp(1.6rem,3vw,2.4rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s13-quote { max-width:720px; margin:.6rem auto 0; padding:.6rem 1rem; border-left:3px solid var(--accent); background:rgba(193,127,89,.06); border-radius:0 8px 8px 0; text-align:left; font-size:clamp(.72rem,1vw,.85rem); color:var(--card-text); line-height:1.6; opacity:0; transition:opacity .5s ease; }
+  #s13-quote em { color:var(--accent); font-style:normal; font-weight:700; }
+
+  #s13-axis { position:relative; margin:1.2rem auto 0; max-width:860px; opacity:0; transition:opacity .5s ease; }
+  #s13-line { height:3px; background:linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%); border-radius:2px; margin:2.2rem 0; }
+  .s13-nodes { display:flex; justify-content:space-between; position:relative; top:-2.6rem; }
+  .s13-node { display:flex; flex-direction:column; align-items:center; width:11%; cursor:pointer; opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease; }
+  .s13-node.visible { opacity:1; transform:translateY(0); }
+  .s13-dot { width:.7rem; height:.7rem; border-radius:50%; background:var(--primary); border:2px solid var(--bg); transition:transform .3s ease, background .3s ease; }
+  .s13-node:hover .s13-dot { transform:scale(1.4); background:var(--accent); }
+  .s13-node.active .s13-dot { transform:scale(1.5); background:var(--accent); box-shadow:0 0 0 4px rgba(193,127,89,.25); }
+  .s13-date { font-family:var(--font-heading); font-size:clamp(.72rem, 1.05vw, .85rem); font-weight:700; color:var(--accent); margin-top:.35rem; white-space:nowrap; }
+  .s13-event { font-size:clamp(.72rem, 1.05vw, .85rem); color:var(--card-text); margin-top:.15rem; line-height:1.35; }
+  .s13-node.active .s13-event { color:var(--accent); font-weight:700; }
+
+  /* 详情面板 */
+  #s13-detail { max-width:720px; margin:.6rem auto 0; background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:10px; padding: .9rem 1.1rem; text-align:left; opacity:0; transform:translateY(6px); transition:opacity .4s ease, transform .4s ease; min-height:60px; }
+  #s13-detail.visible { opacity:1; transform:translateY(0); }
+  .s13-d-title { font-family:var(--font-heading); font-size:clamp(.82rem,1.15vw,.95rem); font-weight:700; color:var(--accent); margin-bottom:.3rem; }
+  .s13-d-text { font-size:clamp(.72rem,1.05vw,.85rem); color:var(--card-text); line-height:1.65; }
+  .s13-d-hint { font-size:clamp(.72rem,1vw,.82rem); color:var(--text-dim); text-align:center; line-height:1.6; }
+
+  #s13-note { max-width:720px; margin:.8rem auto 0; font-size:clamp(.72rem,1vw,.85rem); color:var(--text-dim); line-height:1.6; text-align:left; opacity:0; transition:opacity .5s ease; }
+
+  @media(max-width:760px){
+    .s13-nodes { flex-wrap:wrap; gap:.6rem; justify-content:center; top:-1.8rem; }
+    .s13-node { width:22%; }
+    #s13-line { margin:1.6rem 0; }
+  }
+</style>
+
+<div id="s13-wrap">
+  <div id="s13-title">Karpathy 时间轴：8 个里程碑</div>
+  <div id="s13-quote">
+    <em>"智能体在 2024 年 12 月之前基本跑不通。现在勉强能跑了。而 Harness Engineering 就是在这个窗口期里，从概念变成真·工程的。"</em>
+    <br><span style="color:var(--text-dim);">—— Andrej Karpathy，YC AI Startup School 2025-06</span>
+  </div>
+
+  <div id="s13-axis">
+    <div id="s13-line"></div>
+    <div class="s13-nodes">
+      <div class="s13-node" data-idx="0"><div class="s13-dot"></div><div class="s13-date">2025-09</div><div class="s13-event">Trivedy 首提 HaaS</div></div>
+      <div class="s13-node" data-idx="1"><div class="s13-dot"></div><div class="s13-date">2025-10</div><div class="s13-event">LangChain 三层切分</div></div>
+      <div class="s13-node" data-idx="2"><div class="s13-dot"></div><div class="s13-date">2025-11</div><div class="s13-event">Anthropic 首篇官方博文</div></div>
+      <div class="s13-node" data-idx="3"><div class="s13-dot"></div><div class="s13-date">2026-01</div><div class="s13-event">Phil Schmid 三原则</div></div>
+      <div class="s13-node" data-idx="4"><div class="s13-dot"></div><div class="s13-date">2026-02</div><div class="s13-event">LangChain +13.7pp</div></div>
+      <div class="s13-node" data-idx="5"><div class="s13-dot"></div><div class="s13-date">2026-02</div><div class="s13-event">OpenAI 百万行声明</div></div>
+      <div class="s13-node" data-idx="6"><div class="s13-dot"></div><div class="s13-date">2026-03</div><div class="s13-event">Anthropic 架构设计篇</div></div>
+      <div class="s13-node" data-idx="7"><div class="s13-dot"></div><div class="s13-date">2026-04</div><div class="s13-event">martinfowler.com 收录</div></div>
+    </div>
+  </div>
+
+  <!-- 详情面板 -->
+  <div id="s13-detail">
+    <div class="s13-d-hint">点击上方任意里程碑节点，查看该事件在 Harness Engineering 发展中的具体意义与背景</div>
+  </div>
+
+  <div id="s13-note">
+    <strong style="color:var(--primary);">前 4 节点</strong> 是社群博客驱动的概念孵化；<strong style="color:var(--primary);">后 4 节点</strong> 是大厂用实证数据 + 官方架构博文把它钉成学科。
+    六个月完成了一门学科从诞生到定型的完整周期。
+  </div>
+</div>
+
+<script>
+(function(){
+  var data=[
+    { title:'2025-09 · Trivedy 首提 HaaS', text:'Vivek Trivedy 在 LangChain 内部讨论中首次提出 <strong>"Harness as a Service"</strong> 概念，将 Harness Engineering 从 "写好 prompt 的技巧" 升格为一门独立工程学科。这是整个时间轴的起点——在此之前，agent 社区只有碎片化的 best practice，没有系统化的工程框架。' },
+    { title:'2025-10 · LangChain 三层切分', text:'Harrison Chase 发表博文，首次将 LLM 应用架构明确划分为 <strong>Framework / Runtime / Harness</strong> 三层。关键论断：大多数工程师需要的不是 runtime，是一个<strong>能直接跑的 harness</strong>。这层切分让 "harness" 获得了清晰的架构定位，不再是模糊的系统概念。' },
+    { title:'2025-11 · Anthropic 首篇官方博文', text:'Anthropic 发布首篇关于 Agent 工程实践的官方技术文章，系统介绍了 <strong>Agent Loop、Tool Use、Progress Tracking</strong> 等机制。标志大厂正式入场，Harness Engineering 从社群自发讨论进入企业级技术传播的正规渠道。' },
+    { title:'2026-01 · Phil Schmid 三原则', text:'Phil Schmid 提出 Agent 开发三大核心原则——<strong>任务拆解、验证闭环、状态持久化</strong>。这三条原则成为 Harness Engineering 方法论的基础骨架：任何生产级 agent 都必须回答 "怎么拆、怎么验、怎么续" 这三个问题。' },
+    { title:'2026-02 · LangChain +13.7pp', text:'LangChain 在 Terminal Bench 2.0 上发布决定性数据：<strong>同一模型，仅优化 harness，准确率从 52.8% 跃升至 66.5%</strong>。这是 harness 可测量的第一块硬证据——证明了决定能不能稳定交付的，不是模型，而是 harness 的工程质量。' },
+    { title:'2026-02 · OpenAI 百万行声明', text:'OpenAI 工程团队以官方博文形式披露：内测产品用 agent <strong>5 个月自动生成约 100 万行代码，完成 ~1500 个 PR</strong>。这是 harness 不是概念玩具、能承担生产级工程强度的第二块硬证据。' },
+    { title:'2026-03 · Anthropic 架构设计篇', text:'Anthropic 发布 Harness 架构设计深度文章，系统阐述了 <strong>Generator-Evaluator 分离、Subagent 隔离、Context Compaction</strong> 等高级机制。标志着 Harness Engineering 从 "能用" 走向 "设计得好" 的架构阶段。' },
+    { title:'2026-04 · martinfowler.com 收录', text:'软件工程权威网站 martinfowler.com 正式收录 Harness Engineering，由 Birgitta Bockeler 撰写专题文章。这意味着该学科通过了软件工程社区的学术级审视，完成了从 "圈内黑话" 到 "正式术语" 的最后一跃。' }
+  ];
+
+  var nodes=document.querySelectorAll('.s13-node');
+  var detail=document.getElementById('s13-detail');
+
+  function showDetail(idx){
+    nodes.forEach(function(n){ n.classList.remove('active'); });
+    nodes[idx].classList.add('active');
+    detail.innerHTML='<div class="s13-d-title">'+data[idx].title+'</div><div class="s13-d-text">'+data[idx].text+'</div>';
+  }
+
+  nodes.forEach(function(n){
+    n.addEventListener('click', function(){ showDetail(parseInt(n.dataset.idx)); });
+  });
+
+  var title=document.getElementById('s13-title');
+  var quote=document.getElementById('s13-quote');
+  var axis=document.getElementById('s13-axis');
+  var note=document.getElementById('s13-note');
+
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ quote.style.opacity='1'; },450);
+  setTimeout(function(){ axis.style.opacity='1'; },700);
+  nodes.forEach(function(n,i){ setTimeout(function(){ n.classList.add('visible'); },900+i*180); });
+  setTimeout(function(){ detail.classList.add('visible'); },2300);
+  setTimeout(function(){ note.style.opacity='1'; },2600);
+})();
+</script>

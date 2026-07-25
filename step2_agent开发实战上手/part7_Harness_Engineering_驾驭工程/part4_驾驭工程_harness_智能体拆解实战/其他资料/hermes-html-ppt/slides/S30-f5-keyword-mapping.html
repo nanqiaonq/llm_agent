@@ -1,0 +1,217 @@
+<style>
+.s25-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.4rem 2rem;
+  overflow-y: auto;
+  gap: 0.8rem;
+}
+
+.s25-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--accent-amber);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.s25-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.25;
+  font-style: normal;
+}
+.s25-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}
+.s25-subtitle strong { color: var(--accent-amber); font-weight: 600; }
+
+.s25-concept {
+  background: rgba(125, 211, 192, 0.06);
+  border: 1px solid var(--rule-line);
+  border-left: 3px solid var(--secondary);
+  border-radius: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-body);
+}
+.s25-concept strong { color: var(--accent-amber); font-weight: 600; }
+
+.s25-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+.s25-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.s25-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  border-bottom: 1px dashed var(--rule-line);
+  padding-bottom: 0.35rem;
+}
+.s25-lesson-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--accent-amber);
+  background: rgba(212,165,116,0.1);
+  padding: 0.06rem 0.35rem;
+  border-radius: 0.25rem;
+  letter-spacing: 0.04em;
+}
+.s25-card-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.s25-keyword-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.s25-keyword {
+  font-size: 0.72rem;
+  color: var(--text-body);
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+.s25-keyword::before {
+  content: "·";
+  color: var(--text-dim);
+  font-weight: 700;
+}
+.s25-keyword code {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--secondary);
+  background: rgba(125,211,192,0.08);
+  padding: 0.04rem 0.3rem;
+  border-radius: 0.2rem;
+}
+.s25-keyword strong { color: var(--accent-amber); font-weight: 600; }
+
+.s25-callout {
+  background: linear-gradient(135deg, rgba(91, 140, 184, 0.08), rgba(212, 165, 116, 0.06));
+  border: 1px solid var(--rule-line);
+  border-radius: 0.55rem;
+  padding: 0.7rem 0.95rem;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-body);
+}
+.s25-callout-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--accent-amber);
+  margin-bottom: 0.3rem;
+}
+.s25-callout strong { color: var(--text-primary); font-weight: 600; }
+.s25-callout em {
+  font-style: normal;
+  color: var(--accent-amber);
+  font-weight: 600;
+}
+</style>
+
+<div class="s25-wrap">
+  <div>
+    <div class="s25-chapter-label">§3.5 &nbsp;—&nbsp; 跨讲数字一致性提示</div>
+    <h2 class="s25-title">四维评价 ↔ 前三节关键词映射</h2>
+    <div class="s25-subtitle">
+      <strong>四维评价不是新词</strong>——它是把前三节学过的概念换坐标系做评价的<strong>回顾工具</strong>
+    </div>
+  </div>
+
+  <div class="s25-concept">
+    本节涉及的前三节关键词都跟前三节课<strong>一字不差</strong>。如果这一节让你联想起前三节的某个具体场景，那正是这把四维尺工作的方式。
+  </div>
+
+  <div class="s25-grid">
+    <!-- L1 第一节 -->
+    <div class="s25-card">
+      <div class="s25-card-header">
+        <span class="s25-card-title">第一节 · 认知地图</span>
+        <span class="s25-lesson-tag">L1</span>
+      </div>
+      <ul class="s25-keyword-list">
+        <li class="s25-keyword">三支柱 = <code>Context Engineering</code> / <code>Architectural Constraints</code> / <code>Garbage Collection</code></li>
+        <li class="s25-keyword"><strong>本章 3 问 + 入口治理共 4 维</strong>直接复用前三个</li>
+        <li class="s25-keyword">八大故障：循环失控 / context 溢出 / cache miss / tool 错误吞 / 状态丢失 / 缺权限闸 / 缺自动化评审 / 成本失控</li>
+        <li class="s25-keyword">八大机制：Agent Loop / Tool Use / Progress Tracking / Context Mgmt / Feature List / Verification Loop / Subagents / Generator-Evaluator</li>
+      </ul>
+    </div>
+
+    <!-- L2 第二节 -->
+    <div class="s25-card">
+      <div class="s25-card-header">
+        <span class="s25-card-title">第二节 · mini Harness</span>
+        <span class="s25-lesson-tag">L2</span>
+      </div>
+      <ul class="s25-keyword-list">
+        <li class="s25-keyword"><strong>11 机制 = 8 核心 + 3 扩展</strong></li>
+        <li class="s25-keyword">3 扩展：<code>Permission Gate</code> / <code>Hooks</code> / <code>Token Budget</code></li>
+        <li class="s25-keyword">demo 数据：<code>Baseline 1104</code> vs <code>Full 15053</code> tokens</li>
+        <li class="s25-keyword">压缩比 <strong>13.6×</strong>（context 优化锚点）</li>
+      </ul>
+    </div>
+
+    <!-- L3 第三节 -->
+    <div class="s25-card">
+      <div class="s25-card-header">
+        <span class="s25-card-title">第三节 · DeepAgents</span>
+        <span class="s25-lesson-tag">L3</span>
+      </div>
+      <ul class="s25-keyword-list">
+        <li class="s25-keyword">框架版本：<code>deepagents==0.5.3</code></li>
+        <li class="s25-keyword">4 大组件：<code>Middleware</code> / <code>Backend</code> / 子代理 / <code>HITL</code></li>
+        <li class="s25-keyword">手写 <code>provider/model/api_key</code> 三参数构造 <code>ChatDeepSeek</code></li>
+        <li class="s25-keyword">Hermes 把这层抽象成 workflow 配置 + <strong>200+ 模型</strong>多端切换</li>
+      </ul>
+    </div>
+
+    <!-- L4 本节四维 -->
+    <div class="s25-card" style="border-left: 3px solid var(--accent-amber); background: rgba(212,165,116,0.04);">
+      <div class="s25-card-header">
+        <span class="s25-card-title" style="color:var(--accent-amber);">本节 · 四维评价</span>
+        <span class="s25-lesson-tag">L4</span>
+      </div>
+      <ul class="s25-keyword-list">
+        <li class="s25-keyword">问题一·能力增长 → <code>Garbage Collection</code></li>
+        <li class="s25-keyword">问题二·风险控制 → <code>Architectural Constraints</code></li>
+        <li class="s25-keyword">问题三·入口组织 → <strong>入口治理</strong>（三支柱外补 1 维）</li>
+        <li class="s25-keyword">第 4 维（已学）→ <code>Context Engineering</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="s25-callout">
+    <div class="s25-callout-title">这把尺的核心价值</div>
+    <strong>不是引入新词</strong>，是给你一个<em>回顾工具</em>——以后看任何 harness，先用 3 问（<strong>能力 / 风险 / 入口</strong>）+ 第 4 维（<strong>上下文工程</strong>）判断它<em>选了什么、放弃了什么</em>。下一节我们用同一把尺横评 <code>Claude Code</code> / <code>Codex</code> / <code>DeepAgents</code> / <code>OpenClaw</code> 四家。
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<!-- S014 Two Decisive Evidences -->
+<style>
+  #s14-wrap { width:100%; max-width:840px; margin:0 auto; text-align:center; }
+  #s14-title { font-family:var(--font-heading); font-size:clamp(1.6rem,3vw,2.4rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s14-subtitle { font-size:clamp(.78rem,1.1vw,.9rem); color:var(--text-dim); margin-top:.3rem; opacity:0; transition:opacity .5s ease; }
+  #s14-cards { display:flex; gap: 1.7rem; justify-content:center; flex-wrap:wrap; margin-top: 1.8rem; }
+  .s14-card { background:var(--card-bg); backdrop-filter:var(--glass-blur); border:1.5px solid var(--card-border); border-radius:12px; padding:1rem; flex:1; min-width:300px; max-width:420px; text-align:left; opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; }
+  .s14-card.visible { opacity:1; transform:translateY(0); }
+  .s14-card:hover { border-color:var(--accent); }
+  .s14-badge { display:inline-block; font-family:var(--font-heading); font-size:clamp(.65rem,.9vw,.75rem); font-weight:700; padding:.15rem .5rem; border-radius:1rem; margin-bottom:.5rem; }
+  .s14-badge-a { background:rgba(45,90,122,.1); color:var(--primary); }
+  .s14-badge-b { background:rgba(193,127,89,.1); color:var(--accent); }
+  .s14-num { font-family:var(--font-heading); font-size:clamp(2.2rem,3.5vw,3rem); font-weight:700; color:var(--accent); line-height:1; }
+  .s14-unit { font-size:clamp(.7rem,1vw,.8rem); color:var(--text-dim); margin-top:.2rem; }
+  .s14-desc { font-size:clamp(.72rem,1vw,.85rem); color:var(--card-text); line-height:1.55; margin-top:.5rem; }
+  .s14-source { font-size:clamp(.62rem,.9vw,.72rem); color:var(--text-dim); margin-top:.4rem; border-top:1px dashed var(--card-border); padding-top:.3rem; }
+  #s14-conclusion { max-width:680px; margin:1rem auto 0; font-size:clamp(.78rem,1.1vw,.9rem); color:var(--card-text); line-height:1.6; text-align:center; opacity:0; transition:opacity .5s ease; }
+  .s14-facts-title { font-size:clamp(.65rem,.9vw,.75rem); font-weight:700; color:var(--primary); margin-top:.7rem; margin-bottom:.35rem; letter-spacing:.05em; }
+  .s14-facts { display:flex; flex-direction:column; gap:.3rem; }
+  .s14-fact { display:flex; align-items:flex-start; gap:.45rem; font-size:clamp(.72rem,1vw,.82rem); line-height:1.5; color:var(--card-text); }
+  .s14-fact-num { width:1.1rem; height:1.1rem; border-radius:50%; background:var(--accent); color:#fff; font-family:var(--font-heading); font-size:.6rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.1rem; }
+  .s14-fact-key { color:var(--primary); font-weight:600; margin-right:.15rem; }
+  .s14-meaning { border-left:2px solid var(--accent); padding-left:.6rem; font-size:clamp(.7rem,.95vw,.8rem); color:var(--card-text); line-height:1.55; margin-top:.6rem; }
+</style>
+
+<div id="s14-wrap">
+  <div id="s14-title">两条决定性证据</div>
+  <div id="s14-subtitle">决定能不能稳定交付的，不是模型，是 harness</div>
+
+  <div id="s14-cards">
+    <div class="s14-card">
+      <div class="s14-badge s14-badge-a">证据一 · Benchmark 量化</div>
+      <div class="s14-num">+13.7<span style="font-size:.5em;">pp</span></div>
+      <div class="s14-unit">同模型仅改 harness · Terminal Bench 2.0</div>
+      <div class="s14-facts-title">关键事实</div>
+      <div class="s14-facts">
+        <div class="s14-fact"><div class="s14-fact-num">1</div><span><span class="s14-fact-key">得分：</span>52.8% → 66.5%</span></div>
+        <div class="s14-fact"><div class="s14-fact-num">2</div><span><span class="s14-fact-key">排名：</span>Top 30 → Top 5</span></div>
+        <div class="s14-fact"><div class="s14-fact-num">3</div><span><span class="s14-fact-key">变量：</span>模型不变，仅替换 harness</span></div>
+      </div>
+      <div class="s14-meaning">harness 可测量的<strong style="color:var(--accent);">第一块硬证据</strong>——<br>feedback control 给不出 benchmark 曲线。</div>
+      <div class="s14-source">LangChain 博客 2026-02-17 / 研究员 Vivek Trivedy</div>
+    </div>
+    <div class="s14-card">
+      <div class="s14-badge s14-badge-b">证据二 · 生产级强度</div>
+      <div class="s14-num">~100<span style="font-size:.5em;">万行</span></div>
+      <div class="s14-unit">OpenAI 内测产品 · 5 个月完工</div>
+      <div class="s14-facts-title">关键事实</div>
+      <div class="s14-facts">
+        <div class="s14-fact"><div class="s14-fact-num">1</div><span><span class="s14-fact-key">代码量：</span>~100 万行</span></div>
+        <div class="s14-fact"><div class="s14-fact-num">2</div><span><span class="s14-fact-key">PR 数：</span>~1500 个</span></div>
+        <div class="s14-fact"><div class="s14-fact-num">3</div><span><span class="s14-fact-key">人工：</span>零人工编码</span></div>
+        <div class="s14-fact"><div class="s14-fact-num">4</div><span><span class="s14-fact-key">时间：</span>1/10 人力耗时</span></div>
+      </div>
+      <div class="s14-meaning">harness 不是概念玩具——<br>是能承担<strong style="color:var(--accent);">生产级工程强度</strong>的系统。</div>
+      <div class="s14-source">OpenAI 工程团队 2026-02-11</div>
+    </div>
+  </div>
+
+  <div id="s14-conclusion">
+    <strong style="color:var(--primary);">教学结论</strong>：决定模型能不能上线的是模型本身，决定<strong>能不能稳定交付</strong>的是 harness。<br>
+    前者是 2023 年之前 AI 工程的核心问题，后者是 2026 年及以后的核心问题。
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s14-title');
+  var subtitle=document.getElementById('s14-subtitle');
+  var cards=document.querySelectorAll('.s14-card');
+  var conclusion=document.getElementById('s14-conclusion');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  setTimeout(function(){ cards[0].classList.add('visible'); },700);
+  setTimeout(function(){ cards[1].classList.add('visible'); },950);
+  setTimeout(function(){ conclusion.style.opacity='1'; },1400);
+})();
+</script>

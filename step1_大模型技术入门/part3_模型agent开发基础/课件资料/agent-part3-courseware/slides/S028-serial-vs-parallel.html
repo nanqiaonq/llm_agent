@@ -1,0 +1,28 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;padding-top:2.6vh;padding-bottom:2vh;">
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">技术层 · 3.2</span></div>
+    <h2 class="page-title animate-ready delay-2" style="font-size:clamp(1.7rem,2.8vw,2.2rem);margin-bottom:0.9vh;">串行 vs 并行 Function Calling</h2>
+    <p class="page-subtitle animate-ready delay-3" style="font-size:0.92em;margin-bottom:1.2vh;">点击“开始对比”观察两种调用方式的耗时差异</p>
+
+    <div class="animate-ready delay-4" style="width:100%;max-width:980px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:var(--card-bg);border:1px solid rgba(37,99,235,0.25);border-radius:12px;padding:14px 16px;text-align:left;">
+            <div style="font-size:0.88em;font-weight:700;color:#2563eb;margin-bottom:8px;">串行模式（A → B → C）</div>
+            <div class="serial-row" style="display:flex;flex-direction:column;gap:8px;">
+                <div class="serial-bar" data-key="A" style="height:24px;border-radius:8px;background:rgba(37,99,235,0.08);overflow:hidden;"><div class="bar-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div>
+                <div class="serial-bar" data-key="B" style="height:24px;border-radius:8px;background:rgba(37,99,235,0.08);overflow:hidden;"><div class="bar-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div>
+                <div class="serial-bar" data-key="C" style="height:24px;border-radius:8px;background:rgba(37,99,235,0.08);overflow:hidden;"><div class="bar-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#0891b2,#22d3ee);"></div></div>
+            </div>
+        </div>
+
+        <div style="background:var(--card-bg);border:1px solid rgba(124,58,237,0.25);border-radius:12px;padding:14px 16px;text-align:left;">
+            <div style="font-size:0.88em;font-weight:700;color:#7c3aed;margin-bottom:8px;">并行模式（A / B / C 同时）</div>
+            <div class="parallel-row" style="display:flex;flex-direction:column;gap:8px;">
+                <div class="parallel-bar" data-key="A" style="height:24px;border-radius:8px;background:rgba(124,58,237,0.08);overflow:hidden;"><div class="bar-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div>
+                <div class="parallel-bar" data-key="B" style="height:24px;border-radius:8px;background:rgba(124,58,237,0.08);overflow:hidden;"><div class="bar-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div>
+                <div class="parallel-bar" data-key="C" style="height:24px;border-radius:8px;background:rgba(124,58,237,0.08);overflow:hidden;"><div class="bar-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#0891b2,#22d3ee);"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sp-desc" class="animate-ready delay-5" style="margin-top:1vh;padding:10px 20px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.24);border-radius:10px;max-width:900px;font-size:0.83em;color:var(--text-secondary);">准备就绪：点击开始对比。</div>
+    <button id="sp-start-btn" class="demo-btn animate-ready delay-6" style="margin-top:0.9vh;padding:10px 20px;font-size:0.9rem;">▶ 开始对比</button>
+</div>

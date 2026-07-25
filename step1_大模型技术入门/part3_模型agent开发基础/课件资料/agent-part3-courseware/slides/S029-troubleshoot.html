@@ -1,0 +1,77 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s029-wrap {
+            width: 100%;
+            max-width: 1020px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            background: rgba(255,255,255,0.72);
+            box-shadow: 0 10px 24px rgba(15,23,42,0.08);
+            padding: 8px;
+        }
+
+        .s029-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            font-size: clamp(0.82rem,1.15vw,1rem);
+        }
+
+        .s029-table thead th {
+            padding: 14px 18px;
+            background: rgba(37,99,235,0.14);
+            color: var(--primary);
+            border-bottom: 1px solid rgba(37,99,235,0.3);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .s029-table tbody td {
+            padding: 13px 18px;
+            background: rgba(255,255,255,0.92);
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(37,99,235,0.16);
+            border-bottom: 1px solid rgba(37,99,235,0.16);
+            transition: transform 0.22s ease, background-color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .s029-table tbody tr td:first-child {
+            border-left: 2px solid rgba(37,99,235,0.28);
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .s029-table tbody tr td:last-child {
+            border-right: 1px solid rgba(37,99,235,0.16);
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .s029-table tbody tr:hover td {
+            background: rgba(37,99,235,0.08);
+            border-top-color: rgba(37,99,235,0.32);
+            border-bottom-color: rgba(37,99,235,0.32);
+            transform: translateX(6px);
+            box-shadow: 0 8px 18px rgba(37,99,235,0.12);
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">技术层 · 4.1</span></div>
+    <h2 class="page-title animate-ready delay-2">FC 四大故障速查表</h2>
+
+    <div class="animate-ready delay-3 table-scroll s029-wrap">
+        <table class="data-table s029-table">
+            <thead>
+                <tr><th>故障现象</th><th>根因</th><th>排查方向</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>🔄 死循环调用</td><td>LLM 认为任务未完成</td><td>检查终止条件 / max_iterations</td></tr>
+                <tr><td>🎭 参数捏造</td><td>description 不够精确</td><td>补强参数描述 + enum 限制</td></tr>
+                <tr><td>👻 幻觉工具调用</td><td>返回了不存在的函数名</td><td>添加工具白名单校验</td></tr>
+                <tr><td>🚫 拒绝使用工具</td><td>触发条件不明确</td><td>改写 description 的调用条件</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>

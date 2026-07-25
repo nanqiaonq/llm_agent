@@ -1,0 +1,47 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">价值对比</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:16px;">
+            同一个任务，两个世界
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:860px;margin-bottom:24px;">
+            切换几个真实任务，看看“只有聊天能力”和“Agent + Skills”之间的差异到底在哪里。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.25" style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:940px;margin-bottom:22px;">
+            <button class="world-task-btn btn btn-primary" data-task="tests">补单元测试</button>
+            <button class="world-task-btn btn" data-task="repo" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">仓库找 Skill</button>
+            <button class="world-task-btn btn" data-task="markdown" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">批量整理 Markdown</button>
+        </div>
+
+        <div class="world-compare animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;max-width:1180px;">
+            <div class="card" style="border-color:rgba(220,38,38,0.18);">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+                    <div style="width:38px;height:38px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;background:rgba(220,38,38,0.1);">❌</div>
+                    <h3 style="font-size:1.2rem;margin:0;">只有聊天能力</h3>
+                </div>
+                <div id="world-before" style="padding:18px;border-radius:var(--radius-md);background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.12);min-height:200px;"></div>
+                <div id="world-before-tags" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;"></div>
+            </div>
+
+            <div class="card" style="border-color:var(--teal-border);">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+                    <div style="width:38px;height:38px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;background:var(--teal-pale);">✅</div>
+                    <h3 style="font-size:1.2rem;margin:0;">Agent + Skills</h3>
+                </div>
+                <div id="world-after" style="padding:18px;border-radius:var(--radius-md);background:var(--teal-pale);border:1px solid var(--teal-border);min-height:200px;"></div>
+                <div id="world-after-tags" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;"></div>
+            </div>
+        </div>
+
+        <div class="animate-ready center-block content-left" data-delay="0.35" style="max-width:1000px;margin-top:22px;padding:16px 20px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-md);">
+            <p id="world-takeaway" style="margin:0;font-size:0.98rem;color:var(--text-primary);"></p>
+        </div>
+    </div>
+</div>

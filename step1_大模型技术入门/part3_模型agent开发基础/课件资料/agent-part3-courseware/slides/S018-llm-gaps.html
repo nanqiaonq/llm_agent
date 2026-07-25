@@ -1,0 +1,192 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s018-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            width: 100%;
+            max-width: 1120px;
+        }
+
+        .s018-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 22px 16px 18px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .s018-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 36px rgba(37, 99, 235, 0.16);
+        }
+
+        /* 顶部缺口警示条 */
+        .s018-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .s018-card.gap-1::before {
+            background: linear-gradient(90deg, #ef4444, #f97316);
+        }
+
+        .s018-card.gap-2::before {
+            background: linear-gradient(90deg, #f97316, #eab308);
+        }
+
+        .s018-card.gap-3::before {
+            background: linear-gradient(90deg, #eab308, #f59e0b);
+        }
+
+        .s018-card.gap-4::before {
+            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+        }
+
+        .s018-card.gap-5::before {
+            background: linear-gradient(90deg, #6366f1, #818cf8);
+        }
+
+        .s018-icon {
+            font-size: 2em;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .s018-gap-label {
+            font-size: 0.82em;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 8px;
+            padding: 3px 10px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .s018-gap-text {
+            font-size: 0.84em;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            min-height: 2.6em;
+        }
+
+        .s018-arrow {
+            font-size: 1.1em;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .s018-fix-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .s018-card.gap-1 .s018-fix-label {
+            color: #1d4ed8;
+            background: rgba(37, 99, 235, 0.10);
+            border: 1px solid rgba(37, 99, 235, 0.25);
+        }
+
+        .s018-card.gap-2 .s018-fix-label {
+            color: #7c3aed;
+            background: rgba(124, 58, 237, 0.10);
+            border: 1px solid rgba(124, 58, 237, 0.25);
+        }
+
+        .s018-card.gap-3 .s018-fix-label {
+            color: #0891b2;
+            background: rgba(8, 145, 178, 0.10);
+            border: 1px solid rgba(8, 145, 178, 0.25);
+        }
+
+        .s018-card.gap-4 .s018-fix-label {
+            color: #7c3aed;
+            background: rgba(124, 58, 237, 0.10);
+            border: 1px solid rgba(124, 58, 237, 0.25);
+        }
+
+        .s018-card.gap-5 .s018-fix-label {
+            color: #4f46e5;
+            background: rgba(79, 70, 229, 0.10);
+            border: 1px solid rgba(79, 70, 229, 0.25);
+        }
+
+        @media (max-width: 1180px) {
+            .s018-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .s018-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">第四章 · 4.2</span></div>
+    <h2 class="page-title animate-ready delay-2">LLM 五大能力缺口</h2>
+    <p class="page-subtitle animate-ready delay-3" style="margin-bottom:2vh;">这些缺口，恰好定义了 Agent 工具体系的设计蓝图</p>
+
+    <div class="s018-grid animate-ready delay-4">
+        <div class="s018-card gap-1 animate-ready delay-4">
+            <div class="s018-icon">🌐</div>
+            <div class="s018-gap-label">❌ 缺口</div>
+            <div class="s018-gap-text">无法获取实时信息</div>
+            <div class="s018-arrow">↓</div>
+            <div class="s018-fix-label">✅ 搜索 / API 工具</div>
+        </div>
+
+        <div class="s018-card gap-2 animate-ready delay-5">
+            <div class="s018-icon">🧮</div>
+            <div class="s018-gap-label">❌ 缺口</div>
+            <div class="s018-gap-text">无法精确计算</div>
+            <div class="s018-arrow">↓</div>
+            <div class="s018-fix-label">✅ 计算器 / 代码执行</div>
+        </div>
+
+        <div class="s018-card gap-3 animate-ready delay-6">
+            <div class="s018-icon">📁</div>
+            <div class="s018-gap-label">❌ 缺口</div>
+            <div class="s018-gap-text">无法操作外部系统</div>
+            <div class="s018-arrow">↓</div>
+            <div class="s018-fix-label">✅ 文件 / HTTP 工具</div>
+        </div>
+
+        <div class="s018-card gap-4 animate-ready delay-7">
+            <div class="s018-icon">🔄</div>
+            <div class="s018-gap-label">❌ 缺口</div>
+            <div class="s018-gap-text">无法多步推理验证</div>
+            <div class="s018-arrow">↓</div>
+            <div class="s018-fix-label">✅ ReAct / Reflection</div>
+        </div>
+
+        <div class="s018-card gap-5 animate-ready delay-8">
+            <div class="s018-icon">🤝</div>
+            <div class="s018-gap-label">❌ 缺口</div>
+            <div class="s018-gap-text">无法跨系统协作</div>
+            <div class="s018-arrow">↓</div>
+            <div class="s018-fix-label">✅ Multi-Agent / A2A</div>
+        </div>
+    </div>
+
+    <div class="animate-ready delay-8"
+        style="margin-top:1.5vh;padding:10px 22px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.22);border-radius:10px;max-width:980px;font-size:0.84em;color:var(--text-secondary);">
+        每一个缺口，都催生了 Agent 工具链中的一类核心组件。
+    </div>
+</div>

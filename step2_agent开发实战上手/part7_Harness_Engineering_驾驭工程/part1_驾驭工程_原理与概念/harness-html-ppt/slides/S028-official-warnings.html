@@ -1,0 +1,119 @@
+<!-- S028 Three Official Warnings - Half-folded (Scheme B) -->
+<style>
+  #s28-wrap { width:100%; max-width:940px; margin:0 auto; }
+  #s28-title { font-family:var(--font-heading); font-size:clamp(1.5rem,2.8vw,2.15rem); font-weight:700; color:var(--primary); text-align:center; opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s28-subtitle { text-align:center; font-size:clamp(.78rem,1.05vw,.9rem); color:var(--text-dim); margin-top:.3rem; opacity:0; transition:opacity .5s ease; }
+  .s28-card { background:rgba(255,255,255,0.78); backdrop-filter:blur(12px); border:1.5px solid var(--card-border); border-radius:12px; padding:.9rem 1.1rem .75rem; margin-top:.85rem; box-shadow:0 4px 20px rgba(45,90,122,.06); opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease, border-color .3s ease; }
+  .s28-card.visible { opacity:1; transform:translateY(0); }
+  .s28-card:hover { border-color:var(--accent); }
+  .s28-head { display:flex; align-items:center; gap:.55rem; margin-bottom:.45rem; }
+  .s28-badge { font-family:var(--font-heading); font-size:clamp(.72rem,.95vw,.82rem); font-weight:700; padding:.22rem .7rem; border-radius:14px; white-space:nowrap; letter-spacing:.02em; }
+  .s28-b1 { background:rgba(231,76,60,.14); color:#c0392b; }
+  .s28-b2 { background:rgba(193,127,89,.16); color:var(--accent); }
+  .s28-b3 { background:rgba(45,90,122,.14); color:var(--primary); }
+  .s28-quote { font-size:clamp(.86rem,1.15vw,.96rem); color:var(--card-text); line-height:1.6; font-style:italic; border-left:3px solid var(--accent); padding:.1rem .7rem .1rem 1rem; margin:.3rem 0; position:relative; }
+  .s28-quote::before { content:"\201C"; position:absolute; top:-.3rem; left:.25rem; font-size:1.5rem; color:rgba(193,127,89,.35); font-family:serif; line-height:1; }
+  .s28-source { font-size:clamp(.7rem,.92vw,.78rem); color:var(--text-dim); margin:.15rem 0 .4rem; }
+  .s28-meaning { font-size:clamp(.82rem,1.08vw,.9rem); color:var(--text-primary); font-weight:600; padding:.4rem .6rem; background:rgba(193,127,89,.08); border-radius:6px; line-height:1.55; }
+  .s28-meaning strong { color:var(--primary); font-weight:700; }
+
+  .s28-toggle { display:inline-flex; align-items:center; gap:.4rem; margin-top:.5rem; padding:.32rem .7rem; font-size:clamp(.72rem,.92vw,.8rem); color:var(--primary); font-weight:700; background:rgba(45,90,122,.06); border:1px solid rgba(45,90,122,.12); border-radius:6px; cursor:pointer; transition:background .2s ease, border-color .2s ease; font-family:inherit; letter-spacing:.02em; }
+  .s28-toggle:hover { background:rgba(45,90,122,.12); border-color:rgba(45,90,122,.2); }
+  .s28-toggle-icon { display:inline-block; transition:transform .3s ease; font-size:.72em; }
+  .s28-card.expanded .s28-toggle-icon { transform:rotate(180deg); }
+
+  .s28-actions { max-height:0; overflow:hidden; opacity:0; transition:max-height .4s ease, opacity .3s ease, margin-top .3s ease, padding .3s ease; background:rgba(45,90,122,.04); border-radius:8px; padding:0 .7rem; margin-top:0; }
+  .s28-card.expanded .s28-actions { max-height:320px; opacity:1; padding:.5rem .7rem .4rem; margin-top:.55rem; }
+  .s28-actions-title { font-size:clamp(.72rem,.95vw,.8rem); color:var(--primary); font-weight:700; margin-bottom:.35rem; letter-spacing:.02em; }
+  .s28-actions ul { list-style:none; padding:0; margin:0; }
+  .s28-actions li { font-size:clamp(.78rem,1.02vw,.88rem); color:var(--card-text); line-height:1.6; padding:.1rem 0 .1rem 1rem; position:relative; }
+  .s28-actions li::before { content:"\203A"; position:absolute; left:.25rem; color:var(--accent); font-weight:700; }
+  .s28-actions li strong { color:var(--primary); font-weight:700; }
+</style>
+
+<div id="s28-wrap">
+  <div id="s28-title">三句官方警示</div>
+  <div id="s28-subtitle">harness 不是银弹——每条警示给"怎么判断、怎么做"的清单（点击展开具体信号/行动）</div>
+
+  <div class="s28-card">
+    <div class="s28-head">
+      <div class="s28-badge s28-b1">警示一：harness 会过时</div>
+    </div>
+    <div class="s28-quote">A harness encodes assumptions that go stale. What works for Claude 3.5 may not work for Claude 4.5.</div>
+    <div class="s28-source">Anthropic 官方博文 2025-11-26（Justin Young）</div>
+    <div class="s28-meaning">harness 不是一次性架构写死，要像管理软件一样<strong>持续迭代</strong></div>
+    <button class="s28-toggle" type="button" aria-expanded="false">
+      <span class="s28-toggle-icon">&#9660;</span>
+      <span>具体信号 / 行动</span>
+    </button>
+    <div class="s28-actions">
+      <div class="s28-actions-title">怎么判断、怎么做</div>
+      <ul>
+        <li><strong>信号</strong>：同类任务成功率连续下降 5pp 以上</li>
+        <li><strong>信号</strong>：新模型上线后旧 harness benchmark 反而退步</li>
+        <li><strong>行动</strong>：每次模型升级后跑一次 benchmark 对比</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="s28-card">
+    <div class="s28-head">
+      <div class="s28-badge s28-b2">警示二：Build to Delete</div>
+    </div>
+    <div class="s28-quote">The best harness is the one you're most willing to throw away and rewrite. The dataset of failures from your current harness is more valuable than the harness itself.</div>
+    <div class="s28-source">Phil Schmid 2026-01-05（Bitter Lesson 三原则之一）</div>
+    <div class="s28-meaning">最好的 harness 是<strong>最愿意扔掉重写的那个</strong>，失败数据比 harness 本身更值钱</div>
+    <button class="s28-toggle" type="button" aria-expanded="false">
+      <span class="s28-toggle-icon">&#9660;</span>
+      <span>具体信号 / 行动</span>
+    </button>
+    <div class="s28-actions">
+      <div class="s28-actions-title">怎么判断、怎么做</div>
+      <ul>
+        <li><strong>信号</strong>：改一个 bug 牵动 5+ 处刚性流程——刚性过强该重写</li>
+        <li><strong>参照</strong>：Manus 团队 6 个月重构 5 次的节奏</li>
+        <li><strong>行动</strong>：failure log 当一等公民留存，harness 可以扔，数据不能扔</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="s28-card">
+    <div class="s28-head">
+      <div class="s28-badge s28-b3">警示三：三大开放争议还没定论</div>
+    </div>
+    <div class="s28-quote" style="font-style:normal;">1. 多 Agent vs 单 Loop？&nbsp;&nbsp;2. Compaction vs Reset？&nbsp;&nbsp;3. CLI-first vs IDE-native？</div>
+    <div class="s28-source">本课综合 Anthropic / OpenAI / LangChain 多方立场</div>
+    <div class="s28-meaning">如果有人告诉你"正确答案就是 X"，<strong>保持警惕</strong>——驾驭工程还在演化中</div>
+    <button class="s28-toggle" type="button" aria-expanded="false">
+      <span class="s28-toggle-icon">&#9660;</span>
+      <span>具体信号 / 行动</span>
+    </button>
+    <div class="s28-actions">
+      <div class="s28-actions-title">怎么判断、怎么做</div>
+      <ul>
+        <li><strong>现象</strong>：Anthropic 倾向单 Loop，OpenAI/多 Agent 派活跃</li>
+        <li><strong>现象</strong>：Compaction → Reset 2026 才见雏形路线</li>
+        <li><strong>行动</strong>：不盲从单一观点，跟踪 3-6 个月社群共识变化</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s28-title');
+  var subtitle=document.getElementById('s28-subtitle');
+  var cards=document.querySelectorAll('.s28-card');
+  var toggles=document.querySelectorAll('.s28-toggle');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  cards.forEach(function(c,i){ setTimeout(function(){ c.classList.add('visible'); },700+i*250); });
+  toggles.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var card=this.closest('.s28-card');
+      var expanded=card.classList.toggle('expanded');
+      this.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+  });
+})();
+</script>

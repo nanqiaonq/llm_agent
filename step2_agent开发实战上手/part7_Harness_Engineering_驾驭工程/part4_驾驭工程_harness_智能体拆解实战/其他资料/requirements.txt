@@ -1,0 +1,40 @@
+# ========================================
+# Harness Engineering 驾驭工程 · 第四节课：Hermes Agent
+# ----------------------------------------
+# Conda env: harness  (Python 3.11)
+# 更新日期: 2026-05-07
+# 安装：
+#   pip install -r requirements.txt
+# 国内镜像加速：
+#   pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+# ========================================
+
+
+# ── Jupyter Notebook 环境 ──
+jupyter==1.1.1
+notebook==7.2.2
+ipykernel==6.29.5
+nbformat==5.10.4
+
+
+# ── Agent 框架核心（跟第三节 Harness-DeepAgents 同版本） ──
+langchain==1.2.15
+langchain-core==1.3.2
+
+
+# ── LLM Provider（课堂默认 DeepSeek，单一 Provider 即可） ──
+langchain-deepseek==1.0.1
+
+
+# ── 通用工具 ──
+python-dotenv==1.0.1
+
+
+# ========================================
+# 说明：
+# 1. Jupyter 环境为课件运行必需（§1.3 / §1.4 / §2.8 / §2.9 / §2.10 全章节均在 ipynb 跑）
+# 2. langchain 1.2.15 提供 §2.8 demo 用的 create_agent + AgentMiddleware 双原语
+# 3. langchain-core 1.3.2 提供 §2.9 测试用的 FakeListChatModel + §2.10 自定义 ScriptedChatModel 的 BaseChatModel 基类
+# 4. langchain-deepseek 1.0.1 是单一 LLM Provider，对齐第三节课堂取舍
+# 5. 全部 == 精确版本，避免跨学员/跨日期环境漂移
+# ========================================

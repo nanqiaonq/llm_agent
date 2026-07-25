@@ -1,0 +1,547 @@
+<style>
+/* ─── S12 · 完整周期 · 沉浸式对话框 ─── */
+
+/* 居中铁律 */
+.slide[data-slide-id="S12"] .s12-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 4rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 对话框主体 */
+.slide[data-slide-id="S12"] .s12-chat-box {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 1px solid var(--card-border-strong);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* header */
+.slide[data-slide-id="S12"] .s12-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.4rem;
+  border-bottom: 1px solid var(--card-border);
+  background: var(--bg-mid);
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S12"] .s12-header-title {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-style: normal;
+}
+.slide[data-slide-id="S12"] .s12-header-status {
+  font-size: 0.82rem;
+  color: var(--secondary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+/* 热记忆 banner */
+.slide[data-slide-id="S12"] .s12-banner {
+  background: rgba(125,211,192,0.07);
+  border-bottom: 1px solid var(--rule-line);
+  padding: 0.65rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+}
+.slide[data-slide-id="S12"] .s12-banner-icon {
+  font-size: 0.95rem;
+  color: var(--secondary);
+  font-style: normal;
+}
+.slide[data-slide-id="S12"] .s12-banner-text {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-body);
+  font-style: normal;
+  flex: 1;
+}
+.slide[data-slide-id="S12"] .s12-banner-text strong {
+  color: var(--secondary);
+  font-style: normal;
+}
+.slide[data-slide-id="S12"] .s12-banner-pill {
+  background: var(--accent-warm);
+  color: var(--bg-code);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  padding: 0.15rem 0.55rem;
+  border-radius: 10px;
+  letter-spacing: 0.03em;
+}
+
+/* 对话区 */
+.slide[data-slide-id="S12"] .s12-messages {
+  flex: 1;
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  overflow-y: auto;
+  max-height: 520px;
+}
+
+/* 消息行 */
+.slide[data-slide-id="S12"] .s12-msg-user {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  opacity: 0;
+}
+.slide[data-slide-id="S12"] .s12-msg-agent {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  opacity: 0;
+}
+.slide[data-slide-id="S12"] .s12-avatar {
+  font-size: 1.3rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* 气泡 */
+.slide[data-slide-id="S12"] .s12-bubble-user {
+  background: rgba(125,211,192,0.15);
+  border-radius: 18px 18px 4px 18px;
+  border: 1px solid rgba(125,211,192,0.25);
+  padding: 0.7rem 1.1rem;
+  max-width: 70%;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-style: normal;
+  min-height: 1.8rem;
+}
+.slide[data-slide-id="S12"] .s12-bubble-agent {
+  background: rgba(212,165,116,0.10);
+  border-radius: 18px 18px 18px 4px;
+  border: 1px solid rgba(212,165,116,0.20);
+  padding: 0.7rem 1.1rem;
+  max-width: 80%;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text-body);
+  line-height: 1.7;
+  font-style: normal;
+  min-height: 1.8rem;
+}
+
+/* 内部状态折叠面板 */
+.slide[data-slide-id="S12"] .s12-internal {
+  border-left: 3px solid var(--accent-warm);
+  border-radius: 0 8px 8px 0;
+  background: var(--card-bg-soft);
+  padding: 0.8rem 1rem;
+  opacity: 0;
+  transform: translateY(8px);
+}
+.slide[data-slide-id="S12"] .s12-internal-header {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent-warm);
+  margin-bottom: 0.6rem;
+  font-style: normal;
+}
+.slide[data-slide-id="S12"] .s12-step {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0;
+  opacity: 0;
+  transform: translateX(-6px);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.83rem;
+  color: var(--text-body);
+  font-style: normal;
+}
+.slide[data-slide-id="S12"] .s12-step-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 1.4rem;
+  text-align: center;
+}
+.slide[data-slide-id="S12"] .s12-step-text {
+  flex: 1;
+  font-style: normal;
+}
+.slide[data-slide-id="S12"] .s12-step-ok {
+  color: var(--secondary);
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+/* 进度条通用 */
+.slide[data-slide-id="S12"] .s12-pbar-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(91,140,184,0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.slide[data-slide-id="S12"] .s12-pbar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--secondary);
+  border-radius: 3px;
+  transition: width 1s ease-out;
+}
+.slide[data-slide-id="S12"] .s12-pbar-fill.amber {
+  background: var(--accent-warm);
+}
+
+/* 命中 session 卡片 */
+.slide[data-slide-id="S12"] .s12-sessions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+  margin-left: 2rem;
+}
+.slide[data-slide-id="S12"] .s12-session-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 0.25rem 0.55rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+/* Worker 行 */
+.slide[data-slide-id="S12"] .s12-workers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-left: 2rem;
+  margin-top: 0.2rem;
+}
+.slide[data-slide-id="S12"] .s12-worker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+}
+.slide[data-slide-id="S12"] .s12-worker-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  width: 7rem;
+  flex-shrink: 0;
+}
+.slide[data-slide-id="S12"] .s12-worker-ok {
+  font-size: 0.75rem;
+  color: var(--accent-warm);
+  font-weight: 600;
+  width: 7rem;
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+/* 拼装 prompt 色块区 */
+.slide[data-slide-id="S12"] .s12-prompt-blocks {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-left: 2rem;
+  margin-top: 0.3rem;
+}
+.slide[data-slide-id="S12"] .s12-pblock {
+  border-radius: 5px;
+  padding: 0.2rem 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0;
+}
+.slide[data-slide-id="S12"] .s12-pblock.mem {
+  background: rgba(125,211,192,0.18);
+  color: var(--secondary);
+  border: 1px solid rgba(125,211,192,0.3);
+}
+.slide[data-slide-id="S12"] .s12-pblock.user {
+  background: rgba(125,211,192,0.12);
+  color: var(--secondary);
+  border: 1px solid rgba(125,211,192,0.25);
+}
+.slide[data-slide-id="S12"] .s12-pblock.sum {
+  background: rgba(91,140,184,0.18);
+  color: var(--primary);
+  border: 1px solid rgba(91,140,184,0.3);
+}
+.slide[data-slide-id="S12"] .s12-pblock.query {
+  background: rgba(212,165,116,0.18);
+  color: var(--accent-warm);
+  border: 1px solid rgba(212,165,116,0.3);
+}
+
+/* spinner */
+.slide[data-slide-id="S12"] .s12-spinner {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid rgba(212,165,116,0.25);
+  border-top-color: var(--accent-warm);
+  border-radius: 50%;
+  animation: s12-spin 0.9s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes s12-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 底部 status bar */
+.slide[data-slide-id="S12"] .s12-status {
+  border-top: 1px solid var(--rule-line);
+  background: var(--bg-mid);
+  padding: 0.6rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  flex-wrap: wrap;
+}
+.slide[data-slide-id="S12"] .s12-toast-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  padding: 0.2rem 0.6rem;
+}
+.slide[data-slide-id="S12"] .s12-hook-text {
+  flex: 1;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.82rem;
+  font-style: normal;
+  color: var(--accent-warm);
+  font-weight: 500;
+  text-align: right;
+}
+.slide[data-slide-id="S12"] .s12-hook-text.pulse {
+  animation: s12-pulse 1.5s ease-in-out infinite;
+}
+@keyframes s12-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* count-up 数字 */
+.slide[data-slide-id="S12"] .s12-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--secondary);
+  font-size: 0.95rem;
+}
+.slide[data-slide-id="S12"] .s12-count-amber {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--accent-warm);
+  font-size: 0.95rem;
+}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .slide[data-slide-id="S12"] .s12-chat-box,
+  .slide[data-slide-id="S12"] .s12-banner,
+  .slide[data-slide-id="S12"] .s12-msg-user,
+  .slide[data-slide-id="S12"] .s12-msg-agent,
+  .slide[data-slide-id="S12"] .s12-internal,
+  .slide[data-slide-id="S12"] .s12-step,
+  .slide[data-slide-id="S12"] .s12-session-card,
+  .slide[data-slide-id="S12"] .s12-worker-row,
+  .slide[data-slide-id="S12"] .s12-status {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .slide[data-slide-id="S12"] .s12-pbar-fill {
+    width: 100% !important;
+    transition: none !important;
+  }
+  .slide[data-slide-id="S12"] .s12-session-card,
+  .slide[data-slide-id="S12"] .s12-worker-ok,
+  .slide[data-slide-id="S12"] .s12-pblock {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+</style>
+
+<div class="slide" data-slide-id="S12">
+  <div class="s12-wrap">
+    <div class="s12-chat-box" id="s12-chat-box">
+
+      <!-- ── header ── -->
+      <div class="s12-header" id="s12-header">
+        <span class="s12-header-title">💬 Hermes Agent · Chat</span>
+        <span class="s12-header-status">🟢 Online</span>
+      </div>
+
+      <!-- ── 热记忆 banner ── -->
+      <div class="s12-banner" id="s12-banner">
+        <span class="s12-banner-icon">📚</span>
+        <span class="s12-banner-text">
+          系统已加载 &nbsp;·&nbsp;
+          MEMORY.md &nbsp;<strong><span class="s12-count" id="s12-cnt-mem">0</span> 行事实</strong>
+          &nbsp;&nbsp;｜&nbsp;&nbsp;
+          USER.md &nbsp;<strong><span class="s12-count-amber" id="s12-cnt-user">0</span> 项画像</strong>
+          &nbsp;&nbsp;·&nbsp;&nbsp; 每次对话默认注入 system prompt
+        </span>
+        <span class="s12-banner-pill">⚡ 热</span>
+      </div>
+
+      <!-- ── 对话区 ── -->
+      <div class="s12-messages" id="s12-messages">
+
+        <!-- user 气泡 -->
+        <div class="s12-msg-user" id="s12-user-row">
+          <div class="s12-bubble s12-bubble-user" id="s12-bubble-user"></div>
+          <span class="s12-avatar">👤</span>
+        </div>
+
+        <!-- 内部状态面板 -->
+        <div class="s12-internal" id="s12-internal">
+          <div class="s12-internal-header">🤖 ▼ 内部状态展开</div>
+
+          <!-- Step 4: 检测关键词 -->
+          <div class="s12-step" id="s12-step-keyword">
+            <span class="s12-step-icon">🔍</span>
+            <span class="s12-step-text">检测到历史关键词 <strong style="color:var(--accent-warm);font-style:normal;">"kafka rebalance"</strong></span>
+          </div>
+
+          <!-- Step 5: 触发工具 -->
+          <div class="s12-step" id="s12-step-tool">
+            <span class="s12-step-icon">⚙️</span>
+            <span class="s12-step-text">触发 <strong style="color:var(--secondary);font-style:normal;">session_search</strong> 工具</span>
+          </div>
+
+          <!-- Step 6: FTS5 查询 -->
+          <div class="s12-step" id="s12-step-fts5">
+            <span class="s12-step-icon">📂</span>
+            <span class="s12-step-text">FTS5 unicode61 查询中...</span>
+            <div class="s12-pbar-track" id="s12-fts5-track">
+              <div class="s12-pbar-fill" id="s12-fts5-bar"></div>
+            </div>
+            <span class="s12-step-ok" id="s12-fts5-ok" style="opacity:0;">100%</span>
+          </div>
+
+          <!-- Step 7: 命中 -->
+          <div class="s12-step" id="s12-step-hit">
+            <span class="s12-step-icon">✅</span>
+            <span class="s12-step-text">命中 <strong style="color:var(--secondary);font-style:normal;">5</strong> 个历史 session</span>
+          </div>
+          <div class="s12-sessions" id="s12-sessions">
+            <div class="s12-session-card" id="s12-s1">session_2024_0112</div>
+            <div class="s12-session-card" id="s12-s2">session_2024_0203</div>
+            <div class="s12-session-card" id="s12-s3">session_2024_0315</div>
+            <div class="s12-session-card" id="s12-s4">session_2024_0419</div>
+            <div class="s12-session-card" id="s12-s5">session_2024_0501</div>
+          </div>
+
+          <!-- Step 8: 异步摘要 Workers -->
+          <div class="s12-step" id="s12-step-workers">
+            <span class="s12-step-icon">🔄</span>
+            <span class="s12-step-text">异步并发摘要</span>
+          </div>
+          <div class="s12-workers" id="s12-workers">
+            <div class="s12-worker-row" id="s12-w1-row">
+              <span class="s12-worker-label">⚙️ Worker 1</span>
+              <div class="s12-pbar-track">
+                <div class="s12-pbar-fill amber" id="s12-w1-bar" style="transition:width 1.2s ease-out;"></div>
+              </div>
+              <span class="s12-worker-ok" id="s12-w1-ok">✓ 5 元素摘要</span>
+            </div>
+            <div class="s12-worker-row" id="s12-w2-row">
+              <span class="s12-worker-label">⚙️ Worker 2</span>
+              <div class="s12-pbar-track">
+                <div class="s12-pbar-fill amber" id="s12-w2-bar" style="transition:width 1.8s ease-out;"></div>
+              </div>
+              <span class="s12-worker-ok" id="s12-w2-ok">✓ 5 元素摘要</span>
+            </div>
+            <div class="s12-worker-row" id="s12-w3-row">
+              <span class="s12-worker-label">⚙️ Worker 3</span>
+              <div class="s12-pbar-track">
+                <div class="s12-pbar-fill amber" id="s12-w3-bar" style="transition:width 1.5s ease-out;"></div>
+              </div>
+              <span class="s12-worker-ok" id="s12-w3-ok">✓ 5 元素摘要</span>
+            </div>
+          </div>
+
+          <!-- Step 9: 拼装 prompt -->
+          <div class="s12-step" id="s12-step-prompt">
+            <span class="s12-step-icon">🧩</span>
+            <span class="s12-step-text">拼装 prompt</span>
+          </div>
+          <div class="s12-prompt-blocks" id="s12-prompt-blocks">
+            <div class="s12-pblock mem" id="s12-pb-mem">MEMORY.md</div>
+            <div class="s12-pblock user" id="s12-pb-user">USER.md</div>
+            <div class="s12-pblock sum" id="s12-pb-sum">5 摘要</div>
+            <div class="s12-pblock query" id="s12-pb-query">query</div>
+          </div>
+
+          <!-- Step 10: LLM 推理 -->
+          <div class="s12-step" id="s12-step-llm">
+            <span class="s12-step-icon">🧠</span>
+            <span class="s12-step-text">LLM 推理中...</span>
+            <span class="s12-spinner" id="s12-spinner"></span>
+          </div>
+        </div>
+
+        <!-- agent 回答 -->
+        <div class="s12-msg-agent" id="s12-agent-row">
+          <span class="s12-avatar">🤖</span>
+          <div class="s12-bubble s12-bubble-agent" id="s12-bubble-agent"></div>
+        </div>
+
+      </div><!-- /messages -->
+
+      <!-- ── 底部 status bar ── -->
+      <div class="s12-status" id="s12-status">
+        <div class="s12-toast-chip">💾 SQLite 写入 (2 turn)</div>
+        <div class="s12-toast-chip">🔔 Nudge 计数器 +1</div>
+        <span class="s12-hook-text" id="s12-hook-text">
+          → MEMORY.md 谁写的？进入第 2 章
+        </span>
+      </div>
+
+    </div><!-- /chat-box -->
+  </div><!-- /wrap -->
+</div>

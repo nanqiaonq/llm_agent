@@ -1,0 +1,425 @@
+<style>
+  /* ── S14 第二章过渡页 · creates skills from experience 真的是 AI 自主学习吗 ── */
+
+  /* ── 居中铁律：height + center + center ── */
+  .s14c-wrap {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 4rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  /* ── Chapter 02 标签 ── */
+  .s14c-chapter-label {
+    font-family: var(--font-mono);
+    font-size: clamp(0.85rem, 1.4vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    margin-bottom: 0.9rem;
+
+    opacity: 0;
+    animation: s14c-fade-in 0.4s ease forwards;
+    animation-delay: 0ms;
+  }
+
+  /* ── Hero 大问句 ── */
+  .s14c-hero {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3.4vw, 2.2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    max-width: 1100px;
+    margin: 0 auto 0.9rem;
+
+    opacity: 0;
+    transform: translateY(14px);
+    animation: s14c-fade-up 0.5s ease forwards;
+    animation-delay: 350ms;
+  }
+
+  .s14c-hero .s14c-quote-en {
+    font-family: var(--font-mono);
+    color: var(--accent-amber);
+    font-weight: 600;
+    background: rgba(212, 165, 116, 0.10);
+    border: 1px solid rgba(212, 165, 116, 0.32);
+    border-radius: 4px;
+    padding: 0.05em 0.4em;
+    font-size: 0.92em;
+  }
+
+  /* ── 副标题 ── */
+  .s14c-subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+    font-weight: 400;
+    color: var(--text-subtle);
+    margin-bottom: 2.4rem;
+    font-style: normal;
+
+    opacity: 0;
+    animation: s14c-fade-in 0.4s ease forwards;
+    animation-delay: 800ms;
+  }
+
+  /* ── 五连击节点轨道（横向 5 圆 + 4 SVG 连线 overlay） ── */
+  .s14c-chain {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    width: min(900px, 100%);
+    margin: 0 auto 2rem;
+  }
+
+  .s14c-chain-track {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .s14c-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    flex: 0 0 auto;
+    width: 110px;
+  }
+
+  .s14c-node-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--card-bg, rgba(36, 49, 66, 0.85));
+    border: 2px solid var(--text-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition:
+      background var(--transition-base),
+      border-color var(--transition-base),
+      transform var(--transition-base),
+      box-shadow var(--transition-base);
+
+    /* 初始 opacity:0，由 hookFn 加 .lit 切换到 1 */
+    opacity: 0;
+  }
+
+  .s14c-node-num {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-subtle);
+    transition: color var(--transition-base);
+  }
+
+  .s14c-node-label {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+
+    opacity: 0;
+    transition: color var(--transition-base), opacity var(--transition-base);
+  }
+
+  /* ── 点亮态：.lit 由 hookFn 加 ── */
+  .s14c-node.lit .s14c-node-circle {
+    opacity: 1;
+    background: rgba(212, 165, 116, 0.12);
+    border-color: var(--accent-amber);
+    transform: scale(1.04);
+    box-shadow: 0 0 0 6px rgba(212, 165, 116, 0.08);
+  }
+
+  .s14c-node.lit .s14c-node-num {
+    color: var(--accent-amber);
+  }
+
+  .s14c-node.lit .s14c-node-label {
+    opacity: 1;
+    color: var(--text-body);
+  }
+
+  /* 第一个节点（计数器）固定 amber 强化 */
+  .s14c-node[data-idx="1"].lit .s14c-node-circle {
+    background: rgba(212, 165, 116, 0.18);
+    box-shadow: 0 0 0 8px rgba(212, 165, 116, 0.10);
+  }
+
+  /* ── SVG 连线层 ── */
+  .s14c-chain-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;             /* 与圆同高，让线穿圆心 */
+    pointer-events: none;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  .s14c-line {
+    fill: none;
+    stroke: var(--accent-amber);
+    stroke-width: 2;
+    stroke-linecap: round;
+    /* dashoffset 由 hookFn 计算 setProperty 后，加 .draw 切到 0 */
+  }
+
+  .s14c-line.draw {
+    stroke-dashoffset: 0 !important;
+    transition: stroke-dashoffset 0.5s ease-out;
+  }
+
+  /* ── 结论 pill ── */
+  .s14c-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+    font-weight: 600;
+    color: var(--accent-amber);
+    background: rgba(212, 165, 116, 0.10);
+    border: 1px solid rgba(212, 165, 116, 0.45);
+    border-radius: 999px;
+    padding: 0.6rem 1.4rem;
+    margin: 0 auto 2rem;
+    font-style: normal;
+
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .s14c-pill.lit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .s14c-pill::before {
+    content: '▶';
+    font-size: 0.7em;
+    color: var(--accent-amber);
+  }
+
+  /* ── 底部锚点（章节节奏） ── */
+  .s14c-anchor {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    border-top: 1px dashed var(--rule-line-dashed, rgba(91, 140, 184, 0.35));
+    padding-top: 1rem;
+
+    opacity: 0;
+    animation: s14c-fade-in 0.5s ease forwards;
+    animation-delay: 2400ms;
+  }
+
+  .s14c-anchor-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-subtle);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
+  }
+
+  .s14c-anchor-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.45rem 1.1rem;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .s14c-anchor-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  .s14c-anchor-item .s14c-anchor-tag {
+    font-family: var(--font-mono);
+    color: var(--accent-teal);
+    font-weight: 500;
+    flex: 0 0 auto;
+  }
+
+  .s14c-anchor-item .s14c-anchor-text {
+    color: var(--text-body);
+  }
+
+  /* ── Keyframes ── */
+  @keyframes s14c-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes s14c-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── prefers-reduced-motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .s14c-chapter-label,
+    .s14c-hero,
+    .s14c-subtitle,
+    .s14c-anchor {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .s14c-node .s14c-node-circle,
+    .s14c-node .s14c-node-label,
+    .s14c-pill {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .s14c-line {
+      stroke-dashoffset: 0 !important;
+    }
+  }
+</style>
+
+<div class="slide" id="S14" data-slide-id="S14">
+  <div class="s14c-wrap">
+
+    <!-- Chapter 02 标签 -->
+    <span class="s14c-chapter-label">Chapter 02 · Nudge 机制</span>
+
+    <!-- Hero 大问句 -->
+    <h1 class="s14c-hero">
+      <span class="s14c-quote-en">creates skills from experience</span>
+      &nbsp;真的是 AI 自主学习吗？
+    </h1>
+
+    <!-- 副标题 -->
+    <p class="s14c-subtitle">揭开浪漫话术，看一条机械闭环</p>
+
+    <!-- 五连击节点轨道 -->
+    <div class="s14c-chain" id="s14c-chain">
+
+      <!-- SVG 连线 overlay：4 条连线串起 5 个节点 -->
+      <svg class="s14c-chain-svg" id="s14c-chain-svg"
+           viewBox="0 0 900 80"
+           preserveAspectRatio="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <!-- 5 节点中心 x：55 / 252.5 / 450 / 647.5 / 845；圆半径 40 → 线段从 圆右边到下一圆左边 -->
+        <line class="s14c-line" id="s14c-line-1" x1="95"  y1="40" x2="212.5" y2="40"/>
+        <line class="s14c-line" id="s14c-line-2" x1="292.5" y1="40" x2="410"   y2="40"/>
+        <line class="s14c-line" id="s14c-line-3" x1="490"  y1="40" x2="607.5" y2="40"/>
+        <line class="s14c-line" id="s14c-line-4" x1="687.5" y1="40" x2="805"   y2="40"/>
+      </svg>
+
+      <!-- 节点轨道 -->
+      <div class="s14c-chain-track">
+
+        <div class="s14c-node" data-idx="1" id="s14c-node-1">
+          <div class="s14c-node-circle">
+            <span class="s14c-node-num">①</span>
+          </div>
+          <span class="s14c-node-label">计数器</span>
+        </div>
+
+        <div class="s14c-node" data-idx="2" id="s14c-node-2">
+          <div class="s14c-node-circle">
+            <span class="s14c-node-num">②</span>
+          </div>
+          <span class="s14c-node-label">判定</span>
+        </div>
+
+        <div class="s14c-node" data-idx="3" id="s14c-node-3">
+          <div class="s14c-node-circle">
+            <span class="s14c-node-num">③</span>
+          </div>
+          <span class="s14c-node-label">fork</span>
+        </div>
+
+        <div class="s14c-node" data-idx="4" id="s14c-node-4">
+          <div class="s14c-node-circle">
+            <span class="s14c-node-num">④</span>
+          </div>
+          <span class="s14c-node-label">prompt</span>
+        </div>
+
+        <div class="s14c-node" data-idx="5" id="s14c-node-5">
+          <div class="s14c-node-circle">
+            <span class="s14c-node-num">⑤</span>
+          </div>
+          <span class="s14c-node-label">落盘</span>
+        </div>
+
+      </div><!-- /s14c-chain-track -->
+
+    </div><!-- /s14c-chain -->
+
+    <!-- 结论 pill -->
+    <div class="s14c-pill" id="s14c-pill">
+      prompt 驱动的机械闭环，不是 AI 自主意识
+    </div>
+
+    <!-- 底部锚点：本章 9 页节奏 -->
+    <div class="s14c-anchor">
+      <div class="s14c-anchor-title">本章节奏 · 8 页源码 walk + 1 页完整运行动画</div>
+      <div class="s14c-anchor-grid">
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.1</span>
+          <span class="s14c-anchor-text">四来源</span>
+        </div>
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.2</span>
+          <span class="s14c-anchor-text">双计数器</span>
+        </div>
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.3</span>
+          <span class="s14c-anchor-text">判定时机</span>
+        </div>
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.4</span>
+          <span class="s14c-anchor-text">4 重约束</span>
+        </div>
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.5</span>
+          <span class="s14c-anchor-text">反思 prompt</span>
+        </div>
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.6</span>
+          <span class="s14c-anchor-text">落盘 5 步</span>
+        </div>
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.7</span>
+          <span class="s14c-anchor-text">MVP demo</span>
+        </div>
+        <div class="s14c-anchor-item">
+          <span class="s14c-anchor-tag">§2.8</span>
+          <span class="s14c-anchor-text">完整链路演示</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /s14c-wrap -->
+</div>

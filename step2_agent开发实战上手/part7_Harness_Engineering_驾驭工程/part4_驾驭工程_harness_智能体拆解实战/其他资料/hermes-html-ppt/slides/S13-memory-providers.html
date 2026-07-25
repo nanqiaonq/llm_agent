@@ -1,0 +1,680 @@
+<style>
+/* ===================================================
+   S13 · 扩展层 8 种 Memory Provider · 翻面卡片页
+   =================================================== */
+
+/* === 入场动画 keyframes === */
+@keyframes s13-fade-down {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes s13-banner-grow {
+  from { opacity: 0; transform: scaleX(0.15); transform-origin: left; }
+  to   { opacity: 1; transform: scaleX(1); transform-origin: left; }
+}
+
+@keyframes s13-card-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes s13-callout-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Honcho 轻晃（amber 边框） */
+@keyframes s13-honcho-shake {
+  0%   { box-shadow: 0 0 0 0 rgba(212,165,116,0); }
+  30%  { box-shadow: 0 0 0 3px rgba(212,165,116,0.5); transform: translateX(-2px); }
+  60%  { box-shadow: 0 0 0 3px rgba(212,165,116,0.3); transform: translateX(2px); }
+  100% { box-shadow: 0 0 0 0 rgba(212,165,116,0); transform: translateX(0); }
+}
+
+/* Holographic 红色 pulse */
+@keyframes s13-holo-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(229,115,115,0); }
+  40%  { box-shadow: 0 0 8px 4px rgba(229,115,115,0.45); }
+  100% { box-shadow: 0 0 0 0 rgba(229,115,115,0); }
+}
+
+/* callout amber pulse（持续） */
+@keyframes s13-callout-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,165,116,0.0); }
+  50%       { box-shadow: 0 0 0 4px rgba(212,165,116,0.25); }
+}
+
+/* 卡片悬停提示（hint-shimmer，扫光暗示可翻） */
+@keyframes s13-hint {
+  0%   { opacity: 0; left: -60%; }
+  100% { opacity: 0.18; left: 120%; }
+}
+
+/* === 外层 wrapper === */
+.s13-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.2rem 3.5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+/* === 标题区 === */
+.s13-headline {
+  text-align: center;
+  margin-bottom: 0.75rem;
+  animation: s13-fade-down 0.45s ease both;
+  animation-delay: 0ms;
+}
+
+.s13-headline h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.2vw, 1.85rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.s13-headline h2 .hl-amber {
+  color: var(--accent-amber);
+}
+
+.s13-headline p.sub {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1.1vw, 0.92rem);
+  color: var(--text-subtle);
+  margin-top: 0.3rem;
+}
+
+/* === 顶部警示 banner === */
+.s13-banner {
+  width: 100%;
+  max-width: 1140px;
+  margin-bottom: 0.85rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--accent-amber);
+  border-radius: 0.5rem;
+  background: rgba(212, 165, 116, 0.07);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  animation: s13-banner-grow 0.4s ease both;
+  animation-delay: 400ms;
+}
+
+.s13-banner .icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.s13-banner p {
+  font-family: var(--font-mono);
+  font-size: clamp(0.72rem, 0.95vw, 0.82rem);
+  color: var(--accent-amber);
+  line-height: 1.4;
+}
+
+.s13-banner p span.sep {
+  color: var(--text-subtle);
+  margin: 0 0.4rem;
+}
+
+/* === 4×2 卡片 Grid === */
+.s13-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 1140px;
+  margin-bottom: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .s13-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* === 单卡 wrapper（perspective 容器）=== */
+.s13-card-wrap {
+  perspective: 1000px;
+  height: 175px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* 入场动画（每卡不同 delay） */
+.s13-card-wrap:nth-child(1)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1000ms; }
+.s13-card-wrap:nth-child(2)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1100ms; }
+.s13-card-wrap:nth-child(3)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1200ms; }
+.s13-card-wrap:nth-child(4)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1300ms; }
+.s13-card-wrap:nth-child(5)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1400ms; }
+.s13-card-wrap:nth-child(6)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1500ms; }
+.s13-card-wrap:nth-child(7)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1600ms; }
+.s13-card-wrap:nth-child(8)  { animation: s13-card-rise 0.4s ease both; animation-delay: 1700ms; }
+
+/* Honcho：2000ms 轻晃，触发一次 */
+.s13-card-wrap[data-name="Honcho"] .s13-card-front {
+  animation: s13-honcho-shake 0.4s ease 1;
+  animation-delay: 2000ms;
+  animation-fill-mode: both;
+}
+
+/* Holographic：2500ms 红色 pulse，触发一次 */
+.s13-card-wrap[data-name="Holographic"] .s13-card-front {
+  animation: s13-holo-pulse 0.6s ease 1;
+  animation-delay: 2500ms;
+  animation-fill-mode: both;
+}
+
+/* === 卡片内层（3D 变换核心）=== */
+.s13-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+/* hover / 键盘 focus 触发翻面 */
+.s13-card-wrap:hover .s13-card-inner,
+.s13-card-wrap:focus-within .s13-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* === 正面 / 背面 共同样式 === */
+.s13-card-front,
+.s13-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.75rem;
+  padding: 0.8rem 0.85rem;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* 扫光提示层（正面） */
+.s13-card-front::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  transform: skewX(-15deg);
+  pointer-events: none;
+}
+.s13-card-wrap:hover .s13-card-front::after {
+  display: none;
+}
+
+/* === 背面翻转定位 === */
+.s13-card-back {
+  transform: rotateY(180deg);
+  background: var(--bg-surface);
+  border-color: var(--card-border-strong);
+  gap: 0.35rem;
+}
+
+/* === Holographic 红色边框（正背面）=== */
+.s13-card-wrap[data-name="Holographic"] .s13-card-front,
+.s13-card-wrap[data-name="Holographic"] .s13-card-back {
+  border-color: var(--accent-red);
+}
+
+/* === 正面内容元素 === */
+.s13-front-top {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.s13-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.s13-dot.amber { background: var(--accent-amber); }
+.s13-dot.teal  { background: var(--accent-teal);  }
+.s13-dot.red   { background: var(--accent-red);   }
+
+.s13-card-name {
+  font-family: var(--font-mono);
+  font-size: clamp(0.88rem, 1.15vw, 1.05rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+/* 推荐/警示 pill */
+.s13-pill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  border-radius: 3px;
+  padding: 0.12rem 0.35rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.s13-pill.amber {
+  background: rgba(212, 165, 116, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+}
+.s13-pill.teal {
+  background: rgba(125, 211, 192, 0.12);
+  color: var(--accent-teal);
+  border: 1px solid rgba(125, 211, 192, 0.25);
+}
+.s13-pill.red {
+  background: rgba(229, 115, 115, 0.12);
+  color: var(--accent-red);
+  border: 1px solid rgba(229, 115, 115, 0.28);
+}
+
+.s13-card-pos {
+  font-family: var(--font-body);
+  font-size: clamp(0.72rem, 0.92vw, 0.82rem);
+  color: var(--text-body);
+  line-height: 1.4;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+}
+
+.s13-front-pill-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* === 背面内容元素 === */
+.s13-back-name {
+  font-family: var(--font-mono);
+  font-size: clamp(0.78rem, 1vw, 0.9rem);
+  font-weight: 700;
+  color: var(--accent-amber);
+  margin-bottom: 0.1rem;
+  line-height: 1.2;
+}
+.s13-card-wrap[data-name="Holographic"] .s13-back-name,
+.s13-card-wrap[data-name="Honcho"] .s13-back-name {
+  color: var(--accent-amber);
+}
+.s13-card-wrap[data-name="Supermemory"] .s13-back-name {
+  color: var(--accent-amber);
+}
+
+.s13-back-features {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.s13-feat {
+  font-family: var(--font-body);
+  font-size: clamp(0.66rem, 0.85vw, 0.75rem);
+  color: var(--text-body);
+  line-height: 1.35;
+  display: flex;
+  gap: 0.3rem;
+  align-items: flex-start;
+}
+.s13-feat .fi {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  line-height: 1.4;
+}
+
+.s13-back-yaml {
+  font-family: var(--font-mono);
+  font-size: clamp(0.62rem, 0.78vw, 0.7rem);
+  color: var(--text-subtle);
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 3px;
+  padding: 0.18rem 0.4rem;
+  line-height: 1.4;
+  display: inline-block;
+  margin-top: 0.2rem;
+}
+
+/* === 底部 callout === */
+.s13-callout {
+  width: 100%;
+  max-width: 1140px;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--accent-amber);
+  border-radius: 0.5rem;
+  background: rgba(212, 165, 116, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  animation: s13-callout-up 0.45s ease both, s13-callout-pulse 2.4s ease-in-out 3.2s infinite;
+  animation-delay: 3200ms, 3200ms;
+}
+
+.s13-callout .icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.s13-callout p {
+  font-family: var(--font-body);
+  font-size: clamp(0.72rem, 0.95vw, 0.82rem);
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+.s13-callout p .hl-amber {
+  color: var(--accent-amber);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.s13-callout p .hl-teal {
+  color: var(--accent-teal);
+  font-weight: 600;
+}
+
+/* === prefers-reduced-motion === */
+@media (prefers-reduced-motion: reduce) {
+  .s13-headline,
+  .s13-banner,
+  .s13-card-wrap,
+  .s13-callout {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .s13-card-inner {
+    transition: none !important;
+  }
+  .s13-card-front::after {
+    display: none !important;
+  }
+}
+</style>
+
+<div class="slide" id="S13" data-slide-id="S13">
+  <div class="s13-wrap">
+
+    <!-- 标题区 -->
+    <div class="s13-headline">
+      <h2>扩展层 · <span class="hl-amber">8 种外部 Memory Provider</span></h2>
+      <p class="sub">全部 opt-in &nbsp;·&nbsp; hover 或聚焦卡片翻面查看特点</p>
+    </div>
+
+    <!-- 顶部警示 banner -->
+    <div class="s13-banner" role="note" aria-label="opt-in 警示">
+      <span class="icon">⚠️</span>
+      <p>
+        默认链路 = 热双层 + 冷三件套
+        <span class="sep">/</span>
+        这 8 个 Provider 全部需在
+        <code style="font-family:var(--font-mono);font-size:0.78em;color:var(--accent-amber);background:rgba(0,0,0,0.2);padding:0.1em 0.3em;border-radius:3px;">~/.hermes/config.yaml</code>
+        显式启用
+      </p>
+    </div>
+
+    <!-- 4×2 翻面卡片 Grid -->
+    <div class="s13-cards-grid" role="list">
+
+      <!-- Card 1 · Honcho -->
+      <div class="s13-card-wrap" data-name="Honcho"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 Honcho 详情">
+        <div class="s13-card-inner">
+          <!-- 正面 -->
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot amber"></span>
+              <span class="s13-card-name">Honcho</span>
+            </div>
+            <div class="s13-card-pos">辩证用户建模 / USER.md 自动填充器</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill amber">⭐ 社区最推荐</span>
+            </div>
+          </div>
+          <!-- 背面 -->
+          <div class="s13-card-back">
+            <div class="s13-back-name">Honcho</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>通过对话辩证推理用户特征（沟通/技能/习惯）</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>跨 session 累积"用户画像"</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span><strong style="color:var(--accent-amber)">唯一能自动填 USER.md 的 Provider</strong></span></div>
+              <div class="s13-feat"><span class="fi">👤</span><span>适用：希望 Agent 越用越懂你</span></div>
+            </div>
+            <code class="s13-back-yaml">memory.provider: honcho</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 · Mem0 -->
+      <div class="s13-card-wrap" data-name="Mem0"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 Mem0 详情">
+        <div class="s13-card-inner">
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot teal"></span>
+              <span class="s13-card-name">Mem0</span>
+            </div>
+            <div class="s13-card-pos">向量 + 图 + 键值 三引擎</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill teal">📊 48K stars / $24.5M</span>
+            </div>
+          </div>
+          <div class="s13-card-back">
+            <div class="s13-back-name">Mem0</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>三引擎并存：向量 + 图 + 键值</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>用户级 + 会话级 + Agent 级 三维记忆</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>AWS Strands SDK 独家 Provider</span></div>
+              <div class="s13-feat"><span class="fi">🎯</span><span>适用：快速给 Agent 加"跨会话记忆"</span></div>
+            </div>
+            <code class="s13-back-yaml">memory.provider: mem0</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 · OpenViking -->
+      <div class="s13-card-wrap" data-name="OpenViking"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 OpenViking 详情">
+        <div class="s13-card-inner">
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot teal"></span>
+              <span class="s13-card-name">OpenViking</span>
+            </div>
+            <div class="s13-card-pos">纯向量后端</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill teal">通用</span>
+            </div>
+          </div>
+          <div class="s13-card-back">
+            <div class="s13-back-name">OpenViking</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>简单纯向量数据库后端</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>无 lock-in / 自托管友好</span></div>
+              <div class="s13-feat"><span class="fi">🎯</span><span>适用：轻量场景，不要图/键值复杂性</span></div>
+            </div>
+            <code class="s13-back-yaml">memory.provider: openviking</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 · Hindsight -->
+      <div class="s13-card-wrap" data-name="Hindsight"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 Hindsight 详情">
+        <div class="s13-card-inner">
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot teal"></span>
+              <span class="s13-card-name">Hindsight</span>
+            </div>
+            <div class="s13-card-pos">语义 + 图 混合</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill teal">推理型</span>
+            </div>
+          </div>
+          <div class="s13-card-back">
+            <div class="s13-back-name">Hindsight</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>语义检索 + 知识图谱并存</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>支持记忆关系推理（"A 与 B 关系"）</span></div>
+              <div class="s13-feat"><span class="fi">🎯</span><span>适用：复杂查询 / 研究分析场景</span></div>
+            </div>
+            <code class="s13-back-yaml">memory.provider: hindsight</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 · Holographic（红色边框警示）-->
+      <div class="s13-card-wrap" data-name="Holographic"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 Holographic 详情">
+        <div class="s13-card-inner">
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot red"></span>
+              <span class="s13-card-name">Holographic</span>
+            </div>
+            <div class="s13-card-pos">HRR 向量编码 + trust_score 奖惩</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill red">⚠️ 研究级 · 不在默认</span>
+            </div>
+          </div>
+          <div class="s13-card-back">
+            <div class="s13-back-name" style="color:var(--accent-red)">Holographic</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>HRR 编码（多概念叠加在同一向量）</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>trust_score：记忆有可信度，错误降权</span></div>
+              <div class="s13-feat"><span class="fi">⚠️</span><span><strong style="color:var(--accent-red)">PDF 营销"四层记忆默认架构"原型 → 实际是 opt-in</strong></span></div>
+              <div class="s13-feat"><span class="fi">🔬</span><span>研究级，不建议生产使用</span></div>
+            </div>
+            <code class="s13-back-yaml" style="border:1px solid rgba(229,115,115,0.3)">memory.provider: holographic</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 · RetainDB -->
+      <div class="s13-card-wrap" data-name="RetainDB"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 RetainDB 详情">
+        <div class="s13-card-inner">
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot teal"></span>
+              <span class="s13-card-name">RetainDB</span>
+            </div>
+            <div class="s13-card-pos">持久化记忆</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill teal">稳定</span>
+            </div>
+          </div>
+          <div class="s13-card-back">
+            <div class="s13-back-name">RetainDB</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>简单纯持久化（无算法黑盒）</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>跨会话 + 长期保留</span></div>
+              <div class="s13-feat"><span class="fi">🎯</span><span>适用：要稳定可预期，不要"AI 魔法"</span></div>
+            </div>
+            <code class="s13-back-yaml">memory.provider: retaindb</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 7 · ByteRover -->
+      <div class="s13-card-wrap" data-name="ByteRover"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 ByteRover 详情">
+        <div class="s13-card-inner">
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot teal"></span>
+              <span class="s13-card-name">ByteRover</span>
+            </div>
+            <div class="s13-card-pos">字节级回放</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill teal">审计型</span>
+            </div>
+          </div>
+          <div class="s13-card-back">
+            <div class="s13-back-name">ByteRover</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>完整字节流记录（含中间状态）</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span>历史会话可"回放"</span></div>
+              <div class="s13-feat"><span class="fi">🎯</span><span>适用：audit / debug / Agent 行为复现</span></div>
+            </div>
+            <code class="s13-back-yaml">memory.provider: byterover</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 8 · Supermemory -->
+      <div class="s13-card-wrap" data-name="Supermemory"
+           tabindex="0" role="listitem"
+           aria-label="点击或聚焦查看 Supermemory 详情">
+        <div class="s13-card-inner">
+          <div class="s13-card-front">
+            <div class="s13-front-top">
+              <span class="s13-dot amber"></span>
+              <span class="s13-card-name">Supermemory</span>
+            </div>
+            <div class="s13-card-pos">语义图 + context fencing</div>
+            <div class="s13-front-pill-row">
+              <span class="s13-pill amber">🆕 v0.8.0 新增</span>
+            </div>
+          </div>
+          <div class="s13-card-back">
+            <div class="s13-back-name">Supermemory</div>
+            <div class="s13-back-features">
+              <div class="s13-feat"><span class="fi">✨</span><span>语义图存储</span></div>
+              <div class="s13-feat"><span class="fi">✨</span><span><strong>context fencing</strong>：自动隔离不同上下文（防记忆"串门"）</span></div>
+              <div class="s13-feat"><span class="fi">🎯</span><span>适用：多项目 / 多领域 Agent</span></div>
+              <div class="s13-feat"><span class="fi">📅</span><span>v0.8.0 (2026-04-08) 新增</span></div>
+            </div>
+            <code class="s13-back-yaml">memory.provider: supermemory</code>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /s13-cards-grid -->
+
+    <!-- 底部 callout · L5 钩子 -->
+    <div class="s13-callout" role="note" aria-label="第五节课钩子">
+      <span class="icon">📌</span>
+      <p>
+        完整选型决策树 + 启用 yaml &nbsp;→&nbsp;
+        <span class="hl-amber">第五节课 L5 §3.2b</span>
+        &nbsp;&nbsp;
+        「两条进化路径：<span class="hl-teal">内置</span>（Nudge + Curator）vs
+        <span class="hl-amber">外挂</span>（8 Provider）」
+      </p>
+    </div>
+
+  </div><!-- /s13-wrap -->
+</div><!-- /slide#S13 -->

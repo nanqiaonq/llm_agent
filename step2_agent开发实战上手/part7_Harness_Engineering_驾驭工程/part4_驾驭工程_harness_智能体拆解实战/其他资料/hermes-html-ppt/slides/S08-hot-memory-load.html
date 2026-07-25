@@ -1,0 +1,500 @@
+<style>
+/* ── S08 热记忆双层 · Agent 启动时怎么"知道" ── */
+:root {
+  --s08-bg: var(--bg-main, #1a2332);
+  --s08-bg-mid: var(--bg-mid, #243142);
+  --s08-bg-surface: var(--bg-surface, #2d3b50);
+  --s08-primary: var(--primary, #5b8cb8);
+  --s08-secondary: var(--secondary, #7dd3c0);
+  --s08-accent: var(--accent-warm, #d4a574);
+  --s08-accent-strong: var(--accent-warm-strong, #c8924a);
+  --s08-text: var(--text-primary, #e8ecf0);
+  --s08-text-body: var(--text-body, #c5cdd8);
+  --s08-text-subtle: var(--text-subtle, #8a96a8);
+  --s08-border: var(--card-border, rgba(91,140,184,0.22));
+  --s08-border-strong: var(--card-border-strong, rgba(91,140,184,0.40));
+  --s08-rule-dashed: var(--rule-line-dashed, rgba(91,140,184,0.35));
+  --s08-card-bg: var(--card-bg, rgba(36,49,66,0.85));
+  --s08-card-bg-soft: var(--card_bg_soft, rgba(45,59,80,0.55));
+}
+
+.s08-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.5rem 3rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ── 头部 ── */
+.s08-header {
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+.s08-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--s08-text);
+  margin: 0 0 0.4rem 0;
+  font-style: normal;
+  letter-spacing: -0.01em;
+}
+
+.s08-subtitle {
+  font-size: 0.95rem;
+  color: var(--s08-text-subtle);
+  margin: 0;
+  font-style: normal;
+}
+
+/* ── 3 列 Grid ── */
+.s08-flow-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 1.5rem;
+  max-width: 1300px;
+  width: 100%;
+  position: relative;
+  align-items: start;
+}
+
+/* ── 列通用 ── */
+.s08-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.s08-col-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--s08-secondary);
+  padding: 0.3rem 0.6rem;
+  background: rgba(125,211,192,0.07);
+  border: 1px solid rgba(125,211,192,0.2);
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── 文件卡 ── */
+.s08-file-card {
+  background: var(--s08-card-bg);
+  border: 1px solid var(--s08-border);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  position: relative;
+}
+
+.s08-file-card::before {
+  content: '';
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 5px; height: 5px;
+  border-top: 1px solid var(--s08-primary);
+  border-right: 1px solid var(--s08-primary);
+}
+
+.s08-file-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--s08-accent);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.s08-file-icon {
+  font-size: 0.9rem;
+}
+
+.s08-file-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+  background: rgba(91,140,184,0.15);
+  border: 1px solid var(--s08-border-strong);
+  border-radius: 3px;
+  color: var(--s08-primary);
+  margin-bottom: 0.5rem;
+}
+
+.s08-file-desc {
+  font-size: 0.8rem;
+  color: var(--s08-text-body);
+  line-height: 1.6;
+  font-style: normal;
+}
+
+.s08-file-note {
+  font-size: 0.72rem;
+  color: var(--s08-text-subtle);
+  margin-top: 0.4rem;
+  border-top: 1px solid var(--s08-border);
+  padding-top: 0.4rem;
+  font-style: normal;
+}
+
+/* ── USER.md 警示 pill ── */
+.s08-warning-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  background: rgba(229,115,115,0.12);
+  border: 1px solid rgba(229,115,115,0.4);
+  border-radius: 12px;
+  color: #e57373;
+  margin-left: 0.5rem;
+}
+
+.s08-honcho-note {
+  font-size: 0.7rem;
+  color: #e57373;
+  margin-top: 0.35rem;
+  font-style: normal;
+  opacity: 0.85;
+}
+
+/* ── Prompt Builder（中列）── */
+.s08-builder-card {
+  background: linear-gradient(135deg, rgba(36,49,66,0.9) 0%, rgba(45,59,80,0.85) 100%);
+  border: 1px solid var(--s08-border-strong);
+  border-radius: 8px;
+  padding: 1.1rem 1.2rem;
+  position: relative;
+}
+
+.s08-builder-card::before {
+  content: '';
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 5px; height: 5px;
+  border-top: 1px solid var(--s08-primary);
+  border-right: 1px solid var(--s08-primary);
+}
+
+.s08-builder-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--s08-text);
+  margin-bottom: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-style: normal;
+}
+
+.s08-source-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.s08-source-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.6rem;
+  border-radius: 4px;
+  background: rgba(91,140,184,0.06);
+  border-left: 2px solid var(--s08-primary);
+}
+
+.s08-source-item .s08-src-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--s08-accent);
+  font-weight: 500;
+}
+
+.s08-source-item .s08-src-desc {
+  font-size: 0.72rem;
+  color: var(--s08-text-subtle);
+  font-style: normal;
+}
+
+.s08-source-item.src-memory { border-left-color: var(--s08-accent); }
+.s08-source-item.src-user   { border-left-color: #e57373; }
+
+.s08-assemble-label {
+  margin-top: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(125,211,192,0.08);
+  border: 1px dashed rgba(125,211,192,0.3);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--s08-secondary);
+  text-align: center;
+  font-style: normal;
+}
+
+/* ── Agent System Prompt（右列）── */
+.s08-prompt-card {
+  background: var(--s08-card-bg);
+  border: 1.5px dashed var(--s08-rule-dashed);
+  border-radius: 8px;
+  padding: 1.1rem 1.2rem;
+  position: relative;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.s08-prompt-card::before {
+  content: '';
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 5px; height: 5px;
+  border-top: 1px solid var(--s08-primary);
+  border-right: 1px solid var(--s08-primary);
+}
+
+.s08-prompt-header {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--s08-text);
+  margin-bottom: 0.7rem;
+  font-style: normal;
+}
+
+.s08-prompt-you {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--s08-accent);
+  margin-bottom: 0.2rem;
+  font-style: normal;
+}
+
+.s08-prompt-subtitle {
+  font-size: 0.75rem;
+  color: var(--s08-text-subtle);
+  margin: 0.35rem 0 0.3rem 0;
+  font-style: normal;
+}
+
+.s08-prompt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.s08-prompt-list li {
+  font-size: 0.78rem;
+  color: var(--s08-text-body);
+  font-style: normal;
+  padding-left: 0.2rem;
+}
+
+.s08-prompt-list li span.s08-num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--s08-secondary);
+  font-size: 0.72rem;
+}
+
+.s08-inject-label {
+  margin-top: 0.8rem;
+  padding: 0.35rem 0.6rem;
+  background: rgba(212,165,116,0.1);
+  border: 1px solid rgba(212,165,116,0.35);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--s08-accent);
+  text-align: center;
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* ── SVG overlay（粒子层）── */
+.s08-particle-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  overflow: visible;
+}
+
+/* ── 提示文字 ── */
+.s08-hint {
+  margin-top: 1.2rem;
+  font-size: 0.7rem;
+  color: var(--s08-text-subtle);
+  opacity: 0.6;
+  text-align: center;
+  font-style: normal;
+}
+
+/* ── prefers-reduced-motion：立即显示终态 ── */
+@media (prefers-reduced-motion: reduce) {
+  .s08-header,
+  .s08-file-card,
+  .s08-builder-card,
+  .s08-prompt-card,
+  .s08-source-item,
+  .s08-assemble-label,
+  .s08-inject-label {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+</style>
+
+<div class="slide" data-slide-id="S08">
+  <div class="s08-wrap">
+
+    <!-- 标题区 -->
+    <header class="s08-header">
+      <h1 class="s08-title">热记忆双层 · Agent 启动时怎么"知道"</h1>
+      <p class="s08-subtitle">每次对话默认注入系统提示词</p>
+    </header>
+
+    <!-- 3 列数据流 Grid -->
+    <div class="s08-flow-grid" id="s08-flow-grid">
+
+      <!-- ─── 左列：文件 ─── -->
+      <div class="s08-col s08-col-left">
+        <div class="s08-col-header">~/.hermes/memories/</div>
+
+        <!-- MEMORY.md 文件卡 -->
+        <div class="s08-file-card" id="s08-memory-card">
+          <div class="s08-file-name">
+            <span class="s08-file-icon">📄</span>
+            MEMORY.md
+          </div>
+          <span class="s08-file-badge">长期事实记忆</span>
+          <p class="s08-file-desc">
+            Agent 自维护<br>
+            长期事实记忆
+          </p>
+          <p class="s08-file-note">
+            由 Nudge 自动写入<br>
+            （第 2 章详讲）
+          </p>
+        </div>
+
+        <!-- USER.md 文件卡 -->
+        <div class="s08-file-card" id="s08-user-card">
+          <div class="s08-file-name">
+            <span class="s08-file-icon">📄</span>
+            USER.md
+            <span class="s08-warning-pill">⚠️ 默认空</span>
+          </div>
+          <span class="s08-file-badge">用户画像</span>
+          <p class="s08-file-desc">
+            · 沟通风格<br>
+            · 技能水平
+          </p>
+          <p class="s08-honcho-note">需 Honcho Provider 启用</p>
+        </div>
+      </div>
+
+      <!-- ─── 中列：Prompt Builder ─── -->
+      <div class="s08-col s08-col-mid">
+        <div style="height:2rem;"></div>
+        <div class="s08-builder-card" id="s08-builder-card">
+          <div class="s08-builder-header">
+            ⚙️&nbsp; Prompt Builder · 6 来源拼装
+          </div>
+          <ol class="s08-source-list">
+            <li class="s08-source-item" id="s08-src-1">
+              <span class="s08-src-name">SOUL.md</span>
+              <span class="s08-src-desc">人格定义</span>
+            </li>
+            <li class="s08-source-item src-memory" id="s08-src-2">
+              <span class="s08-src-name">MEMORY.md</span>
+              <span class="s08-src-desc">长期事实 (热)</span>
+            </li>
+            <li class="s08-source-item src-user" id="s08-src-3">
+              <span class="s08-src-name">USER.md</span>
+              <span class="s08-src-desc">用户画像 (热)</span>
+            </li>
+            <li class="s08-source-item" id="s08-src-4">
+              <span class="s08-src-name">skills/</span>
+              <span class="s08-src-desc">技能列表</span>
+            </li>
+            <li class="s08-source-item" id="s08-src-5">
+              <span class="s08-src-name">.hermes.md</span>
+              <span class="s08-src-desc">项目上下文</span>
+            </li>
+            <li class="s08-source-item" id="s08-src-6">
+              <span class="s08-src-name">工具指引</span>
+              <span class="s08-src-desc">tool definitions</span>
+            </li>
+          </ol>
+          <div class="s08-assemble-label" id="s08-assemble-label">
+            ▼ 拼装完整 system prompt
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 右列：Agent System Prompt ─── -->
+      <div class="s08-col s08-col-right">
+        <div style="height:2rem;"></div>
+        <div class="s08-prompt-card" id="s08-prompt-card">
+          <div class="s08-prompt-header">⚡ Agent System Prompt</div>
+          <p class="s08-prompt-you">你是 Hermes</p>
+          <p class="s08-prompt-subtitle">记忆已加载：</p>
+          <ul class="s08-prompt-list">
+            <li>· 长期事实 <span class="s08-num">(87 行)</span></li>
+            <li>· 用户画像 <span class="s08-num">(12 项)</span></li>
+            <li>· 工具指引</li>
+            <li>· 项目上下文</li>
+            <li>· ...</li>
+          </ul>
+          <div class="s08-inject-label" id="s08-inject-label">
+            Agent 天然知道
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SVG 粒子层 overlay ─── -->
+      <svg class="s08-particle-svg" id="s08-particle-svg"
+           viewBox="0 0 1300 400"
+           preserveAspectRatio="none"
+           xmlns="http://www.w3.org/2000/svg">
+
+        <!-- MEMORY → Builder 粒子（amber × 4）← FM-3: SVG circle 元素 -->
+        <circle id="s08-pm-0" r="5" fill="#d4a574" opacity="0"/>
+        <circle id="s08-pm-1" r="5" fill="#d4a574" opacity="0"/>
+        <circle id="s08-pm-2" r="5" fill="#d4a574" opacity="0"/>
+        <circle id="s08-pm-3" r="5" fill="#d4a574" opacity="0"/>
+
+        <!-- USER → Builder 粒子（teal × 4）← FM-3: SVG circle 元素 -->
+        <circle id="s08-pu-0" r="5" fill="#7dd3c0" opacity="0"/>
+        <circle id="s08-pu-1" r="5" fill="#7dd3c0" opacity="0"/>
+        <circle id="s08-pu-2" r="5" fill="#7dd3c0" opacity="0"/>
+        <circle id="s08-pu-3" r="5" fill="#7dd3c0" opacity="0"/>
+
+        <!-- Builder → Prompt 光柱（绿色横线）-->
+        <line id="s08-beam"
+              x1="884" y1="200"
+              x2="884" y2="200"
+              stroke="#7dd3c0"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              opacity="0"/>
+      </svg>
+
+    </div><!-- /s08-flow-grid -->
+
+    <p class="s08-hint">按 Enter 跳过动画</p>
+
+  </div><!-- /s08-wrap -->
+</div>

@@ -1,0 +1,56 @@
+<!-- S024 Mechanism x Pillar Matrix -->
+<style>
+  #s24-wrap { width:100%; max-width:880px; margin:0 auto; text-align:center; }
+  #s24-title { font-family:var(--font-heading); font-size:clamp(1.4rem,2.6vw,2rem); font-weight:700; color:var(--primary); opacity:0; transform:translateY(-10px); transition:opacity .6s ease, transform .6s ease; }
+  #s24-subtitle { font-size:clamp(.72rem,1vw,.85rem); color:var(--text-dim); margin-top:.3rem; opacity:0; transition:opacity .5s ease; }
+  #s24-table-wrap { margin-top: 1.8rem; overflow-x:auto; opacity:0; transition:opacity .6s ease; }
+  #s24-table { width:100%; border-collapse:collapse; font-size:clamp(1.02rem, 1.4vw, 1.18rem); background:rgba(255,255,255,0.78); backdrop-filter:blur(12px); border-radius:8px; overflow:hidden; box-shadow:0 4px 20px rgba(45,90,122,0.08); }
+  #s24-table th { background:rgba(45,90,122,.12); color:var(--primary); font-family:var(--font-heading); padding: .85rem .65rem; border:1px solid var(--card-border); font-weight:700; }
+  #s24-table td { padding: .8rem .55rem; border:1px solid var(--card-border); color:var(--card-text); text-align:center; }
+  #s24-table td:first-child { text-align:left; font-weight:700; color:var(--primary); background:rgba(45,90,122,.04); }
+  #s24-table tr:hover td { background:rgba(193,127,89,.04); }
+  .s24-p { color:var(--accent); font-weight:700; }
+  .s24-s { color:#27ae60; font-weight:700; }
+  .s24-n { color:var(--text-dim); }
+  .s24-cn { display:block; font-size:.78em; color:var(--text-dim); font-weight:400; margin-top:.15rem; letter-spacing:.02em; }
+  #s24-table th .s24-cn { color:rgba(45,90,122,.72); }
+  #s24-note { max-width:640px; margin:.7rem auto 0; font-size:clamp(.68rem,1vw,.78rem); color:var(--text-dim); line-height:1.5; text-align:left; opacity:0; transition:opacity .5s ease; }
+</style>
+
+<div id="s24-wrap">
+  <div id="s24-title">八大机制 × 三支柱 对照矩阵</div>
+  <div id="s24-subtitle">同一组机制，换个视角看——机制视角是"清单式发现"，支柱视角是"重心式判断"</div>
+  <div id="s24-table-wrap">
+    <table id="s24-table">
+      <thead>
+        <tr><th>机制 \ 支柱</th><th>Context Engineering<span class="s24-cn">上下文工程</span></th><th>Architectural Constraints<span class="s24-cn">架构约束</span></th><th>Garbage Collection<span class="s24-cn">垃圾回收</span></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Agent Loop<span class="s24-cn">四相循环</span></td><td class="s24-s">辅</td><td class="s24-p">主</td><td class="s24-n">-</td></tr>
+        <tr><td>Tool Use<span class="s24-cn">工具编排</span></td><td class="s24-n">-</td><td class="s24-p">主</td><td class="s24-n">-</td></tr>
+        <tr><td>Progress Tracking<span class="s24-cn">进度追踪</span></td><td class="s24-p">主</td><td class="s24-s">辅</td><td class="s24-n">-</td></tr>
+        <tr><td>Context Management<span class="s24-cn">上下文管理</span></td><td class="s24-p">主</td><td class="s24-n">-</td><td class="s24-s">辅</td></tr>
+        <tr><td>Feature List<span class="s24-cn">任务拆解</span></td><td class="s24-p">主</td><td class="s24-s">辅</td><td class="s24-s">辅</td></tr>
+        <tr><td>Verification Loop<span class="s24-cn">验证闭环</span></td><td class="s24-n">-</td><td class="s24-p">主</td><td class="s24-n">-</td></tr>
+        <tr><td>Subagents<span class="s24-cn">子代理分治</span></td><td class="s24-p">主</td><td class="s24-s">辅</td><td class="s24-s">辅</td></tr>
+        <tr><td>Generator-Evaluator<span class="s24-cn">生成-评估对抗</span></td><td class="s24-n">-</td><td class="s24-p">主</td><td class="s24-n">-</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="s24-note">
+    <strong style="color:var(--primary);">注意</strong>：GC 列在本节课仅有三个"辅"位（Context Management 的 compaction、Feature List 的任务边界回收、Subagents 的子 context 整包回收）。GC 支柱的"主"由第二节课的 Token Budget / Cost Cap 承担，本节课刻意留白。
+  </div>
+</div>
+
+<script>
+(function(){
+  var title=document.getElementById('s24-title');
+  var subtitle=document.getElementById('s24-subtitle');
+  var table=document.getElementById('s24-table-wrap');
+  var note=document.getElementById('s24-note');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; },200);
+  setTimeout(function(){ subtitle.style.opacity='1'; },450);
+  setTimeout(function(){ table.style.opacity='1'; },700);
+  setTimeout(function(){ note.style.opacity='1'; },1200);
+})();
+</script>

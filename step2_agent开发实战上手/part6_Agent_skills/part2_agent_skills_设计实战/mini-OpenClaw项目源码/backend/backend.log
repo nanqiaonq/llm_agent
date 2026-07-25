@@ -1,0 +1,10 @@
+INFO:     Started server process [25105]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8002): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+📋 Skills snapshot: 2 skills found
+🤖 Agent initialized with 5 tools (DeepSeek: deepseek-chat)
+⚠️ Memory index build error: 'utf-8' codec can't decode byte 0xd0 in position 417: invalid continuation byte
+✅ mini OpenClaw backend ready

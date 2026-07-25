@@ -1,0 +1,328 @@
+<style>
+  /* slide 容器纵向居中 */
+  .slide#s15 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 1.5rem 2rem 1.2rem;
+  }
+
+  #s15-inner {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #s15-inner .s15-chapter {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent-amber);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  #s15-inner .s15-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+    font-style: normal;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  #s15-inner .s15-table-ref {
+    text-align: center;
+  }
+
+  /* 四卡网格 */
+  #s15-inner .s15-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  #s15-inner .s15-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.15rem 1.2rem;
+    backdrop-filter: blur(6px);
+    position: relative;
+    cursor: default;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  #s15-inner .s15-card::after {
+    content: '';
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 10px; height: 10px;
+    border-top: 1px solid var(--primary);
+    border-right: 1px solid var(--primary);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* agent-created 特殊高亮 */
+  #s15-inner .s15-card.highlight {
+    border-color: rgba(212, 165, 116, 0.45);
+    background: rgba(212, 165, 116, 0.06);
+  }
+
+  #s15-inner .s15-card.highlight::after {
+    border-color: var(--accent-amber);
+    opacity: 0.6;
+  }
+
+  /* hover 上浮效果 */
+  #s15-inner .s15-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  #s15-inner .s15-card.highlight:hover {
+    box-shadow: 0 8px 24px rgba(212, 165, 116, 0.18);
+    border-color: rgba(212, 165, 116, 0.6);
+  }
+
+  #s15-inner .s15-card:not(.highlight):hover {
+    border-color: var(--card-border-strong);
+  }
+
+  /* 卡片内部元素 */
+  #s15-inner .s15-card-type {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.65rem;
+    font-style: normal;
+  }
+
+  #s15-inner .s15-card-type.normal {
+    color: var(--accent-teal);
+  }
+
+  #s15-inner .s15-card-type.special {
+    color: var(--accent-amber);
+  }
+
+  #s15-inner .s15-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--accent-amber);
+    background: rgba(212, 165, 116, 0.12);
+    border: 1px solid rgba(212, 165, 116, 0.3);
+    border-radius: 4px;
+    padding: 0.08rem 0.4rem;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+    line-height: 1.5;
+    font-style: normal;
+  }
+
+  #s15-inner .s15-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+  }
+
+  #s15-inner .s15-field-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-style: normal;
+  }
+
+  #s15-inner .s15-field-key {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    min-width: 4.2rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  #s15-inner .s15-field-val {
+    font-size: 0.88rem;
+    color: var(--text-body);
+    line-height: 1.45;
+  }
+
+  #s15-inner .s15-field-val.amber-text {
+    color: var(--accent-amber);
+    font-weight: 500;
+  }
+
+  #s15-inner .s15-field-val code {
+    font-family: var(--font-mono);
+    font-size: 0.84em;
+    color: var(--accent-teal);
+    background: rgba(125, 211, 192, 0.08);
+    padding: 0.05rem 0.32rem;
+    border-radius: 3px;
+  }
+
+  /* 底部说明行 */
+  #s15-inner .s15-note-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    background: rgba(212, 165, 116, 0.06);
+    border: 1px solid rgba(212, 165, 116, 0.2);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+  }
+
+  #s15-inner .s15-note-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: var(--accent-amber);
+  }
+
+  #s15-inner .s15-note-text {
+    font-size: 0.88rem;
+    color: var(--text-body);
+    line-height: 1.55;
+    font-style: normal;
+  }
+
+  #s15-inner .s15-note-text strong {
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+
+  #s15-inner .s15-note-text code {
+    font-family: var(--font-mono);
+    font-size: 0.84em;
+    color: var(--accent-teal);
+    background: rgba(125, 211, 192, 0.08);
+    padding: 0.05rem 0.32rem;
+    border-radius: 3px;
+  }
+
+  /* 表 2-1 标签 */
+  #s15-inner .s15-table-ref {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.95rem;
+    font-style: normal;
+  }
+</style>
+
+<div class="slide" id="s15" data-slide-id="S15">
+  <div id="s15-inner">
+    <div class="s15-chapter">第2章 · Nudge 机制</div>
+    <div class="s15-title">Skill 四来源对比</div>
+    <div class="s15-table-ref">表 2-1 Hermes Agent Skill 四种来源</div>
+
+    <!-- 四卡网格 -->
+    <div class="s15-cards-grid">
+      <!-- bundled -->
+      <div class="s15-card">
+        <div class="s15-card-type normal">bundled</div>
+        <div class="s15-field">
+          <div class="s15-field-item">
+            <span class="s15-field-key">写入路径</span>
+            <span class="s15-field-val">仓库内 <code>skills/</code></span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">谁写的</span>
+            <span class="s15-field-val">Nous Research 团队</span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">触发时机</span>
+            <span class="s15-field-val">安装时拷贝</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- hub -->
+      <div class="s15-card">
+        <div class="s15-card-type normal">hub</div>
+        <div class="s15-field">
+          <div class="s15-field-item">
+            <span class="s15-field-key">写入路径</span>
+            <span class="s15-field-val">从 <code>agentskills.io</code> 下载</span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">谁写的</span>
+            <span class="s15-field-val">第三方贡献者</span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">触发时机</span>
+            <span class="s15-field-val">用户主动拉取</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- user-created -->
+      <div class="s15-card">
+        <div class="s15-card-type normal">user-created</div>
+        <div class="s15-field">
+          <div class="s15-field-item">
+            <span class="s15-field-key">写入路径</span>
+            <span class="s15-field-val">调 <code>skill_manage create</code></span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">谁写的</span>
+            <span class="s15-field-val">当前会话 user</span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">触发时机</span>
+            <span class="s15-field-val">用户显式动作</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- agent-created - 高亮 -->
+      <div class="s15-card highlight">
+        <div class="s15-card-type special">
+          agent-created
+          <span class="s15-badge">本章重点</span>
+        </div>
+        <div class="s15-field">
+          <div class="s15-field-item">
+            <span class="s15-field-key">写入路径</span>
+            <span class="s15-field-val amber-text" style="font-family:var(--font-mono); font-size:0.82rem;">~/.hermes/skills/&lt;name&gt;/SKILL.md</span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">谁写的</span>
+            <span class="s15-field-val amber-text">Nudge fork agent 自动产出</span>
+          </div>
+          <div class="s15-field-item">
+            <span class="s15-field-key">触发时机</span>
+            <span class="s15-field-val amber-text">计数器达阈值后台触发</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部说明 -->
+    <div class="s15-note-row">
+      <span class="s15-note-icon">&#128279;</span>
+      <div class="s15-note-text">
+        前三种来源均为"先有需求、后有 skill"；<strong>agent-created 对应 README 上那句 "creates skills from experience"</strong>——
+        跑过几个 session 后执行 <code>ls -la ~/.hermes/skills/</code>，会看到你从未写过的 skill 目录（如 <code>kafka-debugging</code>），这就是 Nudge 的产物
+      </div>
+    </div>
+  </div>
+</div>

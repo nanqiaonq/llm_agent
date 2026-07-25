@@ -1,0 +1,33 @@
+{
+  "baseline": {
+    "answer": "# 代码重复问题分析与重构建议\n\n## 问题识别\n\n### 重复模式 1：折扣率硬编码分散\n```python\n# calculate_discount 和 process_order 中各自重复了相同的折扣逻辑\nif customer_type == \"regular\":\n    discount = price * 0.05   # 同样的折扣率出现两次\nelif customer_type == \"vip\":\n    discount = price * 0.15   # 同样的折扣率出现两次\nelif customer_type == \"premium\":\n    discount = price * 0.25   # 同样的折扣率出现两次\n```\n\n### 重复模式 2：折扣计算公式重复\n```python\ndiscount = price * rate\nfinal_price = price - discount  # 这个计算逻辑在每个分支中重复\n```\n\n### 问题汇总\n\n| 问题类型 | 位置 | 风险 |\n|---------|------|------|\n| 折扣率重复定义 | 两个函数各自硬编码 | 修改折扣时需改多处，易遗漏 |\n| if/elif 结构重复 | `calculate_discount` / `process_order` | 新增客户类型需改多处 |\n| 计算公式重复 | 每个分支内部 | 逻辑变更时易不一致 |\n\n---\n\n## 重构方案\n\n### 重构后代码\n\n```python\n\"\"\"Refactored code eliminating duplication.\"\"\"\n\n# ✅ 将折扣率集中到单一数据源\nDISCOUNT_RATES = {\n    \"regular\": 0.05,\n    \"vip\":     0.15,\n    \"premium\": 0.25,\n}\n\n\ndef apply_discount(price: float, customer_type: str) -> float:\n    \"\"\"\n    对价格应用折扣，返回折后价格。\n\n    Args:\n        price: 原始价格\n        customer_type: 客户类型（regular/vip/premium）\n\n    Returns:\n        折后价格，未知客户类型返回原价\n    \"\"\"\n    # ✅ 用字典查找替代 if/elif 链\n    rate = DISCOUNT_RATES.get(customer_type, 0.0)\n    return price * (1 - rate)\n\n\ndef calculate_discount(price: float, customer_type: str) -> float:\n    \"\"\"Calculate final price after discount.\"\"\"\n    # ✅ 直接复用核心逻辑，无重复\n    return apply_discount(price, customer_type)\n\n\ndef process_order(items: list[dict], customer_type: str) -> float:\n    \"\"\"Process order and return total price after discount.\"\"\"\n    # ✅ 用 sum + 生成式替代手动累加\n    total = sum(item[\"price\"] for item in items)\n    return apply_discount(total, customer_type)\n```\n\n---\n\n## 关键重构手法说明\n\n### 1. 提取配置表（Replace Magic Number with Symbolic Constant）\n```python\n# Before：折扣率分散在代码各处\ndiscount = price * 0.15  # 这个 0.15 是什么？来自哪里？\n\n# After：语义清晰，修改只需改一处\nDISCOUNT_RATES = {\"vip\": 0.15}\nrate = DISCOUNT_RATES.get(customer_type, 0.0)\n```\n\n### 2. 提取公共函数（Extract Function）\n```python\n# Before：两个函数各自实现折扣逻辑\ndef calculate_discount(...):\n    discount = price * 0.15      # 重复\n    final_price = price - discount\n\ndef process_order(...):\n    discount = total * 0.15      # 重复\n    final_total = total - discount\n\n# After：抽取为单一职责函数\ndef apply_discount(price, customer_type) -> float:\n    rate = DISCOUNT_RATES.get(customer_type, 0.0)\n    return price * (1 - rate)    # 唯一实现\n```\n\n### 3. 简化累加逻辑\n```python\n# Before\ntotal = 0\nfor item in items:\n    total += item[\"price\"]\n\n# After：更 Pythonic，意图更清晰\ntotal = sum(item[\"price\"] for item in items)\n```\n\n---\n\n## 扩展性对比\n\n现在新增客户类型 `\"enterprise\"`（折扣 35%）：\n\n```python\n# Before：需要修改两个函数，各加一个 elif ❌\n# calculate_discount 加一个 elif\n# process_order 加一个 elif\n\n# After：只需修改一行配置 ✅\nDISCOUNT_RATES = {\n    \"regular\":   0.05,\n    \"vip\":       0.15,\n    \"premium\":   0.25,\n    \"enterprise\": 0.35,  # 仅此一处\n}\n```\n\n> **核心原则**：遵循 **DRY**（Don't Repeat Yourself）——每一个业务规则在系统中应当有且只有一个明确的表示。折扣率是业务规则，应集中管理；折扣计算是逻辑，应只实现一次。",
+    "steps": 1,
+    "elapsed_time": 46.83305287361145,
+    "errors": []
+  },
+  "harness": {
+    "answer": "---\n\n## 📋 任务规划 & 执行结果\n\n以下是完整的重构分析报告，按步骤逐一展开：\n\n---\n\n### ✅ Step 1 — 识别代码重复问题\n\n通过逐行阅读，发现以下 **3 处核心重复**：\n\n#### 🔴 重复点 1：折扣率硬编码 & 分支逻辑重复（出现 2 次）\n\n`calculate_discount` 和 `process_order` 中均包含完全相同的 if-elif 折扣判断结构：\n\n```python\nif customer_type == \"regular\":\n    discount = price * 0.05\nelif customer_type == \"vip\":\n    discount = price * 0.15\nelif customer_type == \"premium\":\n    discount = price * 0.25\n```\n\n> **违反原则**：DRY（Don't Repeat Yourself）— 折扣率一旦变更，需要同时修改多处。\n\n#### 🔴 重复点 2：折扣计算逻辑重复（出现 5 次）\n\n```python\ndiscount = price * rate\nfinal_price = price - discount\nreturn final_price\n```\n\n每个 if 分支都在独立执行相同的\"乘法 + 减法\"运算，属于**结构性重复**。\n\n#### 🔴 重复点 3：`process_order` 中重复造轮子\n\n`process_order` 完全重写了折扣判断逻辑，而不是复用 `calculate_discount`，导致两份逻辑**永久性分叉**，极易产生 Bug。\n\n---\n\n### ✅ Step 2 — 重构方案设计\n\n#### 方案一：抽取折扣率映射表（推荐 ⭐⭐⭐⭐⭐）\n\n用字典替代 if-elif 链，折扣率集中管理：\n\n```python\n\"\"\"Refactored code - eliminating duplication.\"\"\"\n\n# 折扣率统一配置，单一修改点\nDISCOUNT_RATES = {\n    \"regular\": 0.05,\n    \"vip\":     0.15,\n    \"premium\": 0.25,\n}\n\ndef calculate_discount(price: float, customer_type: str) -> float:\n    \"\"\"Calculate final price after discount.\"\"\"\n    rate = DISCOUNT_RATES.get(customer_type, 0.0)  # 默认无折扣\n    return price * (1 - rate)\n\ndef process_order(items: list, customer_type: str) -> float:\n    \"\"\"Process order and apply discount.\"\"\"\n    total = sum(item[\"price\"] for item in items)   # 用 sum() 简化累加\n    return calculate_discount(total, customer_type) # 复用已有函数，消除重复\n```\n\n#### 方案二：封装为折扣策略类（适合业务扩展场景 ⭐⭐⭐⭐）\n\n```python\nfrom dataclasses import dataclass, field\n\n@dataclass\nclass DiscountCalculator:\n    \"\"\"封装折扣计算，便于扩展新客户类型。\"\"\"\n    rates: dict = field(default_factory=lambda: {\n        \"regular\": 0.05,\n        \"vip\":     0.15,\n        \"premium\": 0.25,\n    })\n\n    def get_final_price(self, price: float, customer_type: str) -> float:\n        rate = self.rates.get(customer_type, 0.0)\n        return price * (1 - rate)\n\n    def process_order(self, items: list, customer_type: str) -> float:\n        total = sum(item[\"price\"] for item in items)\n        return self.get_final_price(total, customer_type)\n```\n\n---\n\n### ✅ Step 3 — 重构前后对比\n\n| 维度 | 重构前 | 重构后 |\n|------|--------|--------|\n| **代码行数** | 38 行 | ~15 行（减少 **60%**） |\n| **折扣率修改点** | 2 处（极易遗漏） | 1 处（`DISCOUNT_RATES`） |\n| **if-elif 分支数** | 8 个分支 | **0 个**（字典查找替代） |\n| **函数复用** | `process_order` 重复造轮子 | 直接调用 `calculate_discount` |\n| **新增客户类型** | 需改 2 处 | 只需在字典加 1 行 |\n| **可测试性** | 需覆盖每个分支 | 只测数据驱动逻辑 |\n\n---\n\n### ✅ Step 4 — 重构核心原则总结\n\n```\n1. DRY 原则         → 折扣率字典，消除重复的 if-elif 链\n2. 单一职责原则      → calculate_discount 只负责计算，process_order 只负责聚合\n3. 开闭原则         → 新增客户类型只需扩展字典，无需修改函数逻辑\n4. 函数复用         → process_order 调用 calculate_discount，避免逻辑分叉\n```\n\n---\n\n> 💡 **建议优先采用方案一**（字典映射 + 函数复用），改动最小、收益最大，适合直接落地。若后续需要支持动态折扣规则（如时间段折扣、叠加折扣），可进一步升级为方案二的类封装结构。",
+    "steps": 5,
+    "tokens": 2656,
+    "errors": [
+      "Tool execution failed: run_full_harness_agent.<locals>.<lambda>() missing 1 required positional argument: 'code'"
+    ],
+    "elapsed_time": 37.383097887039185
+  },
+  "evaluation": {
+    "baseline": {
+      "steps": 1,
+      "elapsed_time": 46.83305287361145,
+      "has_planning": false,
+      "identifies_duplication": true,
+      "provides_solution": true
+    },
+    "harness": {
+      "steps": 5,
+      "elapsed_time": 37.383097887039185,
+      "has_planning": true,
+      "identifies_duplication": true,
+      "provides_solution": false
+    }
+  }
+}

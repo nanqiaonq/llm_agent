@@ -1,0 +1,461 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s010-wrap {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .s010-panel {
+            flex: 1;
+            text-align: left;
+            padding: 30px;
+            min-height: 390px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .s010-title {
+            font-size: 1.16em;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .s010-scene {
+            min-height: 208px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .s010-docs {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.65em;
+            margin-bottom: 8px;
+        }
+
+        .s010-flow-arrow {
+            position: relative;
+            width: 2px;
+            height: 30px;
+            background: repeating-linear-gradient(to bottom,
+                    rgba(37, 99, 235, 0.4) 0 4px,
+                    transparent 4px 8px);
+            margin-bottom: 10px;
+        }
+
+        .s010-flow-arrow::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -6px;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 7px solid rgba(37, 99, 235, 0.55);
+        }
+
+        .s010-rag-plus {
+            position: absolute;
+            right: 60%;
+            top: 44%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 3;
+            pointer-events: none;
+            margin-right: 2px;
+        }
+
+        .s010-mini-docs {
+            font-size: 1.02em;
+            color: #4338ca;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(124, 58, 237, 0.28);
+            background: rgba(124, 58, 237, 0.12);
+        }
+
+        .s010-knowledge-flow {
+            position: relative;
+            width: 84px;
+            height: 2px;
+            background: repeating-linear-gradient(to right,
+                    rgba(124, 58, 237, 0.48) 0 6px,
+                    transparent 6px 12px);
+            background-size: 24px 2px;
+            animation: s010-knowledge-move 1.2s linear infinite;
+        }
+
+        .s010-knowledge-flow::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -7px;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 7px solid rgba(124, 58, 237, 0.72);
+        }
+
+        .s010-bot {
+            font-size: 3em;
+            line-height: 1;
+        }
+
+        .s010-rag-bubble {
+            margin-top: 10px;
+            border-radius: 14px;
+            border: 1px solid rgba(37, 99, 235, 0.28);
+            background: rgba(37, 99, 235, 0.12);
+            color: #1d4ed8;
+            padding: 8px 12px;
+            font-size: 0.84em;
+            line-height: 1.4;
+        }
+
+        .s010-mid {
+            min-width: 78px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .s010-mid-label {
+            font-size: 0.75em;
+            color: var(--text-dim);
+            letter-spacing: 0.04em;
+        }
+
+        .s010-orbit {
+            width: 210px;
+            height: 210px;
+            position: relative;
+        }
+
+        .s010-center {
+            width: 94px;
+            height: 94px;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            background: rgba(124, 58, 237, 0.12);
+            box-shadow: 0 0 28px rgba(124, 58, 237, 0.22);
+            z-index: 2;
+        }
+
+        .s010-conn {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 66px;
+            border-top: 1px dashed rgba(124, 58, 237, 0.35);
+            transform-origin: left center;
+            z-index: 1;
+        }
+
+        .s010-conn.c1 {
+            transform: translateY(-1px) rotate(-90deg);
+        }
+
+        .s010-conn.c2 {
+            transform: translateY(-1px) rotate(-30deg);
+        }
+
+        .s010-conn.c3 {
+            transform: translateY(-1px) rotate(30deg);
+        }
+
+        .s010-conn.c4 {
+            transform: translateY(-1px) rotate(90deg);
+        }
+
+        .s010-conn.c5 {
+            transform: translateY(-1px) rotate(150deg);
+        }
+
+        .s010-conn.c6 {
+            transform: translateY(-1px) rotate(210deg);
+        }
+
+        .s010-tool {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            background: rgba(124, 58, 237, 0.12);
+            border: 1px solid rgba(124, 58, 237, 0.33);
+            box-shadow: 0 6px 14px rgba(124, 58, 237, 0.16);
+            z-index: 2;
+        }
+
+        .s010-tool .icon {
+            font-size: 0.92em;
+            line-height: 1;
+        }
+
+        .s010-tool .label {
+            font-size: 0.56em;
+            font-weight: 600;
+            color: #5b21b6;
+            line-height: 1;
+        }
+
+        .s010-tool.t1 {
+            top: 0;
+            left: 78px;
+        }
+
+        .s010-tool.t2 {
+            top: 30px;
+            right: 8px;
+        }
+
+        .s010-tool.t3 {
+            bottom: 30px;
+            right: 8px;
+        }
+
+        .s010-tool.t4 {
+            bottom: 0;
+            left: 78px;
+        }
+
+        .s010-tool.t5 {
+            bottom: 30px;
+            left: 8px;
+        }
+
+        .s010-tool.t6 {
+            top: 30px;
+            left: 8px;
+        }
+
+        .s010-tool.t1 {
+            animation: s010-float-1 3.2s ease-in-out infinite;
+        }
+
+        .s010-tool.t2 {
+            animation: s010-float-2 3.5s ease-in-out infinite;
+        }
+
+        .s010-tool.t3 {
+            animation: s010-float-3 3.1s ease-in-out infinite;
+        }
+
+        .s010-tool.t4 {
+            animation: s010-float-1 3.4s ease-in-out infinite;
+        }
+
+        .s010-tool.t5 {
+            animation: s010-float-2 3.0s ease-in-out infinite;
+        }
+
+        .s010-tool.t6 {
+            animation: s010-float-3 3.6s ease-in-out infinite;
+        }
+
+        .s010-status {
+            margin-top: 12px;
+            font-size: 0.84em;
+            color: #6d28d9;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            background: rgba(124, 58, 237, 0.1);
+            border-radius: 12px;
+            padding: 8px 12px;
+        }
+
+        .s010-inherit {
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #5b21b6;
+            border: 1px dashed rgba(124, 58, 237, 0.34);
+            background: rgba(124, 58, 237, 0.08);
+            border-radius: 10px;
+            padding: 7px 10px;
+            text-align: center;
+        }
+
+        .s010-tags {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .s010-tag {
+            font-size: 0.82em;
+            line-height: 1.35;
+            border-radius: 10px;
+            padding: 7px 9px;
+            border: 1px solid rgba(37, 99, 235, 0.24);
+            background: rgba(37, 99, 235, 0.1);
+            color: #1e3a8a;
+        }
+
+        .s010-tag.agent {
+            border-color: rgba(124, 58, 237, 0.25);
+            background: rgba(124, 58, 237, 0.1);
+            color: #581c87;
+        }
+
+        @keyframes s010-float-1 {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        @keyframes s010-float-2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(2px, -3px);
+            }
+        }
+
+        @keyframes s010-float-3 {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-2px, -4px);
+            }
+        }
+
+        @keyframes s010-knowledge-move {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 24px 0;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .s010-wrap {
+                flex-direction: column;
+                gap: 14px;
+                align-items: stretch;
+            }
+
+            .s010-mid {
+                flex-direction: row;
+                min-width: 0;
+                justify-content: center;
+            }
+
+            .s010-panel {
+                min-height: 330px;
+            }
+
+            .s010-tags {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">第二章 · 2.3</span></div>
+    <h2 class="page-title animate-ready delay-2">从 RAG 到 Agent：最后一公里</h2>
+    <p class="page-subtitle animate-ready delay-3">RAG 解决“知道什么”，Agent 解决“如何行动”</p>
+
+    <div class="s010-wrap animate-ready delay-4">
+        <div class="card s010-panel" style="border-color:rgba(37,99,235,0.35);">
+            <div class="s010-title" style="color:#1d4ed8;">RAG 解决了什么</div>
+            <div class="s010-scene">
+                <div class="s010-docs animate-ready delay-5">📄 📚 📄</div>
+                <div class="s010-flow-arrow animate-ready delay-6"></div>
+                <div class="s010-bot animate-ready delay-6">🤖</div>
+                <div class="s010-rag-bubble animate-ready delay-7">💬 根据文档，答案是...</div>
+            </div>
+            <div class="s010-tags animate-ready delay-8">
+                <div class="s010-tag">✅ 知识检索</div>
+                <div class="s010-tag">✅ 上下文增强</div>
+                <div class="s010-tag">⚠️ 被动响应</div>
+                <div class="s010-tag">⚠️ 不能执行操作</div>
+            </div>
+        </div>
+
+        <div class="s010-mid animate-ready delay-5">
+            <div class="s010-mid-label">进化</div>
+            <div id="rag-agent-arrow" style="font-size:2rem;color:#7c3aed;">→</div>
+        </div>
+
+        <div class="card s010-panel" style="border-color:rgba(124,58,237,0.35);">
+            <div class="s010-title" style="color:#7c3aed;">Agent 突破了什么</div>
+            <div class="s010-scene animate-ready delay-5">
+                <div class="s010-orbit">
+                    <div class="s010-rag-plus animate-ready delay-6">
+                        <div class="s010-mini-docs">📄📚 RAG</div>
+                        <div class="s010-knowledge-flow"></div>
+                    </div>
+                    <div class="s010-conn c1"></div>
+                    <div class="s010-conn c2"></div>
+                    <div class="s010-conn c3"></div>
+                    <div class="s010-conn c4"></div>
+                    <div class="s010-conn c5"></div>
+                    <div class="s010-conn c6"></div>
+
+                    <div class="s010-tool t1"><span class="icon">🔍</span><span class="label">搜索</span></div>
+                    <div class="s010-tool t2"><span class="icon">📊</span><span class="label">分析</span></div>
+                    <div class="s010-tool t3"><span class="icon">📅</span><span class="label">日程</span></div>
+                    <div class="s010-tool t4"><span class="icon">🌐</span><span class="label">浏览</span></div>
+                    <div class="s010-tool t5"><span class="icon">📈</span><span class="label">报表</span></div>
+                    <div class="s010-tool t6"><span class="icon">📧</span><span class="label">邮件</span></div>
+
+                    <div class="s010-center">🤖</div>
+                </div>
+                <div class="s010-inherit">可以同时包含 RAG 基础：先检索知识，再规划执行</div>
+                <div class="s010-status">✅ 正在执行中...</div>
+            </div>
+            <div class="s010-tags animate-ready delay-8">
+                <div class="s010-tag agent">✅ 继承知识检索</div>
+                <div class="s010-tag agent">✅ 主动规划</div>
+                <div class="s010-tag agent">✅ 闭环反馈</div>
+                <div class="s010-tag agent">✅ 调用工具执行</div>
+            </div>
+        </div>
+    </div>
+</div>

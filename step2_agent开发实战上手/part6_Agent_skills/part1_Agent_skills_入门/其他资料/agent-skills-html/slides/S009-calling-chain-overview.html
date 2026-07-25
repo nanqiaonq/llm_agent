@@ -1,0 +1,32 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">机制总览</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            Agent 调用 Skill，不是“想起了就用”，而是走一条判断链
+        </h2>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;max-width:1160px;">
+            <div class="card" style="padding:18px 20px;min-width:150px;text-align:center;">用户请求</div>
+            <div style="font-size:1.4rem;color:var(--teal);">→</div>
+            <div class="card" style="padding:18px 20px;min-width:150px;text-align:center;">识别任务</div>
+            <div style="font-size:1.4rem;color:var(--teal);">→</div>
+            <div class="card" style="padding:18px 20px;min-width:170px;text-align:center;">判断是否需要外部能力</div>
+            <div style="font-size:1.4rem;color:var(--teal);">→</div>
+            <div class="card" style="padding:18px 20px;min-width:150px;text-align:center;">匹配 Skill</div>
+            <div style="font-size:1.4rem;color:var(--teal);">→</div>
+            <div class="card" style="padding:18px 20px;min-width:150px;text-align:center;">执行并整合</div>
+        </div>
+
+        <div class="animate-ready center-block" data-delay="0.4" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1080px;margin-top:28px;">
+            <div class="card"><h4 style="margin-bottom:10px;">前半段在做判断</h4><p style="font-size:0.95rem;">重点不是执行，而是先搞清楚“这是不是 Skill 问题”。</p></div>
+            <div class="card"><h4 style="margin-bottom:10px;">中间段在做匹配</h4><p style="font-size:0.95rem;">候选很多，但真正关键的是“哪一个最合适”。</p></div>
+            <div class="card"><h4 style="margin-bottom:10px;">后半段才是执行</h4><p style="font-size:0.95rem;">执行之后还要整理成用户能继续推进的结果。</p></div>
+        </div>
+    </div>
+</div>

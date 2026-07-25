@@ -1,0 +1,166 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;">
+    <style>
+        .s012-board {
+            width: 100%;
+            max-width: 1040px;
+            text-align: left;
+            padding: 28px;
+            border: 1px solid rgba(37, 99, 235, 0.28);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 14px 36px rgba(37, 99, 235, 0.1);
+            backdrop-filter: blur(8px);
+        }
+
+        .s012-question {
+            border: 1px solid rgba(37, 99, 235, 0.26);
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 14px;
+            padding: 12px 14px;
+            color: #1d4ed8;
+            font-size: clamp(1rem, 1.2vw, 1.08rem);
+            line-height: 1.55;
+            margin-bottom: 12px;
+        }
+
+        .s012-process-title {
+            font-size: 0.92em;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .s012-steps {
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            background: rgba(37, 99, 235, 0.06);
+            border-radius: 14px;
+            padding: 12px;
+            min-height: 178px;
+        }
+
+        .s012-step {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.35s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            font-size: clamp(0.95rem, 1.1vw, 1.02rem);
+            color: #1e293b;
+            border: 1px solid rgba(37, 99, 235, 0.14);
+            background: rgba(255, 255, 255, 0.74);
+        }
+
+        .s012-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .s012-step.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .s012-step.current::before {
+            content: "▎";
+            color: #2563eb;
+            font-weight: 700;
+            margin-right: 4px;
+            animation: s012-cursor-blink 0.8s steps(2, end) infinite;
+        }
+
+        .s012-step.done::before {
+            content: "";
+            margin-right: 0;
+            animation: none;
+        }
+
+        .s012-check {
+            opacity: 0;
+            color: #059669;
+            font-size: 0.9em;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .s012-step.done .s012-check {
+            opacity: 1;
+        }
+
+        .s012-answer {
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.28s ease;
+            margin-top: 8px;
+            border: 1px solid rgba(124, 58, 237, 0.28);
+            background: rgba(124, 58, 237, 0.1);
+            border-radius: 10px;
+            padding: 9px 11px;
+            color: #6d28d9;
+            font-size: clamp(0.98rem, 1.15vw, 1.08rem);
+            font-weight: 700;
+        }
+
+        .s012-answer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .s012-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .s012-footnote {
+            margin-top: 10px;
+            text-align: center;
+            border-radius: 10px;
+            border: 1px solid rgba(124, 58, 237, 0.24);
+            background: rgba(124, 58, 237, 0.08);
+            color: #6b21a8;
+            font-size: 0.86em;
+            padding: 8px 11px;
+        }
+
+        @keyframes s012-cursor-blink {
+            0%, 40% { opacity: 1; }
+            41%, 100% { opacity: 0.25; }
+        }
+
+        @media (max-width: 1024px) {
+            .s012-board {
+                padding: 20px;
+            }
+
+            .s012-steps {
+                min-height: 165px;
+            }
+        }
+    </style>
+
+    <div class="animate-ready delay-1" style="margin-bottom:6px;"><span class="badge">第三章 · 3.1</span></div>
+    <h2 class="page-title animate-ready delay-2">思维链推理 Chain-of-Thought</h2>
+    <p class="page-subtitle animate-ready delay-3">把复杂问题拆成可执行的小步骤</p>
+
+    <div class="s012-board animate-ready delay-4">
+        <div class="s012-question">💬 小明有 5 个苹果，给了小红 2 个，又买了 3 个，请问现在有几个？</div>
+        <div class="s012-process-title">🧠 思考过程：</div>
+
+        <div class="s012-steps" id="cot-steps-box">
+            <div class="s012-step" id="cot-step-1"><span>Step 1: 初始数量，小明有 5 个苹果</span><span class="s012-check">✅</span></div>
+            <div class="s012-step" id="cot-step-2"><span>Step 2: 给出 2 个，5 - 2 = 3 个</span><span class="s012-check">✅</span></div>
+            <div class="s012-step" id="cot-step-3"><span>Step 3: 又买 3 个，3 + 3 = 6 个</span><span class="s012-check">✅</span></div>
+            <div class="s012-answer" id="cot-answer">🎯 最终答案：小明现在有 6 个苹果</div>
+        </div>
+
+        <div class="s012-actions">
+            <button class="demo-btn" id="cot-start-btn" type="button">▶ 开始思考</button>
+        </div>
+
+        <div class="s012-footnote">💡 CoT 是 Agent 推理能力的基石（涌现能力）</div>
+    </div>
+</div>

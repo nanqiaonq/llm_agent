@@ -1,0 +1,655 @@
+<style>
+/* ── S14: 4 重约束逐条详解 ── */
+.slide {
+  --s14-tab-h: 48px;
+}
+
+/* ── 页头 ── */
+.s14-header {
+  margin-bottom: 1rem;
+}
+.s14-chapter-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.s14-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* ── Tab 导航栏 ── */
+.s14-tablist {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--rule-line);
+  margin-bottom: 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+.s14-tab {
+  position: relative;
+  padding: 0.6rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.s14-tab:hover {
+  color: var(--text-body);
+}
+
+.s14-tab.active,
+.s14-tab[aria-selected="true"] {
+  color: var(--accent-warm);
+  border-bottom: 2px solid var(--accent-warm);
+}
+
+.s14-tab:focus-visible {
+  outline: 1px solid var(--accent-warm);
+  outline-offset: -2px;
+  border-radius: 2px;
+}
+
+/* ── Tab 数字徽章 ── */
+.s14-tab-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: var(--bg-surface);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-subtle);
+  margin-right: 0.4rem;
+  vertical-align: middle;
+  transition: background 0.2s, color 0.2s;
+}
+
+.s14-tab.active .s14-tab-num {
+  background: rgba(212,165,116,0.18);
+  color: var(--accent-warm);
+}
+
+/* ── Panel 通用 ── */
+.s14-panels {
+  min-height: 340px;
+}
+
+.s14-panel {
+  animation: none;
+}
+
+/* 一句话定义 */
+.s14-definition {
+  font-size: 0.97rem;
+  color: var(--text-body);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--card-bg-soft);
+  border-left: 2px solid var(--accent-warm);
+  border-radius: 0 4px 4px 0;
+}
+
+/* 双列代码对比 */
+.s14-code-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+/* 单列（tab0/tab1 无 warning，扩展到全宽可选，但保持双列更整齐） */
+
+/* 源码块 */
+.s14-source-block {
+  background: var(--bg-code);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.s14-source-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.65rem;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.s14-source-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.s14-source-ref {
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  color: var(--secondary);
+  opacity: 0.85;
+}
+
+.s14-source-block pre {
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.s14-source-block code {
+  font-family: var(--font-mono);
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+/* 关键字高亮 */
+.kw-amber { color: var(--accent-warm); font-weight: 600; }
+.kw-cyan  { color: var(--secondary);   font-weight: 500; }
+.kw-dim   { color: var(--text-subtle); }
+.kw-comment { color: var(--text-dim);  font-style: normal; }
+
+/* 警示 pill */
+.s14-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(229,115,115,0.08);
+  border: 1px solid rgba(229,115,115,0.28);
+  border-radius: 6px;
+  margin-bottom: 0.9rem;
+  font-size: 0.83rem;
+  color: var(--text-body);
+  line-height: 1.55;
+}
+
+.s14-warning-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+  color: #e57373;
+}
+
+.s14-warning-text {
+  color: var(--text-body);
+}
+
+.s14-warning strong {
+  color: #e57373;
+  font-weight: 600;
+}
+
+/* ── 底部总结行 ── */
+.s14-footer-summary {
+  padding: 0.6rem 0.9rem;
+  background: rgba(91,140,184,0.07);
+  border: 1px solid var(--rule-line-dashed);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: var(--text-subtle);
+  line-height: 1.55;
+  margin-top: 0.2rem;
+}
+
+.s14-footer-summary em {
+  color: var(--accent-warm);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ── tab2: enabled_toolsets 视觉化「47 → 2」 ── */
+.s14-toolset-viz {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1.1rem;
+  margin: 0.6rem 0 0.7rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--card-bg-soft);
+  border: 1px solid var(--rule-line-dashed);
+  border-radius: 6px;
+}
+
+.s14-tools-before,
+.s14-tools-after {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.s14-tools-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+.s14-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2px;
+  width: 100%;
+  max-width: 200px;
+}
+
+.s14-tools-grid--small {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  max-width: 80px;
+}
+
+.s14-tool-cell {
+  aspect-ratio: 1 / 1;
+  background: rgba(212,165,116,0.18);
+  border: 1px solid rgba(212,165,116,0.32);
+  border-radius: 2px;
+}
+
+.s14-tool-cell--green {
+  background: rgba(122,184,128,0.28);
+  border-color: rgba(122,184,128,0.55);
+  box-shadow: 0 0 6px rgba(122,184,128,0.25);
+}
+
+.s14-tools-counter {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-warm);
+  letter-spacing: 0.02em;
+}
+
+.s14-tools-counter--green {
+  color: #7ab880;
+}
+
+.s14-tools-arrow {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--secondary);
+  letter-spacing: -0.05em;
+}
+
+/* ── tab3: 漏写演示（火焰扩散） ── */
+.s14-recursion-demo {
+  margin-top: 0.7rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--card-bg-soft);
+  border: 1px solid var(--rule-line-dashed);
+  border-radius: 6px;
+}
+
+.s14-recursion-controls {
+  display: flex;
+  gap: 0.55rem;
+  justify-content: center;
+  margin-bottom: 0.7rem;
+}
+
+.s14-demo-btn {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.s14-demo-btn:hover {
+  transform: translateY(-1px);
+}
+
+.s14-demo-btn--danger {
+  background: rgba(229,115,115,0.12);
+  border-color: rgba(229,115,115,0.45);
+  color: #e57373;
+}
+
+.s14-demo-btn--danger:hover {
+  background: rgba(229,115,115,0.22);
+  box-shadow: 0 2px 8px rgba(229,115,115,0.25);
+}
+
+.s14-demo-btn--safe {
+  background: rgba(122,184,128,0.12);
+  border-color: rgba(122,184,128,0.45);
+  color: #7ab880;
+}
+
+.s14-demo-btn--safe:hover {
+  background: rgba(122,184,128,0.22);
+  box-shadow: 0 2px 8px rgba(122,184,128,0.25);
+}
+
+.s14-recursion-canvas {
+  position: relative;
+  height: 130px;
+  background: rgba(0,0,0,0.18);
+  border: 1px dashed var(--rule-line-dashed);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.s14-fork-node {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  background: rgba(212,165,116,0.7);
+  border: 1px solid rgba(212,165,116,0.9);
+  box-shadow: 0 0 6px rgba(212,165,116,0.4);
+}
+
+.s14-fork-node.spawned {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.s14-fork-node--gen0 { background: rgba(212,165,116,0.85); border-color: rgba(212,165,116,1); }
+.s14-fork-node--gen1 {
+  background: rgba(229,150,115,0.8);
+  border-color: rgba(229,150,115,1);
+  box-shadow: 0 0 8px rgba(229,150,115,0.55);
+}
+.s14-fork-node--gen2 {
+  background: rgba(229,115,115,0.85);
+  border-color: rgba(229,115,115,1);
+  box-shadow: 0 0 10px rgba(229,115,115,0.7);
+}
+.s14-fork-node--gen3 {
+  background: rgba(229,80,80,0.95);
+  border-color: rgba(229,80,80,1);
+  box-shadow: 0 0 14px rgba(229,80,80,0.85), 0 0 22px rgba(229,80,80,0.5);
+  animation: s14-flame 0.9s ease-in-out infinite;
+}
+
+@keyframes s14-flame {
+  0%, 100% {
+    box-shadow: 0 0 14px rgba(229,80,80,0.85), 0 0 22px rgba(229,80,80,0.5);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255,90,90,1), 0 0 36px rgba(229,80,80,0.7);
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+.s14-recursion-warning {
+  margin-top: 0.55rem;
+  padding: 0.5rem 0.7rem;
+  background: rgba(229,115,115,0.1);
+  border: 1px solid rgba(229,115,115,0.4);
+  border-radius: 4px;
+  font-size: 0.78rem;
+  color: #e57373;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.s14-recursion-warning.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+
+<div class="slide" data-slide-id="S14">
+
+  <!-- 页头 -->
+  <div class="s14-header">
+    <div class="s14-chapter-label">第 2 章 · Nudge 机制 &nbsp;/&nbsp; Fork Agent 约束</div>
+    <h1 class="s14-title">4 重约束逐条详解</h1>
+  </div>
+
+  <!-- Tab 导航 -->
+  <div class="s14-tab-navigator">
+    <div role="tablist" aria-label="4 重约束" class="s14-tablist">
+      <button
+        role="tab"
+        id="s14-tab-0"
+        aria-selected="true"
+        aria-controls="s14-panel-0"
+        tabindex="0"
+        class="s14-tab active"
+        data-tab-index="0"
+      >
+        <span class="s14-tab-num">①</span>max_iter=16
+      </button>
+      <button
+        role="tab"
+        id="s14-tab-1"
+        aria-selected="false"
+        aria-controls="s14-panel-1"
+        tabindex="-1"
+        class="s14-tab"
+        data-tab-index="1"
+      >
+        <span class="s14-tab-num">②</span>quiet_mode=True
+      </button>
+      <button
+        role="tab"
+        id="s14-tab-2"
+        aria-selected="false"
+        aria-controls="s14-panel-2"
+        tabindex="-1"
+        class="s14-tab"
+        data-tab-index="2"
+      >
+        <span class="s14-tab-num">③</span>enabled_toolsets
+      </button>
+      <button
+        role="tab"
+        id="s14-tab-3"
+        aria-selected="false"
+        aria-controls="s14-panel-3"
+        tabindex="-1"
+        class="s14-tab"
+        data-tab-index="3"
+      >
+        <span class="s14-tab-num">④</span>防递归 interval=0
+      </button>
+    </div>
+
+    <!-- 4 个 Panel 预渲染 -->
+    <div class="s14-panels">
+
+      <!-- Panel 0: max_iterations=16 -->
+      <div role="tabpanel" id="s14-panel-0" aria-labelledby="s14-tab-0" class="s14-panel" style="display: block;">
+        <p class="s14-definition">子 agent 最多跑 <strong style="color:var(--accent-warm);">16 步</strong>，到了直接停——防止 hallucination 导致无限工具调用</p>
+        <div class="s14-code-cols">
+          <!-- Hermes 实现 -->
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">Hermes 实现</span>
+              <span class="s14-source-ref">run_agent.py:3559</span>
+            </div>
+            <pre><code><span class="kw-dim">AIAgent(</span>
+    <span class="kw-amber">max_iterations</span>=<span class="kw-cyan">16</span>,  <span class="kw-comment"># ① 步数上限</span>
+    <span class="kw-dim">...
+)</span></code></pre>
+          </div>
+          <!-- LangChain 对比 -->
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">LangChain 对比</span>
+              <span class="s14-source-ref">create_react_agent</span>
+            </div>
+            <pre><code><span class="kw-comment"># 默认 recursion_limit=25</span>
+<span class="kw-dim">app = agent.with_config(</span>
+    <span class="kw-amber">recursion_limit</span>=<span class="kw-cyan">16</span>
+<span class="kw-dim">)</span>
+<span class="kw-comment"># 生产环境显式声明</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 1: quiet_mode=True -->
+      <div role="tabpanel" id="s14-panel-1" aria-labelledby="s14-tab-1" class="s14-panel" style="display: none;">
+        <p class="s14-definition">子 agent 所有 <strong style="color:var(--accent-warm);">stdout / 状态输出</strong>不冒泡到用户终端——避免污染用户体验</p>
+        <div class="s14-code-cols">
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">Hermes 实现</span>
+              <span class="s14-source-ref">run_agent.py:3560</span>
+            </div>
+            <pre><code><span class="kw-dim">AIAgent(</span>
+    <span class="kw-amber">quiet_mode</span>=<span class="kw-cyan">True</span>,  <span class="kw-comment"># ② 安静模式</span>
+    <span class="kw-dim">...
+)</span></code></pre>
+          </div>
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">LangChain 对比</span>
+              <span class="s14-source-ref">_spawn_review · 2.8 节 Part 3</span>
+            </div>
+            <pre><code><span class="kw-comment"># sub-agent 输出加前缀过滤</span>
+<span class="kw-dim">for msg in sub_agent_output:</span>
+    <span class="kw-dim">print(</span><span class="kw-cyan">"[review]"</span><span class="kw-dim">, msg)</span>
+<span class="kw-comment"># 或 capture_output=True 静音</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: enabled_toolsets -->
+      <div role="tabpanel" id="s14-panel-2" aria-labelledby="s14-tab-2" class="s14-panel" style="display: none;">
+        <p class="s14-definition">子 agent 只能调用 <strong style="color:var(--accent-warm);">memory + skills</strong> 两个工具集（全局 47 工具 / 20 Toolset 中只放行 2 个）</p>
+        <div class="s14-code-cols">
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">Hermes 实现</span>
+              <span class="s14-source-ref">run_agent.py:3563</span>
+            </div>
+            <pre><code><span class="kw-dim">AIAgent(</span>
+    <span class="kw-amber">enabled_toolsets</span>=[
+        <span class="kw-cyan">"memory"</span>,
+        <span class="kw-cyan">"skills"</span>   <span class="kw-comment"># ③ 隔离</span>
+    ],
+    <span class="kw-dim">...
+)</span></code></pre>
+          </div>
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">LangChain 对比</span>
+              <span class="s14-source-ref">create_agent · 2.8 节 Part 3</span>
+            </div>
+            <pre><code><span class="kw-dim">create_agent(</span>
+    <span class="kw-amber">tools</span>=[<span class="kw-cyan">write_skill</span>]
+    <span class="kw-comment"># 显式列出可用工具</span>
+    <span class="kw-comment"># 47 工具 → 1 工具</span>
+<span class="kw-dim">)</span></code></pre>
+          </div>
+        </div>
+        <div class="s14-warning">
+          <span class="s14-warning-icon">⚠️</span>
+          <span class="s14-warning-text"><strong>隔离力度</strong>：47 工具 / 20 Toolset 中只放行 memory + skills，等于把工具面切到 <strong>1/10</strong>——这是防止子 agent 越权调用文件系统/网络/终端的核心防线</span>
+        </div>
+
+        <!-- 47 → 2 视觉化 -->
+        <div class="s14-toolset-viz" id="s14-toolset-viz">
+          <div class="s14-tools-before">
+            <div class="s14-tools-label">主 agent 全集</div>
+            <div class="s14-tools-grid" id="s14-tools-grid-before"></div>
+            <div class="s14-tools-counter">47 工具 / 20 Toolset</div>
+          </div>
+          <div class="s14-tools-arrow">→</div>
+          <div class="s14-tools-after">
+            <div class="s14-tools-label">fork agent 切片</div>
+            <div class="s14-tools-grid s14-tools-grid--small" id="s14-tools-grid-after"></div>
+            <div class="s14-tools-counter s14-tools-counter--green">2 工具集（切到 1/10）</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: 防递归 interval=0 -->
+      <div role="tabpanel" id="s14-panel-3" aria-labelledby="s14-tab-3" class="s14-panel" style="display: none;">
+        <p class="s14-definition">子 agent 的两个 nudge 计数器强制归零——防止子 agent 触发 nudge 再 fork 子子 agent，避免<strong style="color:var(--accent-warm);">指数爆炸</strong></p>
+        <div class="s14-code-cols">
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">Hermes 实现</span>
+              <span class="s14-source-ref">run_agent.py:3570-3571</span>
+            </div>
+            <pre><code><span class="kw-dim">review_agent.</span><span class="kw-amber">_memory_nudge_interval</span> = <span class="kw-cyan">0</span>
+<span class="kw-comment"># ④ 防递归：memory nudge 禁用</span>
+<span class="kw-dim">review_agent.</span><span class="kw-amber">_skill_nudge_interval</span>  = <span class="kw-cyan">0</span>
+<span class="kw-comment"># ④ 防递归：skill nudge 禁用</span></code></pre>
+          </div>
+          <div class="s14-source-block">
+            <div class="s14-source-header">
+              <span class="s14-source-label">LangChain 对比</span>
+              <span class="s14-source-ref">create_agent · 2.8 节 Part 3</span>
+            </div>
+            <pre><code><span class="kw-dim">create_agent(</span>
+    <span class="kw-amber">middleware</span>=[]
+    <span class="kw-comment"># 不挂 NudgeMiddleware</span>
+    <span class="kw-comment"># 子 agent 天生无 nudge</span>
+<span class="kw-dim">)</span></code></pre>
+          </div>
+        </div>
+        <div class="s14-warning">
+          <span class="s14-warning-icon">⚠️</span>
+          <span class="s14-warning-text"><strong>踩坑预警</strong>：漏写这两行 → 子 agent 跑 16 步时自己累加计数器 → fork 子子 agent → 指数爆炸，几分钟内 <strong>API 配额烧光 + OOM</strong></span>
+        </div>
+
+        <!-- 漏写演示 toggle -->
+        <div class="s14-recursion-demo" id="s14-recursion-demo">
+          <div class="s14-recursion-controls">
+            <button type="button" class="s14-demo-btn s14-demo-btn--danger" data-mode="leak">▶ 演示漏写后果</button>
+            <button type="button" class="s14-demo-btn s14-demo-btn--safe" data-mode="safe">✅ 正确：interval=0</button>
+          </div>
+          <div class="s14-recursion-canvas" id="s14-recursion-canvas"></div>
+          <div class="s14-recursion-warning" id="s14-recursion-warning">
+            ⚠️ API 配额烧光 / OOM / 进程卡死
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.s14-panels -->
+  </div><!-- /.s14-tab-navigator -->
+
+  <!-- 底部总结行 -->
+  <div class="s14-footer-summary">
+    <em>Hermes</em> 用「自研类的构造参数」表达约束；<em>LangChain</em> 用「组合 + 显式声明」表达约束。两种风格各有适用场景。
+  </div>
+
+</div>

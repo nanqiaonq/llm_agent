@@ -1,0 +1,44 @@
+<div class="slide" style="justify-content:center;align-items:center;text-align:center;padding-top:2.5vh;padding-bottom:2vh;">
+    <div class="animate-ready delay-1" style="margin-bottom:4px;"><span class="badge">第三章 · 3.2</span></div>
+    <h2 class="page-title animate-ready delay-2" style="font-size:clamp(1.7rem,2.8vw,2.2rem);margin-bottom:0.8vh;">TAO 循环：Agent 的核心运行引擎</h2>
+    <p class="page-subtitle animate-ready delay-3" style="font-size:0.92em;margin-bottom:1.2vh;">Think → Act → Observe 的闭环控制</p>
+
+    <div class="animate-ready delay-4" style="position:relative;width:100%;max-width:920px;min-height:43vh;display:flex;align-items:center;justify-content:center;">
+        <svg id="tao-svg" width="760" height="420" viewBox="0 0 760 420" style="overflow:visible;">
+            <defs>
+                <marker id="tao-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"></path>
+                </marker>
+            </defs>
+
+            <path id="tao-edge-1" d="M432 104 Q560 168 536 282" stroke="rgba(124,58,237,0.38)" stroke-width="3" fill="none" marker-end="url(#tao-arrow)" />
+            <path id="tao-edge-2" d="M512 306 Q380 378 248 306" stroke="rgba(124,58,237,0.38)" stroke-width="3" fill="none" marker-end="url(#tao-arrow)" />
+            <path id="tao-edge-3" d="M224 282 Q200 168 328 104" stroke="rgba(124,58,237,0.38)" stroke-width="3" fill="none" marker-end="url(#tao-arrow)" />
+
+            <circle id="tao-particle" cx="432" cy="104" r="6" fill="rgba(124,58,237,0.9)" stroke="rgba(255,255,255,0.8)" stroke-width="1.2" opacity="0"></circle>
+
+            <g id="tao-think" transform="translate(294,24)">
+                <rect width="172" height="90" rx="15" fill="rgba(255,255,255,0.74)" stroke="rgba(59,130,246,0.48)" stroke-width="1.6" filter="drop-shadow(0 8px 18px rgba(37,99,235,0.16))"></rect>
+                <text x="86" y="35" text-anchor="middle" font-size="18.5" font-weight="700" fill="#2563eb">🧠 Think</text>
+                <text x="86" y="60" text-anchor="middle" font-size="13.2" fill="#334155">分析 · 规划 · 判断</text>
+            </g>
+
+            <g id="tao-act" transform="translate(496,258)">
+                <rect width="172" height="90" rx="15" fill="rgba(255,255,255,0.74)" stroke="rgba(124,58,237,0.48)" stroke-width="1.6" filter="drop-shadow(0 8px 18px rgba(124,58,237,0.16))"></rect>
+                <text x="86" y="35" text-anchor="middle" font-size="18.5" font-weight="700" fill="#7c3aed">⚡ Act</text>
+                <text x="86" y="60" text-anchor="middle" font-size="13.2" fill="#334155">调用工具 · 执行</text>
+            </g>
+
+            <g id="tao-observe" transform="translate(92,258)">
+                <rect width="172" height="90" rx="15" fill="rgba(255,255,255,0.74)" stroke="rgba(8,145,178,0.48)" stroke-width="1.6" filter="drop-shadow(0 8px 18px rgba(8,145,178,0.16))"></rect>
+                <text x="86" y="35" text-anchor="middle" font-size="18.5" font-weight="700" fill="#0891b2">👁 Observe</text>
+                <text x="86" y="60" text-anchor="middle" font-size="13.2" fill="#334155">结果反馈 · 更新上下文</text>
+            </g>
+        </svg>
+    </div>
+
+    <div id="tao-insight" class="animate-ready delay-5" style="display:none;margin-top:0.8vh;padding:10px 20px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.26);border-radius:10px;max-width:900px;font-size:0.84em;color:var(--text-secondary);">
+        传统聊天 = 开环系统（无反馈）；Agent = 闭环系统（带反馈控制回路）。
+    </div>
+
+</div>
