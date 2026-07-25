@@ -9,6 +9,7 @@ __pycache__/
 *.ckpt
 *.tar
 *.npz
+*.zip
 checkpoints/
 logs/
 results/
