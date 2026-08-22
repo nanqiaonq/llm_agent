@@ -1,0 +1,437 @@
+<style>
+/* S007 成本复利曲线 · 双曲线累积图+拐点 · 🔴 交互 · G1 月白灰蓝 */
+/* FM 防御注释：font-style:normal 关键元素 ≥3 次显式声明 */
+/* window.slideHooks 注册交互，禁裸 <script> */
+
+.s007-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1640px;
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal; /* FM 防御 ① */
+}
+
+/* 标题（窄顶） */
+.s007-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+.s007-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: normal; /* FM 防御 ② */
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s007-subtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+/* 图例行 */
+.s007-legend {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+}
+.s007-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.s007-legend-line {
+  width: 2rem;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.s007-legend-text {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-style: normal; /* FM 防御 ③ */
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* 图表容器（宽） */
+.s007-chart-wrap {
+  width: 100%;
+  position: relative;
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.2rem 1.5rem 1.4rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+}
+.s007-svg-container {
+  width: 100%;
+  height: 260px;
+  position: relative;
+}
+.s007-chart-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* 交叉点标注 */
+.s007-crossover-badge {
+  position: absolute;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(247,249,250,0.95);
+  border: 1.5px solid var(--card-border);
+  border-radius: 0.45rem;
+  padding: 0.3rem 0.6rem;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: none;
+}
+.s007-crossover-badge.visible { display: block; }
+
+/* 轴标签 */
+.s007-axis-x-label {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 0.3rem;
+}
+.s007-axis-y-label {
+  position: absolute;
+  left: 0.1rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-style: normal;
+  color: var(--text-dim);
+  white-space: nowrap;
+  transform-origin: center center;
+}
+
+/* 控制条 */
+.s007-controls {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
+.s007-ctrl-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  padding: 0.4rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.s007-ctrl-btn:hover { border-color: var(--secondary); color: var(--text-primary); }
+.s007-ctrl-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(79,96,110,0.08); }
+
+/* 关键洞察（两列） */
+.s007-insights {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem;
+  align-items: stretch;
+}
+.s007-insight-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.85rem;
+  padding: 1rem 1.1rem;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  align-self: stretch;
+}
+.s007-insight-title {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.s007-insight-line {
+  display: inline-block;
+  width: 1rem;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.s007-insight-body {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* 底部免责条（窄） */
+.s007-disclaimer {
+  width: 100%;
+  max-width: 1120px;
+  background: rgba(110,126,140,0.06);
+  border: 1px solid var(--card-border);
+  border-radius: 0.55rem;
+  padding: 0.6rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.s007-disclaimer-text {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.45;
+}
+.s007-disclaimer-text strong { color: var(--color-interpret); }
+
+/* 入场动画 */
+.s007-heading    { animation: s007Up 0.4s ease both 0ms; }
+.s007-legend     { animation: s007Up 0.4s ease both 40ms; }
+.s007-chart-wrap { animation: s007Up 0.4s ease both 70ms; }
+.s007-controls   { animation: s007Up 0.4s ease both 110ms; }
+.s007-insights   { animation: s007Up 0.4s ease both 140ms; }
+.s007-disclaimer { animation: s007Up 0.4s ease both 180ms; }
+@keyframes s007Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="7">
+  <div class="s007-wrap">
+
+    <!-- 标题（窄顶） -->
+    <div class="s007-heading">
+      <h2 class="s007-title">知识：从一次性消费到复利资产</h2>
+      <p class="s007-subtitle">累计查询次数增加时两种范式的理论成本走向——注意"复利"指知识结构复用，不等于单次查询省 token</p>
+    </div>
+
+    <!-- 图例 -->
+    <div class="s007-legend">
+      <div class="s007-legend-item">
+        <div class="s007-legend-line" style="background:var(--color-interpret);"></div>
+        <span class="s007-legend-text">解释执行（传统 RAG）——每次查询都重新消化，成本线性上升</span>
+      </div>
+      <div class="s007-legend-item">
+        <div class="s007-legend-line" style="background:var(--color-compile);"></div>
+        <span class="s007-legend-text">编译执行（编译式 RAG）——前置编译成本，之后查询成本趋平</span>
+      </div>
+    </div>
+
+    <!-- 图表（宽） -->
+    <div class="s007-chart-wrap">
+      <div class="s007-svg-container">
+        <!-- SVG 曲线 -->
+        <svg class="s007-chart-svg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid meet" id="s007-svg">
+          <!-- 轴线 -->
+          <line x1="60" y1="210" x2="780" y2="210" stroke="var(--card-border)" stroke-width="1.5"/>
+          <line x1="60" y1="10"  x2="60"  y2="210" stroke="var(--card-border)" stroke-width="1.5"/>
+          <!-- Y 轴刻度 -->
+          <line x1="55" y1="50"  x2="60" y2="50"  stroke="var(--secondary)" stroke-width="1"/>
+          <line x1="55" y1="130" x2="60" y2="130" stroke="var(--secondary)" stroke-width="1"/>
+          <text x="48" y="54"  text-anchor="end" font-size="11" fill="var(--text-dim)" font-family="JetBrains Mono,monospace">高</text>
+          <text x="48" y="134" text-anchor="end" font-size="11" fill="var(--text-dim)" font-family="JetBrains Mono,monospace">中</text>
+          <!-- X 轴刻度 -->
+          <text x="130"  y="224" text-anchor="middle" font-size="11" fill="var(--text-dim)" font-family="JetBrains Mono,monospace">10</text>
+          <text x="270"  y="224" text-anchor="middle" font-size="11" fill="var(--text-dim)" font-family="JetBrains Mono,monospace">30</text>
+          <text x="410"  y="224" text-anchor="middle" font-size="11" fill="var(--text-dim)" font-family="JetBrains Mono,monospace">50</text>
+          <text x="550"  y="224" text-anchor="middle" font-size="11" fill="var(--text-dim)" font-family="JetBrains Mono,monospace">70</text>
+          <text x="690"  y="224" text-anchor="middle" font-size="11" fill="var(--text-dim)" font-family="JetBrains Mono,monospace">90</text>
+          <!-- 轴标签 -->
+          <text x="420" y="238" text-anchor="middle" font-size="11" fill="var(--text-dim)">累计查询次数</text>
+          <!-- 解释执行：线性上升 -->
+          <polyline id="s007-interpret-line"
+            points="60,195 130,175 200,155 270,135 340,118 410,100 480,80 550,62 620,44 690,28 760,14"
+            fill="none" stroke="var(--color-interpret)" stroke-width="2.5"
+            stroke-dasharray="1000" stroke-dashoffset="1000"
+            stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- 编译执行：前置高起点后趋平 -->
+          <polyline id="s007-compile-line"
+            points="60,195 80,100 130,92 200,86 270,82 340,80 410,79 480,78 550,77 620,77 690,76 760,76"
+            fill="none" stroke="var(--color-compile)" stroke-width="2.5"
+            stroke-dasharray="1000" stroke-dashoffset="1000"
+            stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- 编译期前置成本竖线 -->
+          <line id="s007-compile-cost-mark" x1="80" y1="100" x2="80" y2="210"
+            stroke="var(--color-compile)" stroke-width="1" stroke-dasharray="4,3" opacity="0"/>
+          <text id="s007-compile-cost-label" x="82" y="160"
+            font-size="10" fill="var(--color-compile)" font-family="JetBrains Mono,monospace" opacity="0">编译期</text>
+          <!-- 交叉点标注 -->
+          <circle id="s007-crossover-dot" cx="488" cy="78" r="5"
+            fill="var(--bg-surface)" stroke="var(--accent)" stroke-width="2" opacity="0"/>
+          <text id="s007-crossover-label" x="458" y="58"
+            font-size="11" fill="var(--accent)" font-weight="600" font-family="JetBrains Mono,monospace" opacity="0">盈亏平衡点</text>
+          <line id="s007-crossover-vline" x1="488" y1="78" x2="488" y2="210"
+            stroke="var(--accent)" stroke-width="1" stroke-dasharray="3,3" opacity="0"/>
+        </svg>
+      </div>
+      <div class="s007-axis-x-label" style="font-family:var(--font-body); font-size:0.75rem; color:var(--text-dim);">&#x2192; 查询次数越多，前置编译成本摊得越薄（理论示意，token 真实成本见第 13 页）</div>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div class="s007-controls">
+      <button class="s007-ctrl-btn" id="s007-btn-animate">播放曲线</button>
+      <button class="s007-ctrl-btn" id="s007-btn-crossover">标注拐点</button>
+      <button class="s007-ctrl-btn" id="s007-btn-reset">重置</button>
+    </div>
+
+    <!-- 洞察卡（宽） -->
+    <div class="s007-insights">
+      <div class="s007-insight-card">
+        <div class="s007-insight-title">
+          <span class="s007-insight-line" style="background:var(--color-interpret);"></span>
+          解释执行：成本随查询线性增长
+        </div>
+        <div class="s007-insight-body">每次查询独立付出「检索 + 拼 prompt + 归纳」的消化成本，知识不沉淀，成本不摊薄，累计成本随查询次数线性上升。</div>
+      </div>
+      <div class="s007-insight-card">
+        <div class="s007-insight-title">
+          <span class="s007-insight-line" style="background:var(--color-compile);"></span>
+          编译执行：前置编译后查询趋平
+        </div>
+        <div class="s007-insight-body">编译期一次性付出较高成本，把知识固化为可复用的 wiki——这是"知识结构复用"意义上的复利。但要注意：它并不等于单次查询 token 更低（真实数据见第 13 页，编译式查询反而约 20× 更贵）。</div>
+      </div>
+    </div>
+
+    <!-- 免责声明（窄） -->
+    <div class="s007-disclaimer">
+      <div class="s007-disclaimer-text">
+        &#9888;&nbsp;以上为<strong>理论成本趋势曲线</strong>（示意模型）——第 13 页将用真实实测数据打脸：编译式查询约 20× 更贵，「省成本」需要具体语境。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+window.slideHooks = window.slideHooks || {};
+window.slideHooks['slides/S007-cost-compounding-curve.html'] = function() {
+  var animBtn     = document.getElementById('s007-btn-animate');
+  var crossBtn    = document.getElementById('s007-btn-crossover');
+  var resetBtn    = document.getElementById('s007-btn-reset');
+  var iLine       = document.getElementById('s007-interpret-line');
+  var cLine       = document.getElementById('s007-compile-line');
+  var crossDot    = document.getElementById('s007-crossover-dot');
+  var crossLabel  = document.getElementById('s007-crossover-label');
+  var crossVLine  = document.getElementById('s007-crossover-vline');
+  var compileMark = document.getElementById('s007-compile-cost-mark');
+  var compileLabel= document.getElementById('s007-compile-cost-label');
+  var animDone    = false;
+  var crossShown  = false;
+  var animTimers  = [];
+  function clearTimers() { animTimers.forEach(clearTimeout); animTimers = []; }
+
+  function animateLine(el, duration, onDone) {
+    if (!el) return;
+    var len = 1000;
+    el.style.strokeDashoffset = len;
+    el.style.transition = 'stroke-dashoffset ' + duration + 'ms ease-in-out';
+    // Force reflow
+    el.getBoundingClientRect();
+    el.style.strokeDashoffset = '0';
+    if (onDone) {
+      animTimers.push(setTimeout(onDone, duration));
+    }
+  }
+
+  function showCompileMark() {
+    if (compileMark) { compileMark.style.transition = 'opacity 0.4s'; compileMark.style.opacity = '0.7'; }
+    if (compileLabel) { compileLabel.style.transition = 'opacity 0.4s'; compileLabel.style.opacity = '0.7'; }
+  }
+
+  function onAnimate() {
+    clearTimers();  // 防快速重复点击叠加陈旧定时器
+    if (animBtn) animBtn.classList.add('active');
+    // Reset first
+    if (iLine) { iLine.style.transition = 'none'; iLine.style.strokeDashoffset = '1000'; }
+    if (cLine) { cLine.style.transition = 'none'; cLine.style.strokeDashoffset = '1000'; }
+    // Animate interpret line first
+    animateLine(iLine, 1200, function() {
+      animateLine(cLine, 900, function() {
+        showCompileMark();
+        animDone = true;
+        if (animBtn) { animBtn.classList.remove('active'); animBtn.textContent = '重播曲线'; }
+      });
+    });
+  }
+
+  function onCrossover() {
+    if (!crossShown) {
+      crossShown = true;
+      if (crossDot) { crossDot.style.transition = 'opacity 0.4s'; crossDot.style.opacity = '1'; }
+      if (crossLabel) { crossLabel.style.transition = 'opacity 0.4s'; crossLabel.style.opacity = '1'; }
+      if (crossVLine) { crossVLine.style.transition = 'opacity 0.4s'; crossVLine.style.opacity = '0.7'; }
+      if (crossBtn) crossBtn.classList.add('active');
+    } else {
+      crossShown = false;
+      if (crossDot) crossDot.style.opacity = '0';
+      if (crossLabel) crossLabel.style.opacity = '0';
+      if (crossVLine) crossVLine.style.opacity = '0';
+      if (crossBtn) crossBtn.classList.remove('active');
+    }
+  }
+
+  function onReset() {
+    clearTimers();
+    if (iLine) { iLine.style.transition = 'none'; iLine.style.strokeDashoffset = '1000'; }
+    if (cLine) { cLine.style.transition = 'none'; cLine.style.strokeDashoffset = '1000'; }
+    if (compileMark) { compileMark.style.opacity = '0'; }
+    if (compileLabel) { compileLabel.style.opacity = '0'; }
+    if (crossDot) crossDot.style.opacity = '0';
+    if (crossLabel) crossLabel.style.opacity = '0';
+    if (crossVLine) crossVLine.style.opacity = '0';
+    animDone = false;
+    crossShown = false;
+    if (animBtn) { animBtn.classList.remove('active'); animBtn.textContent = '播放曲线'; }
+    if (crossBtn) crossBtn.classList.remove('active');
+  }
+
+  if (animBtn) animBtn.addEventListener('click', onAnimate);
+  if (crossBtn) crossBtn.addEventListener('click', onCrossover);
+  if (resetBtn) resetBtn.addEventListener('click', onReset);
+
+  return function() {
+    clearTimers();
+    if (animBtn) animBtn.removeEventListener('click', onAnimate);
+    if (crossBtn) crossBtn.removeEventListener('click', onCrossover);
+    if (resetBtn) resetBtn.removeEventListener('click', onReset);
+  };
+};
+</script>

@@ -1,0 +1,163 @@
+<style>
+/* S006b 解释执行的内在过程 · embedding 逐项算相似度 · G1 月白灰蓝 */
+.s6b-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
+  min-height: 84vh; width: 100%; max-width: 1320px;
+  padding: 1.5rem 5rem 1.5rem 7rem; box-sizing: border-box; font-style: normal;
+}
+.s6b-heading { width: 100%; text-align: center; }
+.s6b-title {
+  font-family: var(--font-display); font-size: clamp(1.7rem, 2.8vw, 2.3rem);
+  font-weight: 700; font-style: normal; color: var(--text-primary); line-height: 1.2;
+}
+.s6b-subtitle {
+  font-family: var(--font-body); font-size: clamp(0.86rem, 1.35vw, 1.02rem);
+  font-weight: 400; font-style: normal; color: var(--text-secondary); margin-top: 0.4rem;
+}
+
+/* 本轮问题条 */
+.s6b-qbar {
+  display: flex; align-items: center; justify-content: center;
+  max-width: 860px; padding: 0.62rem 1.5rem; border-radius: 0.7rem;
+  background: rgba(183, 150, 131, 0.1); border: 1.5px solid rgba(183, 150, 131, 0.42);
+  box-shadow: 0 4px 16px rgba(183, 150, 131, 0.14); font-style: normal;
+}
+.s6b-qtag {
+  font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--color-interpret);
+  padding: 0.22rem 0.7rem; margin-right: 0.7rem; border-radius: 0.4rem; white-space: nowrap;
+}
+.s6b-qtext { font-family: var(--font-body); font-size: clamp(0.98rem, 1.5vw, 1.14rem); font-weight: 600; font-style: normal; color: var(--text-primary); }
+
+/* 向量化标识 */
+.s6b-vec {
+  width: 100%; max-width: 1180px; display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.55rem 1.1rem; border-radius: 0.6rem;
+  background: rgba(154, 170, 182, 0.1); border: 1px solid rgba(154, 170, 182, 0.32);
+  font-style: normal;
+}
+.s6b-vec-step { font-family: var(--font-mono); font-size: 0.74rem; font-style: normal; color: var(--text-secondary); white-space: nowrap; }
+.s6b-vec-step b { color: var(--color-interpret); font-weight: 700; }
+.s6b-vec-q { font-family: var(--font-mono); font-size: 0.72rem; font-style: normal; color: var(--color-interpret); background: rgba(183, 150, 131, 0.12); padding: 0.15rem 0.5rem; border-radius: 0.3rem; }
+.s6b-vec-note { font-family: var(--font-body); font-size: 0.7rem; font-style: normal; color: var(--text-dim); margin-left: auto; }
+
+/* 相似度条列表 */
+.s6b-bars { width: 100%; max-width: 1180px; display: flex; flex-direction: column; gap: 0.4rem; }
+.s6b-bar-row {
+  display: grid; grid-template-columns: 11rem 1fr 3rem 3.4rem; align-items: center; gap: 0.7rem;
+  padding: 0.34rem 0.7rem; border-radius: 0.5rem; transition: background 0.3s ease, opacity 0.3s ease;
+  opacity: 0.5;
+}
+.s6b-bar-row.top { opacity: 1; background: rgba(183, 150, 131, 0.08); }
+.s6b-bar-name { font-family: var(--font-mono); font-size: 0.72rem; font-style: normal; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s6b-bar-row.top .s6b-bar-name { color: var(--color-interpret); font-weight: 600; }
+.s6b-bar-track { height: 0.7rem; background: rgba(154, 170, 182, 0.18); border-radius: 0.35rem; overflow: hidden; }
+.s6b-bar-fill { height: 100%; width: 0%; border-radius: 0.35rem; background: rgba(154, 170, 182, 0.55); transition: width 0.6s ease, background 0.4s ease; }
+.s6b-bar-row.top .s6b-bar-fill { background: var(--color-interpret); }
+.s6b-bar-score { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; font-style: normal; color: var(--text-dim); text-align: right; }
+.s6b-bar-row.top .s6b-bar-score { color: var(--color-interpret); }
+.s6b-bar-badge {
+  font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--color-interpret); padding: 0.12rem 0.4rem; border-radius: 0.3rem;
+  text-align: center; opacity: 0; transition: opacity 0.3s ease;
+}
+.s6b-bar-row.top .s6b-bar-badge { opacity: 1; }
+
+/* 召回 → prompt */
+.s6b-recall {
+  width: 100%; max-width: 1180px; display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.5rem 1.1rem; border-radius: 0.6rem;
+  background: rgba(183, 150, 131, 0.08); border: 1px dashed rgba(183, 150, 131, 0.4); font-style: normal;
+}
+.s6b-recall-text { font-family: var(--font-body); font-size: 0.76rem; font-style: normal; color: var(--text-secondary); }
+.s6b-recall-text b { color: var(--color-interpret); font-weight: 600; }
+
+/* 计数 */
+.s6b-meter {
+  width: 100%; max-width: 1180px; display: flex; align-items: center; gap: 1.3rem; flex-wrap: wrap;
+  padding: 0.55rem 1.1rem; border-radius: 0.6rem;
+  background: rgba(183, 150, 131, 0.08); border: 1px solid rgba(183, 150, 131, 0.25);
+}
+.s6b-meter-item { font-family: var(--font-body); font-size: 0.74rem; font-style: normal; color: var(--text-secondary); }
+.s6b-meter-num { font-family: var(--font-mono); font-size: 1.02rem; font-weight: 700; font-style: normal; color: var(--color-interpret); margin-right: 0.2rem; }
+.s6b-meter-reuse .s6b-meter-num { color: var(--text-dim); }
+
+/* 控制 */
+.s6b-controls { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; width: 100%; }
+.s6b-btn-row { display: flex; align-items: center; gap: 0.7rem; }
+.s6b-ask-btn {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--accent); border: none; border-radius: 0.65rem;
+  padding: 0.62rem 1.9rem; cursor: pointer; letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(79, 96, 110, 0.3);
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+.s6b-ask-btn:hover:not(:disabled) { background: var(--primary); transform: translateY(-1px); }
+.s6b-ask-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.s6b-ctrl-btn {
+  font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; font-style: normal;
+  color: var(--text-secondary); background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 0.45rem; padding: 0.4rem 0.9rem; cursor: pointer; transition: background 0.2s ease, color 0.2s ease;
+}
+.s6b-ctrl-btn:hover { background: rgba(110, 126, 140, 0.12); color: var(--accent); }
+.s6b-stage-ind { font-family: var(--font-mono); font-size: 0.7rem; font-style: normal; color: var(--text-dim); letter-spacing: 0.04em; text-align: center; min-height: 1rem; }
+
+/* 入场 */
+.s6b-heading  { animation: s6bUp 0.4s ease both 0ms; }
+.s6b-qbar     { animation: s6bUp 0.4s ease both 60ms; }
+.s6b-vec      { animation: s6bUp 0.4s ease both 100ms; }
+.s6b-bars     { animation: s6bUp 0.4s ease both 140ms; }
+.s6b-controls { animation: s6bUp 0.4s ease both 190ms; }
+@keyframes s6bUp { from { opacity: 0; transform: translateY(0.7rem); } to { opacity: 1; transform: none; } }
+</style>
+
+<div class="slide" data-slide="601">
+  <div class="s6b-wrap">
+
+    <div class="s6b-heading">
+      <h2 class="s6b-title">解释执行的内在过程：逐个 chunk 算相似度</h2>
+      <p class="s6b-subtitle">传统 RAG 的中间产物是向量索引——每个问题先向量化，再和库里每个 chunk 逐个算余弦相似度；换个问题，整列分数全部重算重排</p>
+    </div>
+
+    <!-- 本轮问题 -->
+    <div class="s6b-qbar">
+      <span class="s6b-qtag" id="s6b-qtag">❓ 第 1 问</span>
+      <span class="s6b-qtext" id="s6b-qtext">点「算一次相似度」——看 embedding 检索内部怎么打分</span>
+    </div>
+
+    <!-- 向量化标识 -->
+    <div class="s6b-vec">
+      <span class="s6b-vec-step">❓ 本问 → <b>embedding</b> →</span>
+      <span class="s6b-vec-q" id="s6b-vec-q">q ⟨1536 维向量⟩</span>
+      <span class="s6b-vec-step">→ 与库里每个 chunk 向量算 <b>cos 相似度</b></span>
+      <span class="s6b-vec-note">raw 切成 6 个 chunk · 预先建好向量库</span>
+    </div>
+
+    <!-- 相似度条列表（JS 渲染） -->
+    <div class="s6b-bars" id="s6b-bars">
+      <div class="s6b-bar-row"><span class="s6b-bar-name">等待计算……</span><div class="s6b-bar-track"><div class="s6b-bar-fill"></div></div><span class="s6b-bar-score">—</span><span class="s6b-bar-badge"></span></div>
+    </div>
+
+    <!-- 召回 → prompt -->
+    <div class="s6b-recall">
+      <span class="s6b-recall-text" id="s6b-recall-text">相似度最高的 <b>top-3</b> 被召回 → 拼进 prompt → 交给 LLM 当场归纳（每问重来）</span>
+    </div>
+
+    <!-- 计数 -->
+    <div class="s6b-meter">
+      <span class="s6b-meter-item"><span class="s6b-meter-num" id="s6b-m-q">0</span>问 · 各重算一整列</span>
+      <span class="s6b-meter-item"><span class="s6b-meter-num" id="s6b-m-calc">0</span>次 · 余弦相似度计算（6 chunk × 问数）</span>
+      <span class="s6b-meter-item s6b-meter-reuse"><span class="s6b-meter-num" id="s6b-m-reuse">0</span>次 · 复用上一问的打分</span>
+    </div>
+
+    <!-- 控制 -->
+    <div class="s6b-controls">
+      <div class="s6b-btn-row">
+        <button class="s6b-ask-btn" id="s6b-ask">算一次相似度</button>
+        <button class="s6b-ctrl-btn" id="s6b-reset">↺ 重置</button>
+      </div>
+      <div class="s6b-stage-ind" id="s6b-stage">同一批 chunk 向量预先建好；每换一个问题，问题向量变 → 6 个 cos 全部重算 → top-3 重新排，上一问的打分一点用不上</div>
+    </div>
+
+  </div>
+</div>

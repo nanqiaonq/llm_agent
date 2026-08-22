@@ -1,0 +1,37 @@
+<style>
+/* T4 章节过渡门牌 · 第四章 LLM Wiki 怎么搭起来 · 冷绿 */
+.trans-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 84vh; width: 100%; max-width: 1200px;
+  padding: 2rem 5rem 2rem 7rem; box-sizing: border-box; font-style: normal; text-align: center; gap: 1.5rem;
+}
+.trans-eyebrow {
+  display: flex; align-items: center; gap: 0.8rem;
+  font-family: var(--font-mono); font-size: clamp(0.92rem, 1.5vw, 1.18rem);
+  font-weight: 700; font-style: normal; letter-spacing: 0.16em; color: var(--color-compile);
+}
+.trans-eyebrow::before, .trans-eyebrow::after { content: ''; width: 2.6rem; height: 2px; background: var(--color-compile); opacity: 0.55; }
+.trans-title {
+  font-family: var(--font-display); font-size: clamp(2.6rem, 5.6vw, 3.9rem);
+  font-weight: 700; font-style: normal; color: var(--text-primary); line-height: 1.14; letter-spacing: -0.01em;
+}
+.trans-sub {
+  font-family: var(--font-body); font-size: clamp(1.02rem, 1.9vw, 1.38rem);
+  font-style: normal; color: var(--text-secondary); font-weight: 400;
+}
+.trans-dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--color-compile); margin-top: 0.6rem; }
+.trans-eyebrow { animation: transUp 0.5s ease both 0ms; }
+.trans-title   { animation: transUp 0.5s ease both 130ms; }
+.trans-sub     { animation: transUp 0.5s ease both 260ms; }
+.trans-dot     { animation: transUp 0.5s ease both 360ms; }
+@keyframes transUp { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: none; } }
+</style>
+
+<div class="slide" data-slide="401">
+  <div class="trans-wrap">
+    <div class="trans-eyebrow">第四章 · C4</div>
+    <h2 class="trans-title">LLM Wiki 怎么搭起来</h2>
+    <p class="trans-sub">三层架构 + 两个特殊文件 + 三个操作</p>
+    <div class="trans-dot"></div>
+  </div>
+</div>

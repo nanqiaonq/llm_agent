@@ -1,0 +1,579 @@
+<!-- ←CL04 data-viz/bar ref · ←CL12 slider ref -->
+<style>
+/* ── S015 RRF 名次滑块沙盒 · 极简钢蓝 P06 ── */
+:root {
+  --s015-bg-deep:    #141a26;
+  --s015-bg-mid:     #1e2838;
+  --s015-primary:    #9bcbd7;
+  --s015-secondary:  #6a8ba0;
+  --s015-accent:     #e8a849;
+  --s015-text:       #e2e8ee;
+  --s015-dim:        #7d8fa4;
+  --s015-card-bg:    rgba(30,40,56,0.7);
+  --s015-card-bd:    rgba(155,203,215,0.18);
+  --s015-danger:     #f87171;
+  --s015-good:       #7ecba8;
+}
+
+.s015-wrap {
+    transform: scale(1.04);
+    transform-origin: center center;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 4rem;
+  box-sizing: border-box;
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  color: var(--s015-text);
+}
+
+/* ── 页眉 ── */
+.s015-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+
+.s015-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--s015-secondary);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.s015-title {
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-weight: 700;
+  color: var(--s015-text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.s015-sub {
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.75rem;
+  color: var(--s015-dim);
+  margin-top: 0.25rem;
+}
+
+/* ── 主体：三列 ── */
+.s015-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+/* ── 通用卡片 ── */
+.s015-card {
+  background: var(--s015-card-bg);
+  border: 1px solid var(--s015-card-bd);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.s015-card-title {
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--s015-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(155,203,215,0.12);
+  padding-bottom: 0.5rem;
+}
+
+/* ── 左列：滑块区 ── */
+.s015-slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.s015-slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.s015-slider-name {
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.72rem;
+  color: var(--s015-text);
+  font-weight: 600;
+}
+
+.s015-rank-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.72rem;
+  color: var(--s015-accent);
+  font-weight: 700;
+}
+
+.s015-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(155,203,215,0.15);
+  outline: none;
+  cursor: pointer;
+}
+
+.s015-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--s015-accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(232,168,73,0.4);
+  transition: box-shadow 0.2s;
+}
+
+.s015-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 14px rgba(232,168,73,0.7);
+}
+
+.s015-slider-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.6rem;
+  color: var(--s015-dim);
+}
+
+/* 分隔线 */
+.s015-sep {
+  border: none;
+  border-top: 1px solid rgba(155,203,215,0.1);
+  margin: 0.2rem 0;
+}
+
+/* k 常量展示 */
+.s015-k-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  background: rgba(155,203,215,0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(155,203,215,0.1);
+}
+
+.s015-k-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.65rem;
+  color: var(--s015-dim);
+}
+
+.s015-k-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.72rem;
+  color: var(--s015-primary);
+  font-weight: 700;
+}
+
+/* 原始分展示 */
+.s015-raw-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.s015-raw-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.s015-raw-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.62rem;
+  color: var(--s015-dim);
+  flex-shrink: 0;
+}
+
+.s015-raw-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.68rem;
+  color: var(--s015-text);
+  font-weight: 600;
+}
+
+.s015-raw-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.55rem;
+  color: var(--s015-secondary);
+}
+
+/* ── 中列/右列：对比算法结果 ── */
+.s015-algo-card.danger {
+  border-color: rgba(248,113,113,0.3);
+}
+
+.s015-algo-card.good {
+  border-color: rgba(126,203,168,0.3);
+}
+
+.s015-verdict {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+
+.s015-verdict.danger {
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.25);
+  color: var(--s015-danger);
+}
+
+.s015-verdict.good {
+  background: rgba(126,203,168,0.1);
+  border: 1px solid rgba(126,203,168,0.25);
+  color: var(--s015-good);
+}
+
+/* 分数展示 */
+.s015-score-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.s015-score-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.s015-score-name {
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.62rem;
+  color: var(--s015-dim);
+}
+
+.s015-score-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.6rem;
+  color: var(--s015-secondary);
+  margin-bottom: 0.1rem;
+}
+
+.s015-score-bar-wrap {
+  position: relative;
+  height: 8px;
+  background: rgba(155,203,215,0.06);
+  border-radius: 4px;
+  overflow: visible;
+}
+
+.s015-score-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.15s linear;
+  position: relative;
+}
+
+.s015-score-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+/* 总分大字 */
+.s015-total-block {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(155,203,215,0.12);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.s015-total-label {
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.65rem;
+  color: var(--s015-dim);
+}
+
+.s015-total-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* 主导警告 */
+.s015-domination-warning {
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.58rem;
+  transition: opacity 0.3s;
+}
+
+/* ── 底部：洞察行 ── */
+.s015-insight-row {
+  width: 100%;
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.s015-insight-card {
+  background: rgba(30,40,56,0.5);
+  border: 1px solid rgba(155,203,215,0.1);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: 0.62rem;
+  color: var(--s015-dim);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.s015-insight-card strong {
+  color: var(--s015-primary);
+  display: block;
+  font-size: 0.65rem;
+  margin-bottom: 0.15rem;
+}
+
+/* 闪烁提示（BM25 主导时） */
+@keyframes s015-blink {
+  0%, 100% { opacity: 0.9; }
+  50%       { opacity: 0.4; }
+}
+
+.s015-blink {
+  animation: s015-blink 1.4s ease-in-out infinite;
+}
+
+@media (max-height: 700px) {
+  .s015-wrap { padding: 1rem 3rem; }
+  .s015-insight-row { display: none; }
+}
+</style>
+
+<div class="slide">
+<div class="s015-wrap">
+
+  <!-- 页眉 -->
+  <div class="s015-header">
+    <div>
+      <div class="s015-eyebrow">支撑层 Retrieval</div>
+      <h2 class="s015-title">RRF 为什么不能直接加分</h2>
+      <p class="s015-sub">拖动滑块改名次 — 实时看"直接加分"被 BM25 量纲主导 vs "RRF"两路平权</p>
+    </div>
+  </div>
+
+  <!-- 主体三列 -->
+  <div class="s015-body">
+
+    <!-- 左列：输入控制 -->
+    <div class="s015-card">
+      <div class="s015-card-title">两路检索名次</div>
+
+      <!-- 向量名次滑块 -->
+      <div class="s015-slider-block">
+        <div class="s015-slider-label-row">
+          <span class="s015-slider-name">向量检索名次</span>
+          <span class="s015-rank-display">rank = <span id="s015-vec-rank-val">3</span></span>
+        </div>
+        <input type="range" class="s015-slider" id="s015-slider-vec" min="1" max="10" value="3"/>
+        <span class="s015-slider-hint">1=最佳名次 · 10=最差名次</span>
+      </div>
+
+      <!-- BM25 名次滑块 -->
+      <div class="s015-slider-block">
+        <div class="s015-slider-label-row">
+          <span class="s015-slider-name">BM25 名次</span>
+          <span class="s015-rank-display">rank = <span id="s015-bm25-rank-val">5</span></span>
+        </div>
+        <input type="range" class="s015-slider" id="s015-slider-bm25" min="1" max="10" value="5"/>
+        <span class="s015-slider-hint">1=最佳名次 · 10=最差名次</span>
+      </div>
+
+      <hr class="s015-sep"/>
+
+      <!-- k 常量 -->
+      <div class="s015-k-row">
+        <span class="s015-k-label">RRF 平滑参数 k</span>
+        <span class="s015-k-val">60</span>
+      </div>
+      <div style="font-family:'Sora',sans-serif; font-style:normal; font-size:0.58rem; color:var(--s015-dim);">
+        k=60 防止极端名次 1 被过度放大。标准值由 Cormack et al. 2009 确定。
+      </div>
+
+      <hr class="s015-sep"/>
+
+      <!-- 原始分对比 -->
+      <div class="s015-raw-block">
+        <div style="font-family:'Sora',sans-serif; font-style:normal; font-size:0.62rem; color:var(--s015-dim); margin-bottom:0.2rem;">模拟原始分（量纲不同！）</div>
+        <div class="s015-raw-row">
+          <span class="s015-raw-name">向量 score</span>
+          <span>
+            <span class="s015-raw-val" id="s015-vec-raw">—</span>
+            <span class="s015-raw-unit"> (cos, 0-1)</span>
+          </span>
+        </div>
+        <div class="s015-raw-row">
+          <span class="s015-raw-name">BM25 score</span>
+          <span>
+            <span class="s015-raw-val" id="s015-bm25-raw">—</span>
+            <span class="s015-raw-unit"> (tsvector, 0-3)</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 中列：直接加分（有问题的做法） -->
+    <div class="s015-card s015-algo-card danger">
+      <div class="s015-card-title" style="color: var(--s015-danger);">直接加分 (错误做法)</div>
+
+      <div class="s015-verdict danger" id="s015-direct-verdict">
+        量纲不可比 · BM25 主导
+      </div>
+
+      <div class="s015-score-block">
+        <!-- 向量分 -->
+        <div class="s015-score-row">
+          <div class="s015-score-name">向量原始分</div>
+          <div class="s015-score-formula">cos_sim(q, d) → [0,1]</div>
+          <div class="s015-score-bar-wrap">
+            <div class="s015-score-bar-fill" id="s015-bar-vec-direct" style="background: var(--s015-primary); width: 0%;"></div>
+          </div>
+          <div class="s015-score-val" id="s015-val-vec-direct" style="color: var(--s015-primary);">—</div>
+        </div>
+
+        <!-- BM25 分 -->
+        <div class="s015-score-row">
+          <div class="s015-score-name">BM25 原始分</div>
+          <div class="s015-score-formula">tsvector → [0, 3]</div>
+          <div class="s015-score-bar-wrap">
+            <div class="s015-score-bar-fill" id="s015-bar-bm25-direct" style="background: var(--s015-danger); width: 0%;"></div>
+          </div>
+          <div class="s015-score-val" id="s015-val-bm25-direct" style="color: var(--s015-danger);">—</div>
+        </div>
+      </div>
+
+      <div class="s015-total-block">
+        <span class="s015-total-label">直接相加</span>
+        <span class="s015-total-num" id="s015-direct-total" style="color: var(--s015-danger);">—</span>
+      </div>
+
+      <div class="s015-domination-warning s015-verdict danger" id="s015-dom-warn">
+        BM25 占比 <span id="s015-bm25-pct" style="font-weight:700;">—%</span> · 向量贡献被淹没
+      </div>
+    </div>
+
+    <!-- 右列：RRF（正确做法） -->
+    <div class="s015-card s015-algo-card good">
+      <div class="s015-card-title" style="color: var(--s015-good);">RRF 名次融合 (正确做法)</div>
+
+      <div class="s015-verdict good">
+        只看名次 · 量纲平权
+      </div>
+
+      <div class="s015-score-block">
+        <!-- 向量 RRF 分 -->
+        <div class="s015-score-row">
+          <div class="s015-score-name">向量路 RRF 分</div>
+          <div class="s015-score-formula">1 / (60 + rank_vec)</div>
+          <div class="s015-score-bar-wrap">
+            <div class="s015-score-bar-fill" id="s015-bar-vec-rrf" style="background: var(--s015-primary); width: 0%;"></div>
+          </div>
+          <div class="s015-score-val" id="s015-val-vec-rrf" style="color: var(--s015-primary);">—</div>
+        </div>
+
+        <!-- BM25 RRF 分 -->
+        <div class="s015-score-row">
+          <div class="s015-score-name">BM25 路 RRF 分</div>
+          <div class="s015-score-formula">1 / (60 + rank_bm25)</div>
+          <div class="s015-score-bar-wrap">
+            <div class="s015-score-bar-fill" id="s015-bar-bm25-rrf" style="background: var(--s015-good); width: 0%;"></div>
+          </div>
+          <div class="s015-score-val" id="s015-val-bm25-rrf" style="color: var(--s015-good);">—</div>
+        </div>
+
+        <!-- 比例展示 -->
+        <div style="font-family:'Sora',sans-serif; font-style:normal; font-size:0.58rem; color:var(--s015-dim); padding: 0.3rem 0.5rem; background: rgba(126,203,168,0.05); border-radius:4px; border: 1px solid rgba(126,203,168,0.12);">
+          两路均在 [1/61, 1/70] 范围 · 量纲相同·可直接相加
+        </div>
+      </div>
+
+      <div class="s015-total-block">
+        <span class="s015-total-label">RRF 总分</span>
+        <span class="s015-total-num" id="s015-rrf-total" style="color: var(--s015-good);">—</span>
+      </div>
+
+      <div class="s015-domination-warning s015-verdict good">
+        向量占比 <span id="s015-vec-pct-rrf" style="font-weight:700;">—%</span> · 两路真正平权
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部洞察 -->
+  <div class="s015-insight-row">
+    <div class="s015-insight-card">
+      <strong>为什么不能直接加</strong>
+      BM25 量纲是 cos_sim 的约 2.9×，直接加等于让 BM25 主导最终排名
+    </div>
+    <div class="s015-insight-card">
+      <strong>RRF 为什么可以</strong>
+      1/(k+rank) 把两路映射到相同量纲区间，名次好→分高，名次差→分低，公平可加
+    </div>
+    <div class="s015-insight-card">
+      <strong>k=60 的作用</strong>
+      防止名次 1 的分值无限大，抑制极端值；让 top-10 名次间分差平滑
+    </div>
+  </div>
+
+</div>
+</div>

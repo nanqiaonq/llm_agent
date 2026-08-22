@@ -1,0 +1,305 @@
+<style>
+  /* ── P06 极简钢蓝数据感 CSS 变量 ─────────────────────────────── */
+  :root {
+    --bg-deep:      #141a26;
+    --bg-mid:       #1e2838;
+    --primary:      #9bcbd7;
+    --secondary:    #6a8ba0;
+    --accent:       #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim:     #7d8fa4;
+    --card-bg:      rgba(30, 40, 56, 0.75);
+    --card-border:  rgba(155, 203, 215, 0.18);
+    --card-title:   #aadcec;
+    --eyebrow:      #81a8b9;
+    --shadow:       0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ── slide wrapper ──────────────────────────────────────────── */
+  #S018.s18-wrap {
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2.4rem 4rem 2.4rem 7rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    background-color: var(--bg-deep);
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-style: normal;
+    color: var(--text-primary);
+  }
+
+  /* ── header ─────────────────────────────────────────────────── */
+  #S018 .s18-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; font-style: normal; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--eyebrow);
+    margin-bottom: 0.5rem; text-align: center;
+  }
+  #S018 .s18-title {
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 700; font-style: normal;
+    color: var(--text-primary); margin: 0 0 0.3rem 0; text-align: center; line-height: 1.2;
+  }
+  #S018 .s18-subtitle {
+    font-size: clamp(0.86rem, 1.3vw, 0.98rem); font-style: normal;
+    color: var(--text-dim); margin: 0 0 1.6rem 0; text-align: center; line-height: 1.5;
+  }
+
+  /* ── body: 左统一时间轴 + 右答案卡 ──────────────────────────── */
+  #S018 .s18-body {
+    display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.6rem;
+    width: 100%; min-width: 0; align-items: stretch;
+  }
+
+  /* ── 统一时间轴网格 ─────────────────────────────────────────── */
+  #S018 .s18-tl {
+    display: grid; grid-template-columns: 60px 1fr;
+    column-gap: 0.7rem; row-gap: 0.5rem; position: relative;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 1.2rem 1.5rem 1.3rem;
+  }
+  /* 竖向对齐带层：跨全部行，落在右列 */
+  #S018 .s18-bandlayer { grid-column: 2; grid-row: 1 / -1; position: relative; pointer-events: none; }
+  #S018 .s18-band {
+    position: absolute; top: -0.4rem; bottom: -0.4rem; width: 22%;
+    transform: translateX(-50%); border-radius: 10px; pointer-events: auto;
+    cursor: pointer; transition: background .25s ease, box-shadow .25s ease;
+  }
+  #S018 .s18-band.active { background: rgba(155, 203, 215, 0.09); }
+  #S018 .s18-band.causal.active {
+    background: rgba(232, 168, 73, 0.13);
+    box-shadow: inset 0 0 0 1px rgba(232, 168, 73, 0.45);
+  }
+
+  /* 时间轴刻度行 */
+  #S018 .s18-axis-track { grid-column: 2; position: relative; height: 1.9rem; z-index: 1; }
+  #S018 .s18-axis-line {
+    position: absolute; top: 50%; left: 0; right: 0; height: 2px; transform: translateY(-50%);
+    background: linear-gradient(90deg, rgba(155,203,215,0.55), rgba(155,203,215,0.55) 88%, transparent 88%);
+  }
+  #S018 .s18-axis-line::after {
+    content: '▶'; position: absolute; right: -2px; top: 50%; transform: translateY(-50%);
+    font-size: 0.6rem; color: var(--primary);
+  }
+  #S018 .s18-tick {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 600;
+    color: var(--text-primary); background: var(--bg-mid); padding: 0.1rem 0.45rem;
+    border-radius: 5px; white-space: nowrap; border: 1px solid var(--card-border);
+  }
+
+  /* 泳道 */
+  #S018 .s18-lane-label {
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 0.74rem; font-weight: 600; font-style: normal; color: var(--text-primary);
+    line-height: 1.2;
+  }
+  #S018 .s18-lane-track { position: relative; height: 2.7rem; z-index: 1; }
+  #S018 .s18-lane-line {
+    position: absolute; top: 50%; left: 0; right: 0; height: 2px; transform: translateY(-50%); border-radius: 1px;
+  }
+  #S018 .lane-1 .s18-lane-line { background: linear-gradient(90deg, var(--primary), rgba(155,203,215,0.25)); }
+  #S018 .lane-2 .s18-lane-line { background: linear-gradient(90deg, var(--secondary), rgba(106,139,160,0.25)); }
+  #S018 .lane-3 .s18-lane-line { background: linear-gradient(90deg, var(--accent), rgba(232,168,73,0.25)); }
+
+  #S018 .s18-node {
+    position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%;
+    transform: translate(-50%, -50%); border: 2px solid var(--bg-mid);
+    transition: transform .2s ease, box-shadow .2s ease; z-index: 2;
+  }
+  #S018 .lane-1 .s18-node { background: var(--primary); }
+  #S018 .lane-2 .s18-node { background: var(--secondary); }
+  #S018 .lane-3 .s18-node { background: var(--accent); }
+  #S018 .s18-node.col-on { transform: translate(-50%, -50%) scale(1.45); box-shadow: 0 0 0 4px rgba(155,203,215,0.18); }
+  #S018 .lane-3 .s18-node.col-on { box-shadow: 0 0 0 4px rgba(232,168,73,0.22); }
+
+  #S018 .s18-node-tag {
+    position: absolute; top: calc(50% + 11px); transform: translateX(-50%);
+    font-size: 0.62rem; font-style: normal; white-space: nowrap; color: var(--text-dim);
+    transition: color .2s ease, font-weight .2s ease;
+  }
+  #S018 .s18-node-tag.col-on { color: var(--text-primary); font-weight: 600; }
+
+  /* 因果洞察条 */
+  #S018 .s18-insight {
+    grid-column: 2; margin-top: 0.6rem; border-left: 3px solid var(--primary);
+    background: rgba(155,203,215,0.06); border-radius: 6px; padding: 0.55rem 0.9rem;
+    font-style: normal; transition: border-color .25s ease, background .25s ease;
+  }
+  #S018 .s18-insight.causal { border-left-color: var(--accent); background: rgba(232,168,73,0.08); }
+  #S018 .s18-insight-ts {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.06em; color: var(--primary); margin-bottom: 0.18rem;
+  }
+  #S018 .s18-insight.causal .s18-insight-ts { color: var(--accent); }
+  #S018 .s18-insight-text { font-size: 0.78rem; color: var(--text-dim); line-height: 1.45; }
+
+  /* ── 右侧答案卡 ─────────────────────────────────────────────── */
+  #S018 .s18-answer-card {
+    background: var(--card-bg); border: 1px solid rgba(155,203,215,0.28);
+    border-top: 3px solid var(--primary); border-radius: 1rem; padding: 1.3rem 1.2rem;
+    backdrop-filter: blur(20px); box-shadow: var(--shadow); font-style: normal; height: 100%; box-sizing: border-box;
+  }
+  #S018 .s18-answer-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-style: normal;
+    letter-spacing: 0.08em; color: var(--primary); text-transform: uppercase;
+    margin-bottom: 0.6rem; font-weight: 700;
+  }
+  #S018 .s18-answer-title {
+    font-size: clamp(0.88rem, 1.2vw, 1rem); font-weight: 700; font-style: normal;
+    color: var(--card-title); margin-bottom: 0.9rem; line-height: 1.3;
+  }
+  #S018 .s18-answer-item {
+    display: flex; align-items: flex-start; gap: 0.55rem; margin-bottom: 0.7rem;
+    font-size: clamp(0.78rem, 1vw, 0.85rem); font-style: normal; color: var(--text-dim); line-height: 1.5;
+  }
+  #S018 .s18-answer-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 0.4rem; }
+  #S018 .s18-answer-dot-1 { background: var(--primary); }
+  #S018 .s18-answer-dot-2 { background: var(--secondary); }
+  #S018 .s18-answer-dot-3 { background: var(--accent); }
+  #S018 .s18-answer-val { color: var(--text-primary); font-weight: 600; font-style: normal; }
+  #S018 .s18-answer-citation {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-style: normal;
+    color: var(--primary); opacity: 0.7; margin-left: 0.25rem;
+  }
+
+  /* ── 底部对比条 ─────────────────────────────────────────────── */
+  #S018 .s18-benefit {
+    margin-top: 1.4rem; width: 100%; background: rgba(155,203,215,0.06);
+    border: 1px solid var(--card-border); border-radius: 0.6rem; padding: 0.7rem 1.4rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; min-width: 0; font-style: normal;
+  }
+  #S018 .s18-benefit-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; font-style: normal; }
+  #S018 .s18-benefit-icon { font-size: 0.9rem; flex-shrink: 0; color: var(--primary); }
+  #S018 .s18-benefit-text { color: var(--text-dim); font-style: normal; line-height: 1.4; }
+  #S018 .s18-benefit-text strong { color: var(--text-primary); font-style: normal; }
+
+  /* ── 入场淡入 ───────────────────────────────────────────────── */
+  #S018 .s18-fade { opacity: 0; transform: translateY(10px); animation: s18FadeUp .55s ease forwards; }
+  #S018 .s18-d1 { animation-delay: .05s; }
+  #S018 .s18-d2 { animation-delay: .18s; }
+  #S018 .s18-d3 { animation-delay: .31s; }
+  @keyframes s18FadeUp { to { opacity: 1; transform: none; } }
+</style>
+
+<div class="slide s18-wrap" id="S018">
+  <div class="s18-eyebrow">能力二：读+想</div>
+  <h1 class="s18-title">find_trajectory：时序复利</h1>
+  <p class="s18-subtitle">把散在不同笔记的指标、团队、融资事实，对齐到同一条时间轴——一次查询读出单页给不了的跨维因果</p>
+
+  <div class="s18-body">
+
+    <!-- 左：统一日期时间轴 + 三泳道对齐 -->
+    <div class="s18-tl s18-fade s18-d1">
+
+      <!-- 竖向对齐带（4 个时刻列，落在右列、跨全部行） -->
+      <div class="s18-bandlayer">
+        <div class="s18-band"        data-ts="0" style="left:12.5%"></div>
+        <div class="s18-band"        data-ts="1" style="left:37.5%"></div>
+        <div class="s18-band causal" data-ts="2" style="left:62.5%"></div>
+        <div class="s18-band"        data-ts="3" style="left:87.5%"></div>
+      </div>
+
+      <!-- 时间轴刻度行（左 label 列留空，右 track 列放刻度） -->
+      <div></div>
+      <div class="s18-axis-track">
+        <div class="s18-axis-line"></div>
+        <span class="s18-tick" style="left:12.5%">2021 Q3</span>
+        <span class="s18-tick" style="left:37.5%">2022 Q1</span>
+        <span class="s18-tick" style="left:62.5%">2022 Q2</span>
+        <span class="s18-tick" style="left:87.5%">2022 Q4</span>
+      </div>
+
+      <!-- 泳道 1：指标变化 -->
+      <div class="s18-lane-label">指标<br>变化</div>
+      <div class="s18-lane-track lane-1">
+        <div class="s18-lane-line"></div>
+        <div class="s18-node" data-col="0" style="left:12.5%"></div>
+        <div class="s18-node-tag" data-col="0" style="left:12.5%">MAU 2k</div>
+        <div class="s18-node" data-col="2" style="left:62.5%"></div>
+        <div class="s18-node-tag" data-col="2" style="left:62.5%">8k 加速</div>
+        <div class="s18-node" data-col="3" style="left:87.5%"></div>
+        <div class="s18-node-tag" data-col="3" style="left:87.5%">目标 20k</div>
+      </div>
+
+      <!-- 泳道 2：团队状态 -->
+      <div class="s18-lane-label">团队<br>状态</div>
+      <div class="s18-lane-track lane-2">
+        <div class="s18-lane-line"></div>
+        <div class="s18-node" data-col="0" style="left:12.5%"></div>
+        <div class="s18-node-tag" data-col="0" style="left:12.5%">3 人</div>
+        <div class="s18-node" data-col="1" style="left:37.5%"></div>
+        <div class="s18-node-tag" data-col="1" style="left:37.5%">+CTO · 8 人</div>
+      </div>
+
+      <!-- 泳道 3：融资节点 -->
+      <div class="s18-lane-label">融资<br>节点</div>
+      <div class="s18-lane-track lane-3">
+        <div class="s18-lane-line"></div>
+        <div class="s18-node" data-col="0" style="left:12.5%"></div>
+        <div class="s18-node-tag" data-col="0" style="left:12.5%">种子轮</div>
+        <div class="s18-node" data-col="2" style="left:62.5%"></div>
+        <div class="s18-node-tag" data-col="2" style="left:62.5%">A 轮</div>
+      </div>
+
+      <!-- 因果洞察条（hook 动态更新，默认高亮 2022 Q2 因果簇） -->
+      <div class="s18-insight causal">
+        <div class="s18-insight-ts">2022 Q2</div>
+        <div class="s18-insight-text">A 轮融资落地，同一时刻 MAU 从 2k 加速到 8k——融资与指标在同一列对齐，因果一眼显现</div>
+      </div>
+
+    </div>
+
+    <!-- 右：find_trajectory 答案卡 -->
+    <div class="s18-answer-col s18-fade s18-d2">
+      <div class="s18-answer-card">
+        <div class="s18-answer-label">find_trajectory 输出</div>
+        <div class="s18-answer-title">"NexaFlow 过去一年演变如何？"</div>
+
+        <div class="s18-answer-item">
+          <div class="s18-answer-dot s18-answer-dot-1"></div>
+          <div>
+            <span class="s18-answer-val">MAU 从 2k 增长到 8k</span>，A 轮融资后加速
+            <span class="s18-answer-citation">[metrics/nexaflow-q2]</span>
+          </div>
+        </div>
+
+        <div class="s18-answer-item">
+          <div class="s18-answer-dot s18-answer-dot-2"></div>
+          <div>
+            Carol Wu 于 2022 年加入担任 CTO，工程团队<span class="s18-answer-val">从 3 人扩至 8 人</span>
+            <span class="s18-answer-citation">[people/carol-wu]</span>
+          </div>
+        </div>
+
+        <div class="s18-answer-item">
+          <div class="s18-answer-dot s18-answer-dot-3"></div>
+          <div>
+            2021 Q3 种子轮起步，<span class="s18-answer-val">2022 Q2 完成 A 轮融资</span>，Q4 设定新目标
+            <span class="s18-answer-citation">[notes/nexaflow-funding]</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部对比条 -->
+  <div class="s18-benefit s18-fade s18-d3">
+    <div class="s18-benefit-item">
+      <div class="s18-benefit-icon">&#9654;</div>
+      <div class="s18-benefit-text"><strong>传统做法</strong>：分别查指标 / 查团队 / 查融资，自己对齐时间线 — 3 次查询 + 手动拼接</div>
+    </div>
+    <div class="s18-benefit-item">
+      <div class="s18-benefit-icon">&#9654;</div>
+      <div class="s18-benefit-text"><strong>find_trajectory</strong>：一次查询追出三维事实，对齐到同一时间轴 — 时序复利</div>
+    </div>
+  </div>
+</div>

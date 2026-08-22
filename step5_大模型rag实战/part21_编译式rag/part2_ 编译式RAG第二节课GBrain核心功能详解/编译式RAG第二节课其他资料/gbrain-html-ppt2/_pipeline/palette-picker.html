@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GBrain 课件 · 风格方向选择器 (Gate 1)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Helvetica Neue', 'PingFang SC', sans-serif;
+    background: #0a0d14;
+    color: #e0e0e0;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .header {
+    text-align: center;
+    padding: 44px 24px 16px;
+  }
+  .header h1 {
+    font-size: 26px; font-weight: 700; letter-spacing: 1px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #22d3ee);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header p { margin-top: 8px; color: #7d8590; font-size: 13px; }
+  .header .gate { margin-top: 10px; font-size: 12px; color: #f0b429; letter-spacing: 0.5px; }
+
+  /* Theory banner */
+  .theory-bar {
+    max-width: 960px; margin: 0 auto 28px; padding: 0 24px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px;
+  }
+  .theory-card {
+    background: #11151f; border: 1px solid #1f2733; border-radius: 10px;
+    padding: 14px 16px; font-size: 12px; color: #8b949e;
+  }
+  .theory-card strong { color: #c9d1d9; display: block; margin-bottom: 4px; font-size: 13px; }
+  .theory-card .highlight { color: #58a6ff; }
+
+  .course-bar {
+    display: flex; justify-content: center; gap: 22px; padding: 14px;
+    background: #11151f; border-top: 1px solid #1f2733; border-bottom: 1px solid #1f2733;
+    font-size: 13px; color: #8b949e; flex-wrap: wrap;
+  }
+
+  .category { max-width: 1280px; margin: 0 auto; padding: 32px 24px 0; }
+  .category-title {
+    font-size: 14px; font-weight: 600; color: #8b949e; letter-spacing: 3px;
+    text-transform: uppercase; margin-bottom: 16px;
+    border-left: 3px solid #3b82f6; padding-left: 12px;
+  }
+
+  .palette-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 18px; margin-bottom: 12px;
+  }
+
+  .palette-card {
+    border-radius: 14px; overflow: hidden; cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #1f2733; position: relative; background: #11151f;
+  }
+  .palette-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    border-color: #30363d;
+  }
+  .palette-card.selected {
+    border: 2px solid #58a6ff;
+    box-shadow: 0 0 24px rgba(88,166,255,0.2);
+  }
+  .palette-card.selected::after {
+    content: 'SELECTED'; position: absolute; top: 10px; right: 10px;
+    background: #58a6ff; color: #0d1117; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; z-index: 10;
+  }
+
+  .color-strip { display: flex; height: 76px; }
+  .color-strip div { flex: 1; position: relative; transition: flex 0.3s; }
+  .palette-card:hover .color-strip div:hover { flex: 2.2; }
+  .color-strip div .hex-label {
+    position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; font-family: 'SF Mono', monospace; opacity: 0;
+    transition: opacity 0.2s; white-space: nowrap;
+    padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.6);
+  }
+  .color-strip div:hover .hex-label { opacity: 1; }
+
+  .warm-dot {
+    width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+    margin-right: 4px; vertical-align: middle; border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .card-info { padding: 16px 18px; }
+  .card-info h3 { font-size: 16px; font-weight: 600; margin-bottom: 3px; color: #c9d1d9; }
+  .card-info h3 span { color: #484f58; font-weight: 400; font-size: 12px; }
+  .card-info .direction {
+    display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 1px;
+    padding: 2px 9px; border-radius: 5px; margin-bottom: 8px;
+  }
+  .card-info .subtitle { font-size: 11.5px; color: #7d8590; margin-bottom: 8px; }
+  .card-info .positioning {
+    font-size: 11.5px; color: #9aa4b0; line-height: 1.65; margin-bottom: 10px;
+    background: #0d1117; border-left: 2px solid #30363d; border-radius: 0 6px 6px 0;
+    padding: 8px 11px;
+  }
+  .card-info .positioning b { color: #c9d1d9; font-weight: 600; }
+  .card-info .tags { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+  .card-info .tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 20px;
+    background: #1f2733; color: #8b949e;
+  }
+  .card-info .tag.rec { background: rgba(88,166,255,0.15); color: #58a6ff; }
+  .card-info .harmony-type {
+    font-size: 10px; color: #7d8590; margin-top: 8px;
+    border-top: 1px solid #1f2733; padding-top: 7px;
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 99;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .preview-panel {
+    position: fixed; z-index: 100;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.92);
+    width: min(940px, 92vw);
+    max-height: 88vh;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(88,166,255,0.06);
+    overflow-y: auto;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .preview-panel.open {
+    opacity: 1; pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .preview-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 24px; border-bottom: 1px solid #1f2733;
+    position: sticky; top: 0; background: #0d1117; z-index: 2;
+    border-radius: 16px 16px 0 0;
+  }
+  .preview-header h2 { font-size: 16px; color: #c9d1d9; }
+  .preview-close {
+    background: none; border: none; color: #484f58; font-size: 22px; cursor: pointer;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+  }
+  .preview-close:hover { background: #1f2733; color: #c9d1d9; }
+
+  .vibe-note {
+    max-width: 820px; margin: 14px auto 0; padding: 0 24px;
+    font-size: 12.5px; color: #9aa4b0; line-height: 1.7;
+  }
+  .vibe-note b { color: #c9d1d9; }
+
+  .slide-mockup {
+    border-radius: 12px; overflow: hidden; aspect-ratio: 16/9;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    max-width: 820px; margin: 16px auto; position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .slide-mockup .neuro-bg {
+    position: absolute; inset: 0; opacity: 0.5; pointer-events: none;
+  }
+  .slide-mockup .slide-eyebrow {
+    font-size: clamp(9px, 1.1vw, 11px); letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 8px; font-family: 'SF Mono', monospace; position: relative; z-index: 2;
+  }
+  .slide-mockup .slide-title {
+    font-size: clamp(20px, 3vw, 30px); font-weight: 700;
+    margin-bottom: 6px; text-align: center; padding: 0 32px; position: relative; z-index: 2;
+  }
+  .slide-mockup .slide-subtitle {
+    font-size: clamp(11px, 1.4vw, 15px); text-align: center; padding: 0 32px;
+    position: relative; z-index: 2;
+  }
+  .slide-mockup .mock-cards {
+    display: flex; gap: 14px; margin-top: 22px; padding: 0 32px;
+    width: 100%; justify-content: center; flex-wrap: wrap; position: relative; z-index: 2;
+  }
+  .slide-mockup .mock-card {
+    border-radius: 10px; padding: 14px 16px; flex: 1;
+    min-width: 140px; max-width: 200px;
+  }
+  .slide-mockup .mock-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .slide-mockup .mock-card p { font-size: 10px; line-height: 1.5; }
+
+  .analysis-row {
+    max-width: 820px; margin: 16px auto; padding: 0 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .analysis-box {
+    background: #11151f; border: 1px solid #1f2733; border-radius: 10px; padding: 14px 16px;
+  }
+  .analysis-box h4 { font-size: 12px; color: #8b949e; margin-bottom: 8px; letter-spacing: 1px; }
+
+  .role-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .role-chip { border-radius: 6px; padding: 8px 10px; font-size: 10px; text-align: center; }
+  .role-chip .label { font-weight: 600; margin-bottom: 2px; }
+  .role-chip .hex { font-family: monospace; font-size: 9px; opacity: 0.7; }
+
+  .contrast-row { display: flex; flex-direction: column; gap: 6px; }
+  .contrast-item { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+  .contrast-item .sample {
+    width: 80px; text-align: center; padding: 3px 0; border-radius: 4px;
+    font-size: 10px; font-weight: 600;
+  }
+  .contrast-item .ratio { font-family: monospace; color: #c9d1d9; min-width: 45px; }
+  .contrast-item .grade { font-size: 10px; padding: 1px 6px; border-radius: 10px; }
+  .grade-aaa { background: #1a7f37; color: #aff5b4; }
+  .grade-aa { background: #2d5a27; color: #7ee787; }
+  .grade-fail { background: #6e2b2b; color: #ffa198; }
+
+  .proportion-bar { max-width: 820px; margin: 0 auto 12px; padding: 0 24px; }
+  .proportion-bar .bar-row {
+    display: flex; height: 28px; border-radius: 8px; overflow: hidden; border: 1px solid #1f2733;
+  }
+  .proportion-bar .bar-seg {
+    display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600;
+  }
+  .proportion-bar .legend {
+    display: flex; gap: 16px; justify-content: center; margin-top: 6px;
+    font-size: 10px; color: #7d8590;
+  }
+
+  .css-vars { max-width: 820px; margin: 0 auto 24px; padding: 0 24px; }
+  .css-vars pre {
+    background: #11151f; border: 1px solid #1f2733; border-radius: 10px;
+    padding: 14px 18px; font-size: 11px; font-family: 'SF Mono', monospace;
+    line-height: 1.8; overflow-x: auto; color: #8b949e;
+  }
+  .css-vars pre .key { color: #79c0ff; }
+  .css-vars pre .val { color: #c9d1d9; }
+  .css-vars pre .cmt { color: #484f58; }
+
+  .footer-spacer { height: 60px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>GBrain 课件 · 风格方向选择器</h1>
+  <p>从笔记到会思考的大脑 · 编译式 RAG 的生产级实现 — 4 个有区分度的风格方向供拍板</p>
+  <div class="gate">GATE 1 用户门控 · 点开任一方向预览，满意后点「确认选择此配色」（自动写入剪贴板）</div>
+</div>
+
+<div class="theory-bar">
+  <div class="theory-card">
+    <strong>60-30-10 比例</strong>
+    背景 <span class="highlight">60%</span> / 卡片次色 <span class="highlight">30%</span> / 强调点睛 <span class="highlight">10%</span>
+  </div>
+  <div class="theory-card">
+    <strong>舒适对比度</strong>
+    正文 on 背景 <span class="highlight">7:1 ~ 13:1</span>（不止 4.5:1 下限）
+  </div>
+  <div class="theory-card">
+    <strong>跨色温点睛</strong>
+    冷色主调 + <span class="highlight">暖色 accent</span> 破单调（神经元/边/gap 高亮）
+  </div>
+  <div class="theory-card">
+    <strong>不用纯黑白</strong>
+    用 <span class="highlight">#0a0d14</span> 非 #000，<span class="highlight">#e0e0e0</span> 非 #fff
+  </div>
+</div>
+
+<div class="course-bar">
+  <div>课题：<strong style="color:#c9d1d9">GBrain 完整功能全景 — 建图 Connect + 读想 Read&amp;Think</strong></div>
+  <div>约 24 页 / 9 模块 | 概念全景课 | 任何人讲得通</div>
+  <div>核心锚点：<strong style="color:#f0b429">C2 动态建图演示</strong></div>
+</div>
+
+<div id="app"></div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closePreview()"></div>
+<div class="preview-panel" id="previewPanel">
+  <div class="preview-header">
+    <h2 id="previewTitle"></h2>
+    <button class="preview-close" onclick="closePreview()">&times;</button>
+  </div>
+  <div id="previewContent"></div>
+</div>
+
+<script>
+function luminance(hex) {
+  hex = hex.replace('#','');
+  const r = parseInt(hex.substring(0,2),16)/255;
+  const g = parseInt(hex.substring(2,4),16)/255;
+  const b = parseInt(hex.substring(4,6),16)/255;
+  const R = r <= 0.03928 ? r/12.92 : Math.pow((r+0.055)/1.055, 2.4);
+  const G = g <= 0.03928 ? g/12.92 : Math.pow((g+0.055)/1.055, 2.4);
+  const B = b <= 0.03928 ? b/12.92 : Math.pow((b+0.055)/1.055, 2.4);
+  return 0.2126*R + 0.7152*G + 0.0722*B;
+}
+function contrastRatio(hex1, hex2) {
+  const l1 = luminance(hex1), l2 = luminance(hex2);
+  const lighter = Math.max(l1,l2), darker = Math.min(l1,l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+function hexBrightness(hex) {
+  hex = hex.replace('#','');
+  return parseInt(hex.substring(0,2),16)*0.299 + parseInt(hex.substring(2,4),16)*0.587 + parseInt(hex.substring(4,6),16)*0.114;
+}
+
+/*
+ * GBrain 4 风格方向 — 全部深色（brain-layer 深科技基调），但视觉气质有明显区分度：
+ *   A 深空神经网络 / B 玻璃拟态深科技 / C 极简数据感 / D 矩阵图谱
+ * 每个含 direction(方向标签) + positioning(定位说明) + reason(适配 GBrain 的理由) + neuro(背景示意 SVG 风格)
+ */
+const PALETTES = [
+  {
+    id: 'blue-nebula', name: 'Deep-Space Neural', nameZh: '深空神经网络',
+    direction: 'A · 沉浸星空', dirColor: '#8b5cf6',
+    theme: 'dark',
+    harmony: '蓝紫近似色 + 暖金跨色温点睛',
+    mood: '宇宙感、神经元发光、最具记忆锚点张力',
+    positioning: '<b>定位：</b>把「大脑」做成一片会发光的神经星空——节点是星、wikilink 是星座连线、think 是流光。最贴 brain-layer 的认知隐喻，C2 建图演示里有向边逐条飞出、B2 完整点亮的大脑半球，在深空底上视觉冲击力最强。<br><b>适配理由：</b>蓝紫=LLM/认知/语义的通用心智符号；暖金 accent 专留给「边高亮 / gap 警示 / LLM 0 次角标」等点睛，冷暖反差强化记忆点。<br><b>取舍：</b>氛围最重，动效成本略高（星粒+nebula），概念密集页需克制背景避免分散。',
+    tags: ['RECOMMENDED', 'C2 锚点首选', '神经元隐喻', '冲击力最强'],
+    bgPattern: 'nebula',
+    colors: ['#020817','#1a0a2e','#3b82f6','#8b5cf6','#22d3ee','#e2e8f0'],
+    warmAccent: '#f0b429',
+    slide: {
+      bgFrom: '#070b16', bgMid: '#11122a', bgTo: '#1a1535',
+      eyebrow: '#8b5cf6', title: '#e8ecf4', subtitle: '#8b95b5',
+      cardBg: 'rgba(20,24,48,0.72)', cardBorder: 'rgba(59,130,246,0.28)',
+      cardTitle: '#7dd3fc', cardText: '#9aa4c0',
+      primary: '#3b82f6', secondary: '#8b5cf6', accent: '#f0b429',
+      textPrimary: '#e8ecf4', textDim: '#8b95b5'
+    },
+    recommended: true
+  },
+  {
+    id: 'P01', name: 'Glass Deep-Teal', nameZh: '玻璃拟态深海青',
+    direction: 'B · 玻璃质感', dirColor: '#0F969C',
+    theme: 'dark',
+    harmony: '青绿单色系渐变 + 暖砂跨色温点睛',
+    mood: '通透、高级、毛玻璃层次、克制而专业',
+    positioning: '<b>定位：</b>同色系深海青渐变 + backdrop-blur 毛玻璃卡片，气质最「高级冷静」。深海由暗到浅的天然层次正好映射 GBrain 的<b>三层架构</b>（Storage/Graph/Retrieval 深→浅）与三层金字塔（raw/wiki/CLAUDE.md）。<br><b>适配理由：</b>来自精选配色 B 库（跨课件验证的高级配色），单色相不抢戏、概念页稳；青绿=工程可信赖感，契合「可读可审计 wiki」的克制叙事；暖砂 accent 留给关键论断。<br><b>取舍：</b>冲击力不如深空，但耐看、信息承载强，长课件 24 页不易疲劳。',
+    tags: ['RECOMMENDED', '玻璃拟态', '三层架构隐喻', 'B 库高级配色'],
+    bgPattern: 'glass',
+    colors: ['#05161A','#072E33','#0C7075','#0F969C','#6DA5C0','#294D61'],
+    warmAccent: '#d4956a',
+    slide: {
+      bgFrom: '#08171b', bgMid: '#0c2c31', bgTo: '#0e3a40',
+      eyebrow: '#6DA5C0', title: '#e3eef0', subtitle: '#7faaae',
+      cardBg: 'rgba(12,44,49,0.62)', cardBorder: 'rgba(15,150,156,0.3)',
+      cardTitle: '#5fe0d8', cardText: '#8fb0b2',
+      primary: '#19c2c8', secondary: '#0C7075', accent: '#d4956a',
+      textPrimary: '#e3eef0', textDim: '#8fb0b2'
+    },
+    recommended: true
+  },
+  {
+    id: 'P06', name: 'Minimal Steel-Data', nameZh: '极简钢蓝数据感',
+    direction: 'C · 极简理性', dirColor: '#9bcbd7',
+    theme: 'dark',
+    harmony: '钢蓝灰单色系 + 暖金跨色温点睛',
+    mood: '冷静、企业级、克制理性、留白讲究',
+    positioning: '<b>定位：</b>最「极简数据感」的方向——钢蓝灰底、弱化背景装饰、强化网格与排版秩序，把视觉权重让给图表/矩阵/雷达本身。适合 benchmark 严禁混引、RRF 名次、成本×质量两维这类<b>需要冷静判断力</b>的页面。<br><b>适配理由：</b>I1 收尾「一把判断的尺」就是这股理性气质；钢蓝=数据/企业级可靠，最不容易让数字页显得花哨失焦；暖金 accent 只在 DO-NOT-MIX 红线、关键结论处出现。<br><b>取舍：</b>氛围最弱（刻意），C2/B2 亮点页需 designer 额外补发光/动效抢眼，否则偏静。',
+    tags: ['RECOMMENDED', '极简数据感', 'benchmark/判断力', '排版秩序'],
+    bgPattern: 'grid',
+    colors: ['#344364','#4f6783','#6a8ba0','#81a8b9','#9bcbd7','#aee3eb'],
+    warmAccent: '#e8a849',
+    slide: {
+      bgFrom: '#141a26', bgMid: '#1e2838', bgTo: '#26334a',
+      eyebrow: '#81a8b9', title: '#e2e8ee', subtitle: '#7d8fa4',
+      cardBg: 'rgba(30,40,56,0.7)', cardBorder: 'rgba(155,203,215,0.18)',
+      cardTitle: '#aadcec', cardText: '#8b9aaf',
+      primary: '#9bcbd7', secondary: '#6a8ba0', accent: '#e8a849',
+      textPrimary: '#e2e8ee', textDim: '#7d8fa4'
+    },
+    recommended: true
+  },
+  {
+    id: 'green-matrix', name: 'Wiring Matrix', nameZh: '矩阵图谱织网',
+    direction: 'D · 确定性矩阵', dirColor: '#4ade80',
+    theme: 'dark',
+    harmony: '绿青近似色 + 暖橙跨色温点睛',
+    mood: '工程、确定性、零成本、图谱织网气质',
+    positioning: '<b>定位：</b>矩阵绿的「确定性 / 零 LLM / 终端」气质，最贴 GBrain <b>能力一 self-wiring</b> 的灵魂——正则规则把 wikilink 确定性地织成 typed 图谱，绿光像图谱自己长出来。<br><b>适配理由：</b>C2 角标「LLM 0 次·确定性·$0.00」、四类型边（founded/works_at/invested_in/advises）的彩色标签在绿底上像活的网络；暖橙 accent 区分类型/警示。<br><b>取舍：</b>绿色「黑客/终端」感偏强，可能让读想能力（F1/F2 综合）那半显得偏冷工程，不如蓝紫温和包容两大能力。作为<b>备选</b>，若你想突出建图主轴可选它。',
+    tags: ['备选 ALT', 'self-wiring 主轴', '确定性气质', '图谱织网'],
+    bgPattern: 'matrix',
+    colors: ['#051a0f','#0a2e1d','#4ade80','#22d3ee','#14b8a6','#e2e8f0'],
+    warmAccent: '#e8913a',
+    slide: {
+      bgFrom: '#06140d', bgMid: '#0c2418', bgTo: '#102e1e',
+      eyebrow: '#4ade80', title: '#e4efe8', subtitle: '#7da592',
+      cardBg: 'rgba(12,36,24,0.7)', cardBorder: 'rgba(74,222,128,0.22)',
+      cardTitle: '#56d364', cardText: '#8fb0a0',
+      primary: '#4ade80', secondary: '#22d3ee', accent: '#e8913a',
+      textPrimary: '#e4efe8', textDim: '#7da592'
+    },
+    recommended: false
+  }
+];
+
+const CATEGORIES = [
+  { id: 'rec', title: 'RECOMMENDED 推荐方向（三选一）', titleZh: '深空 / 玻璃 / 极简 三种基调有明显区分' },
+  { id: 'alt', title: 'ALTERNATIVE 备选方向', titleZh: '若想突出 self-wiring 建图主轴' }
+];
+
+function neuroBg(pattern, s) {
+  // 轻量 SVG 背景示意，体现不同方向的视觉基调
+  if (pattern === 'nebula') {
+    return `<svg class="neuro-bg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+      <defs><radialGradient id="g1"><stop offset="0%" stop-color="${s.secondary}" stop-opacity="0.35"/><stop offset="100%" stop-color="${s.secondary}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="g2"><stop offset="0%" stop-color="${s.primary}" stop-opacity="0.3"/><stop offset="100%" stop-color="${s.primary}" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="180" cy="120" r="160" fill="url(#g1)"/><circle cx="620" cy="320" r="180" fill="url(#g2)"/>
+      <g stroke="${s.primary}" stroke-width="1" opacity="0.5">
+        <line x1="200" y1="150" x2="350" y2="220"/><line x1="350" y1="220" x2="500" y2="160"/>
+        <line x1="500" y1="160" x2="600" y2="280"/><line x1="350" y1="220" x2="420" y2="340"/></g>
+      <g fill="${s.accent}">${[[200,150],[350,220],[500,160],[600,280],[420,340]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4"/>`).join('')}</g>
+      <g fill="#fff" opacity="0.6">${Array.from({length:40},()=>`<circle cx="${(Math.random()*800)|0}" cy="${(Math.random()*450)|0}" r="${(Math.random()*1.3+0.3).toFixed(1)}"/>`).join('')}</g>
+    </svg>`;
+  }
+  if (pattern === 'glass') {
+    return `<svg class="neuro-bg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+      <defs><radialGradient id="gg1"><stop offset="0%" stop-color="${s.primary}" stop-opacity="0.28"/><stop offset="100%" stop-color="${s.primary}" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="640" cy="120" r="200" fill="url(#gg1)"/>
+      <g stroke="${s.cardTitle}" stroke-width="1" opacity="0.3">
+        <line x1="150" y1="200" x2="320" y2="200"/><line x1="320" y1="200" x2="320" y2="320"/><line x1="320" y1="320" x2="520" y2="320"/></g>
+      <g fill="none" stroke="${s.primary}" stroke-width="1.5" opacity="0.4">
+        <rect x="120" y="170" width="60" height="60" rx="8"/><rect x="290" y="290" width="60" height="60" rx="8"/></g>
+    </svg>`;
+  }
+  if (pattern === 'grid') {
+    return `<svg class="neuro-bg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+      <defs><pattern id="grd" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0 L0 0 0 40" fill="none" stroke="${s.primary}" stroke-width="0.5" opacity="0.18"/></pattern></defs>
+      <rect width="800" height="450" fill="url(#grd)"/>
+      <g stroke="${s.accent}" stroke-width="1" opacity="0.4"><line x1="0" y1="300" x2="800" y2="240"/></g>
+    </svg>`;
+  }
+  if (pattern === 'matrix') {
+    return `<svg class="neuro-bg" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+      <g stroke="${s.primary}" stroke-width="1" opacity="0.4">
+        <line x1="160" y1="120" x2="340" y2="120"/><line x1="340" y1="120" x2="340" y2="250"/>
+        <line x1="340" y1="250" x2="520" y2="250"/><line x1="520" y1="250" x2="620" y2="160"/>
+        <line x1="340" y1="120" x2="480" y2="200"/></g>
+      <g>${[[160,120,'#4ade80'],[340,120,'#22d3ee'],[340,250,'#e8913a'],[520,250,'#14b8a6'],[620,160,'#4ade80'],[480,200,'#22d3ee']].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="${p[2]}" opacity="0.85"/>`).join('')}</g>
+      <g fill="${s.primary}" opacity="0.3" font-family="monospace" font-size="11">${Array.from({length:8},(_,i)=>`<text x="${60+i*90}" y="${40+(i%3)*20}">[[ ]]</text>`).join('')}</g>
+    </svg>`;
+  }
+  return '';
+}
+
+let selectedId = null;
+
+function render() {
+  const app = document.getElementById('app');
+  let html = '';
+  for (const cat of CATEGORIES) {
+    const group = cat.id === 'rec' ? PALETTES.filter(p=>p.recommended) : PALETTES.filter(p=>!p.recommended);
+    if (!group.length) continue;
+    html += `<div class="category">
+      <div class="category-title">${cat.title}</div>
+      <div style="font-size:11px;color:#7d8590;margin:-8px 0 16px 15px">${cat.titleZh}</div>
+      <div class="palette-grid">`;
+    for (const p of group) {
+      const selClass = selectedId === p.id ? ' selected' : '';
+      const accentDot = `<span class="warm-dot" style="background:${p.warmAccent}" title="暖色点睛: ${p.warmAccent}"></span>`;
+      html += `<div class="palette-card${selClass}" onclick="selectPalette('${p.id}')">
+        <div class="color-strip">
+          ${p.colors.map(c => {
+            const fg = hexBrightness(c) > 140 ? '#1e293b' : '#fff';
+            return `<div style="background:${c}"><span class="hex-label" style="color:${fg}">${c}</span></div>`;
+          }).join('')}
+        </div>
+        <div class="card-info">
+          <span class="direction" style="background:${p.dirColor}22;color:${p.dirColor}">${p.direction}</span>
+          <h3>${p.nameZh} <span>${p.name}</span></h3>
+          <div class="subtitle">${p.mood}</div>
+          <div class="positioning">${p.positioning}</div>
+          <div class="tags">${accentDot}${p.tags.map(t => `<span class="tag${t==='RECOMMENDED'?' rec':''}">${t}</span>`).join('')}</div>
+          <div class="harmony-type">配色法：${p.harmony}</div>
+        </div>
+      </div>`;
+    }
+    html += '</div></div>';
+  }
+  html += '<div class="footer-spacer"></div>';
+  app.innerHTML = html;
+}
+
+function selectPalette(id) {
+  selectedId = id;
+  render();
+  showPreview(id);
+}
+
+function showPreview(id) {
+  const p = PALETTES.find(x => x.id === id);
+  if (!p) return;
+  const s = p.slide;
+
+  document.getElementById('previewTitle').textContent = `${p.direction} · ${p.nameZh} ${p.name}`;
+
+  const gradientColors = p.colors.map((c,i) => `${c} ${(i/(p.colors.length-1)*100).toFixed(0)}%`).join(', ');
+  let html = '';
+
+  html += `<div style="text-align:center;padding:10px 0">
+    <span style="background:#1f2733;color:#8b949e;padding:3px 14px;border-radius:20px;font-size:11px;font-weight:600">DARK THEME</span>
+    <span style="color:#7d8590;font-size:11px;margin-left:8px">${p.harmony}</span>
+  </div>`;
+
+  html += `<div class="vibe-note"><b>视觉基调：</b>${p.mood}。下方为 GBrain 真实封面 + 三模块卡片的套色预览。</div>`;
+
+  html += `<div style="max-width:820px;margin:12px auto 12px;padding:0 24px">
+    <div style="height:32px;border-radius:8px;background:linear-gradient(90deg,${gradientColors})"></div>
+  </div>`;
+
+  html += `<div class="proportion-bar">
+    <div class="bar-row">
+      <div class="bar-seg" style="flex:60;background:${s.bgFrom};color:${s.subtitle}">60% 背景</div>
+      <div class="bar-seg" style="flex:30;background:${s.cardBg.replace(/0\.\d+/,'1')};color:${s.cardText};border-left:1px solid rgba(128,128,128,0.2)">30% 卡片</div>
+      <div class="bar-seg" style="flex:10;background:${s.accent};color:${hexBrightness(s.accent)>140?'#1e293b':'#fff'};border-left:1px solid rgba(128,128,128,0.2)">10%</div>
+    </div>
+    <div class="legend">
+      <span>背景 60%: ${s.bgFrom}</span>
+      <span>卡片次色 30%</span>
+      <span>暖色点睛 10%: ${s.accent}</span>
+    </div>
+  </div>`;
+
+  // GBrain 真实封面 mockup
+  html += `<div class="slide-mockup" style="background:linear-gradient(135deg, ${s.bgFrom} 0%, ${s.bgMid} 50%, ${s.bgTo} 100%);">
+    ${neuroBg(p.bgPattern, s)}
+    <div class="slide-eyebrow" style="color:${s.eyebrow}">COMPILED RAG · BRAIN LAYER</div>
+    <div class="slide-title" style="color:${s.title}">GBrain：从笔记到会思考的大脑</div>
+    <div class="slide-subtitle" style="color:${s.subtitle}">编译式 RAG 的生产级实现 — 它不只给你页面，而是给你答案</div>
+    <div class="mock-cards">
+      <div class="mock-card" style="background:${s.cardBg};border:1px solid ${s.cardBorder};backdrop-filter:blur(8px)">
+        <h4 style="color:${s.cardTitle}">建图 Connect</h4>
+        <p style="color:${s.cardText}">self-wiring 把 wikilink 织成 typed 图谱</p>
+      </div>
+      <div class="mock-card" style="background:${s.cardBg};border:1px solid ${s.cardBorder};backdrop-filter:blur(8px)">
+        <h4 style="color:${s.accent}">动态建图演示</h4>
+        <p style="color:${s.cardText}">看图自己长出来 · LLM 0 次 · $0.00</p>
+      </div>
+      <div class="mock-card" style="background:${s.cardBg};border:1px solid ${s.cardBorder};backdrop-filter:blur(8px)">
+        <h4 style="color:${s.cardTitle}">读+想 Read&Think</h4>
+        <p style="color:${s.cardText}">检索+综合出带引用与空白分析的答案</p>
+      </div>
+    </div>
+  </div>`;
+
+  const bgBase = s.bgFrom;
+  const pairs = [
+    { label: '标题', fg: s.title, bg: bgBase },
+    { label: '正文', fg: s.textPrimary, bg: bgBase },
+    { label: '弱化文字', fg: s.textDim, bg: bgBase },
+    { label: '卡片标题', fg: s.cardTitle, bg: '#1e2830' },
+    { label: '强调色', fg: s.accent, bg: bgBase },
+  ];
+
+  html += `<div class="analysis-row">
+    <div class="analysis-box">
+      <h4>色彩角色 COLOR ROLES</h4>
+      <div class="role-chips">
+        ${[
+          {l:'主色',c:s.primary}, {l:'次色',c:s.secondary}, {l:'点睛',c:s.accent},
+          {l:'标题',c:s.title}, {l:'正文',c:s.textPrimary}, {l:'弱化',c:s.textDim}
+        ].map(item => {
+          const fg = hexBrightness(item.c) > 140 ? '#1e293b' : '#fff';
+          return `<div class="role-chip" style="background:${item.c};color:${fg}">
+            <div class="label">${item.l}</div><div class="hex">${item.c}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="analysis-box">
+      <h4>对比度 CONTRAST (WCAG)</h4>
+      <div class="contrast-row">
+        ${pairs.map(pair => {
+          const ratio = contrastRatio(pair.fg, pair.bg).toFixed(1);
+          const grade = ratio >= 7 ? 'aaa' : ratio >= 4.5 ? 'aa' : 'fail';
+          const gradeLabel = ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : 'FAIL';
+          return `<div class="contrast-item">
+            <div class="sample" style="background:${pair.bg};color:${pair.fg};border:1px solid rgba(128,128,128,0.2)">样例</div>
+            <span class="ratio">${ratio}:1</span>
+            <span class="grade grade-${grade}">${gradeLabel}</span>
+            <span style="color:#7d8590;font-size:10px">${pair.label}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+
+  html += `<div class="css-vars"><pre><span class="key">:root</span> {
+  <span class="cmt">/* 60% - 背景 */</span>
+  <span class="key">--bg-deep</span>: <span class="val">${s.bgFrom}</span>;
+  <span class="key">--bg-mid</span>: <span class="val">${s.bgMid}</span>;
+
+  <span class="cmt">/* 30% - 主次色 / 卡片 */</span>
+  <span class="key">--primary</span>: <span class="val">${s.primary}</span>;
+  <span class="key">--secondary</span>: <span class="val">${s.secondary}</span>;
+  <span class="key">--card-bg</span>: <span class="val">${s.cardBg}</span>;
+  <span class="key">--card-border</span>: <span class="val">${s.cardBorder}</span>;
+
+  <span class="cmt">/* 10% - 暖色点睛（跨色温） */</span>
+  <span class="key">--accent</span>: <span class="val">${s.accent}</span>;
+
+  <span class="cmt">/* 文字（对比度 7:1~13:1 舒适区） */</span>
+  <span class="key">--text-primary</span>: <span class="val">${s.textPrimary}</span>;
+  <span class="key">--text-dim</span>: <span class="val">${s.textDim}</span>;
+}</pre></div>`;
+
+  html += `<div style="text-align:center;padding:0 24px 24px">
+    <button onclick="confirmSelection('${p.id}')" style="
+      background: linear-gradient(135deg, #238636, #2ea043);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 14px 48px; font-size: 15px; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.5px;
+      transition: box-shadow 0.2s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(35,134,54,0.3);
+    " onmouseover="this.style.boxShadow='0 6px 24px rgba(35,134,54,0.5)';this.style.transform='translateY(-1px)'"
+       onmouseout="this.style.boxShadow='0 4px 16px rgba(35,134,54,0.3)';this.style.transform='none'">
+      确认选择此配色
+    </button>
+    <div id="confirmFeedback" style="margin-top:12px;font-size:12px;color:#7d8590"></div>
+  </div>`;
+
+  document.getElementById('previewContent').innerHTML = html;
+  document.getElementById('previewPanel').classList.add('open');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePreview() {
+  document.getElementById('previewPanel').classList.remove('open');
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function confirmSelection(id) {
+  const p = PALETTES.find(x => x.id === id);
+  if (!p) return;
+  const s = p.slide;
+
+  const manifest = {
+    _palette_selection: true,
+    preset: p.id,
+    preset_name: p.nameZh,
+    direction: p.direction,
+    theme: p.theme,
+    harmony: p.harmony,
+    primary_hex: s.primary,
+    secondary_hex: s.secondary,
+    accent_hex: s.accent,
+    bg_deep_hex: s.bgFrom,
+    bg_mid_hex: s.bgMid,
+    text_primary_hex: s.textPrimary,
+    text_dim_hex: s.textDim,
+    card_bg: s.cardBg,
+    card_border: s.cardBorder,
+    card_title_hex: s.cardTitle,
+    card_text_hex: s.cardText,
+    eyebrow_hex: s.eyebrow,
+    warm_accent_hex: p.warmAccent,
+    bg_pattern: p.bgPattern,
+    palette_colors: p.colors
+  };
+
+  const json = JSON.stringify(manifest, null, 2);
+
+  navigator.clipboard.writeText(json).then(() => {
+    const fb = document.getElementById('confirmFeedback');
+    fb.innerHTML = `<span style="color:#3fb950;font-weight:600">
+      "${p.direction} · ${p.nameZh}" 已确认，配置已复制到剪贴板
+    </span><br><span style="color:#484f58">
+      请返回终端告诉 Designer 你选了哪个方向，会自动读取你的选择
+    </span>`;
+    const btn = fb.previousElementSibling;
+    btn.style.background = '#21262d';
+    btn.style.boxShadow = 'none';
+    btn.style.cursor = 'default';
+    btn.textContent = '已确认';
+    btn.onclick = null;
+    selectedId = id;
+    render();
+  }).catch(() => {
+    const fb = document.getElementById('confirmFeedback');
+    fb.innerHTML = `<div style="text-align:left;background:#11151f;border:1px solid #1f2733;border-radius:8px;padding:12px;margin-top:8px">
+      <div style="color:#f0b429;margin-bottom:6px;font-weight:600">剪贴板不可用，请手动复制以下 JSON：</div>
+      <textarea style="width:100%;height:120px;background:#0d1117;color:#c9d1d9;border:1px solid #1f2733;border-radius:6px;padding:8px;font-family:monospace;font-size:10px;resize:vertical" readonly onclick="this.select()">${json}</textarea>
+    </div>`;
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePreview();
+});
+
+render();
+</script>
+</body>
+</html>

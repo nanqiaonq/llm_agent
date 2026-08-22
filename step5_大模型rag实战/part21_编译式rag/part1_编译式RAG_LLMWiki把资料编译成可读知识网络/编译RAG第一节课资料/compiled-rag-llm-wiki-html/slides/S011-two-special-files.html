@@ -1,0 +1,324 @@
+<style>
+/* S011 两个特殊文件 · 双卡片对照 · 🟢 静态 · G1 月白灰蓝 */
+/* font-style:normal 关键元素 ≥3 次显式声明 */
+
+.s011-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;   /* 纵向铺开 */
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1640px;               /* 整体加宽，卡片区撑满 */
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+/* 标题组（窄顶） */
+.s011-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+
+.s011-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.3rem);   /* +15% */
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.s011-title-sub {
+  display: block;
+  font-size: clamp(0.92rem, 1.4vw, 1.1rem);  /* +10% */
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.35rem;
+}
+
+/* 双卡片网格 */
+.s011-cards {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.2rem;
+  align-items: stretch;
+}
+
+/* 单卡 */
+.s011-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.6rem 1.7rem;         /* +14% */
+  backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+/* 卡片顶部：图标 + 文件名 */
+.s011-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.s011-card-icon {
+  font-size: 1.9rem;              /* +19% */
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.s011-card-name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.s011-card-filename {
+  font-family: var(--font-mono);
+  font-size: clamp(1.05rem, 1.65vw, 1.3rem);   /* +13% */
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.s011-card-role {
+  font-family: var(--font-body);
+  font-size: 0.82rem;             /* +9% */
+  font-style: normal;
+  color: var(--text-dim);
+}
+
+/* 属性行 */
+.s011-props {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;                   /* +21% */
+}
+
+.s011-prop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.s011-prop-key {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;             /* +8% */
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-dim);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.s011-prop-val {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 1.3vw, 1.03rem);    /* +12% */
+  font-weight: 500;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.55;
+}
+
+/* 职责行做主角（突出核心职责） */
+.s011-prop.primary .s011-prop-val {
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  font-weight: 600;
+}
+
+.s011-prop-val .chip {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;             /* +8% */
+  font-style: normal;
+  background: rgba(110, 126, 140, 0.1);
+  border: 1px solid var(--card-border);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.38rem;
+  color: var(--text-secondary);
+  display: inline-block;
+  margin-top: 0.1rem;
+}
+
+/* index.md 强调色 */
+.s011-card.index-card .s011-card-filename { color: var(--color-compile); }
+.s011-card.index-card { border-color: rgba(110, 140, 136, 0.3); }
+
+/* log.md 强调色 */
+.s011-card.log-card .s011-card-filename { color: var(--color-interpret); }
+.s011-card.log-card { border-color: rgba(183, 150, 131, 0.3); }
+
+/* 底部示例展示框 */
+.s011-card-example {
+  background: var(--bg-mid);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  padding: 0.7rem 0.9rem;         /* +17% */
+  font-family: var(--font-mono);
+  font-size: 0.76rem;             /* +9% */
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.s011-card-example .hl {
+  color: var(--color-compile);
+  font-weight: 600;
+}
+
+.s011-card-example .hl-warm {
+  color: var(--color-interpret);
+  font-weight: 600;
+}
+
+/* 底部说明 */
+.s011-note {
+  width: 100%;
+  max-width: 1120px;
+  padding: 0.75rem 1.3rem;        /* +15% */
+  background: rgba(110, 126, 140, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.s011-note-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;             /* +8% */
+  font-weight: 600;
+  font-style: normal;
+  color: var(--secondary);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.s011-note-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 1.2vw, 0.97rem);   /* +10% */
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* 入场动画 */
+.s011-heading { animation: s011Up 0.4s ease both 0ms; }
+.s011-cards   { animation: s011Up 0.4s ease both 80ms; }
+.s011-note    { animation: s011Up 0.4s ease both 140ms; }
+
+@keyframes s011Up {
+  from { opacity: 0; transform: translateY(0.8rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="11">
+  <div class="s011-wrap">
+
+    <!-- 标题组 -->
+    <div class="s011-heading">
+      <h2 class="s011-title">
+        两个特殊文件：index.md 与 log.md
+        <span class="s011-title-sub">wiki 层中身份特殊的住户——承担导航与审计，不承载知识内容</span>
+      </h2>
+    </div>
+
+    <!-- 双卡片 -->
+    <div class="s011-cards">
+
+      <!-- index.md 卡 -->
+      <div class="s011-card index-card">
+        <div class="s011-card-header">
+          <span class="s011-card-icon">📑</span>
+          <div class="s011-card-name-wrap">
+            <div class="s011-card-filename">index.md</div>
+            <div class="s011-card-role">wiki 层内容目录 · 查询导航入口</div>
+          </div>
+        </div>
+
+        <div class="s011-props">
+          <div class="s011-prop primary">
+            <div class="s011-prop-key">职责</div>
+            <div class="s011-prop-val">按类目列出所有 wiki 页，每页配一行摘要 + 链接。Agent 查询时从这里开始导航</div>
+          </div>
+          <div class="s011-prop">
+            <div class="s011-prop-key">类比</div>
+            <div class="s011-prop-val">一本书的"目录页"——先找 index.md，再定位到相关的概念页 / 系统页</div>
+          </div>
+          <div class="s011-prop">
+            <div class="s011-prop-key">更新时机</div>
+            <div class="s011-prop-val">每次 Ingest 完成后由 agent 自动追加新页条目</div>
+          </div>
+        </div>
+
+        <!-- 示例 -->
+        <div class="s011-card-example">
+          <span class="hl">## Concepts</span><br>
+          - [[concepts/compile-vs-interpret]] — 编译vs解释核心隐喻<br>
+          - [[concepts/compounding-asset]] — 复利资产模型<br>
+          <span class="hl">## Debates</span><br>
+          - [[debates/query-cost-20x]] — 查询成本实测对照
+        </div>
+      </div>
+
+      <!-- log.md 卡 -->
+      <div class="s011-card log-card">
+        <div class="s011-card-header">
+          <span class="s011-card-icon">📜</span>
+          <div class="s011-card-name-wrap">
+            <div class="s011-card-filename">log.md</div>
+            <div class="s011-card-role">变更日志 · append-only（只追加）</div>
+          </div>
+        </div>
+
+        <div class="s011-props">
+          <div class="s011-prop primary">
+            <div class="s011-prop-key">职责</div>
+            <div class="s011-prop-val">记录每次 Ingest / re-ingest 的时间与范围，让"wiki 是否更新过、怎么长成今天这样"可被审计</div>
+          </div>
+          <div class="s011-prop">
+            <div class="s011-prop-key">关键约束</div>
+            <div class="s011-prop-val">
+              <span class="chip">append-only</span>（只追加、不改旧记录）——统一前缀便于机器解析与人工回溯
+            </div>
+          </div>
+          <div class="s011-prop">
+            <div class="s011-prop-key">条目前缀格式</div>
+            <div class="s011-prop-val">每条以 <span style="font-family:var(--font-mono); font-size:0.85rem; color:var(--color-interpret);">## [YYYY-MM-DD] ingest | 标题</span> 开头</div>
+          </div>
+        </div>
+
+        <!-- 示例 -->
+        <div class="s011-card-example">
+          <span class="hl-warm">## [2026-06-01] ingest | karpathy-llm-wiki</span><br>
+          Pages added: compile-vs-interpret, compounding-asset<br>
+          <span class="hl-warm">## [2026-06-05] ingest | preregistered-critique</span><br>
+          Pages added: debates/query-cost-20x · updated: index.md
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 底部提示 -->
+    <div class="s011-note">
+      <span class="s011-note-label">注意</span>
+      <span class="s011-note-text">这两个文件承担"导航 + 审计"职责，不算知识内容页——所以第三章说"6 个知识页"、"8 个文件"两个数字都对，口径不同而已</span>
+    </div>
+
+  </div>
+</div>

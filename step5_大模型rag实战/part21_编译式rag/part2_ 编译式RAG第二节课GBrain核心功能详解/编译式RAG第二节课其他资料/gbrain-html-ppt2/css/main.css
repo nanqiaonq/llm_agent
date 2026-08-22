@@ -1,0 +1,638 @@
+/*
+ * GBrain HTML 课件 — 全局样式
+ * 预设：P06 极简钢蓝数据感 (confirmed 2026-06-22)
+ * 所有颜色通过 CSS 变量引用，禁止硬编码 HEX 值
+ * ←§一.5 style_manifest 零失真注入
+ */
+
+/* ===== :root CSS 变量 (12个必须变量，来源：style_manifest.json P06) ===== */
+:root {
+  /* 主色：钢蓝 ←§一.5 primary */
+  --primary: #9bcbd7;
+  --primary-rgb: 155, 203, 215;
+
+  /* 次色：钢蓝灰 ←§一.5 secondary */
+  --secondary: #6a8ba0;
+  --secondary-rgb: 106, 139, 160;
+
+  /* 点睛色：暖金，严格限 10% 面积 ←§一.5 accent */
+  --accent: #e8a849;
+  --accent-rgb: 232, 168, 73;
+
+  /* 深背景 ←§一.5 bg_deep */
+  --bg-deep: #141a26;
+  --bg-deep-rgb: 20, 26, 38;
+
+  /* 中背景 ←§一.5 bg_mid */
+  --bg-mid: #1e2838;
+  --bg-mid-rgb: 30, 40, 56;
+
+  /* 表面背景 (bg_surface = bg_mid 微调) */
+  --bg-surface: #232f42;
+
+  /* 卡片背景 / 边框 ←§一.5 card_bg / card_border */
+  --card-bg: rgba(30, 40, 56, 0.7);
+  --card-border: rgba(155, 203, 215, 0.18);
+  --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+
+  /* 文字 */
+  --text-primary: #e2e8ee;
+  --text-dim: #7d8fa4;
+  --card-title: #aadcec;
+  --card-text: #8b9aaf;
+  --eyebrow: #81a8b9;
+
+  /* 字体 ←§一.5 font_pair = Sora/Noto Sans SC, font_mono = JetBrains Mono */
+  --font-display: 'Sora', 'Noto Sans SC', sans-serif;
+  --font-body: 'Noto Sans SC', 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Brass / 强调色（黄铜色正体差异化） */
+  --brass-dark: #c48a2e;
+
+  /* 工具栏尺寸 */
+  --toolbar-width: 64px;
+  --progress-height: 3px;
+  --nav-height: 48px;
+
+  /* 功能性颜色（工具栏/画板/警告，禁止在 :root 外硬编码） */
+  --color-warn: #ef4444;
+  --color-warn-rgb: 239, 68, 68;
+  --color-pen-default: #3B82F6;
+  --color-white: #ffffff;
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-style: normal; /* 全局禁斜体 ←§一.5 font-style:normal */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 强制全局正体 */
+*, *::before, *::after {
+  font-style: normal; /* 第2次确保无斜体 */
+}
+
+em, i {
+  font-style: normal; /* 第3次：斜体标签也走正体 */
+}
+
+/* ===== 全局隐藏滚动条（保留滚动能力，2026-06-24 用户要求去掉右侧滑动条） ===== */
+*::-webkit-scrollbar { width: 0; height: 0; display: none; }
+* { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* ===== 背景：纯色 bg_deep（用户要求去网格，2026-06-23） ===== */
+
+/* ===== 进度条 ===== */
+#progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--progress-height);
+  background: rgba(var(--primary-rgb), 0.12);
+  z-index: 1000;
+}
+
+#progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  width: 4%;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ===== #app 主容器 ===== */
+#app {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* ===== slide 基类：铁律 — align-items 居中，禁贴顶 ===== */
+.slide {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;        /* 水平居中 */
+  justify-content: center;    /* 垂直居中 */
+  padding: 2rem 2rem 2rem calc(var(--toolbar-width) + 2rem);
+  position: relative;
+  overflow: hidden;
+}
+
+/* slide-viewport 充满剩余空间 */
+#slide-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#slide-viewport > .slide {
+  position: absolute;
+  inset: 0;
+}
+
+/* ===== 工具栏：左侧垂直胶囊 ←§一.5 五件套 ===== */
+#toolbar {
+  position: fixed;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(var(--bg-mid-rgb, 30, 40, 56), 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 8px 4px;
+  z-index: 500;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  width: var(--toolbar-width);
+}
+
+#toolbar button,
+#color-picker-wrap > #btn-color {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 6px 4px;
+  width: 52px;
+  min-height: 52px;
+  transition: background 0.2s, color 0.2s;
+  font-family: var(--font-body);
+}
+
+#toolbar button:hover,
+#color-picker-wrap > #btn-color:hover {
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary);
+}
+
+#toolbar button.active,
+#color-picker-wrap > #btn-color.active {
+  background: rgba(var(--primary-rgb), 0.2);
+  color: var(--primary);
+}
+
+/* 画板模式时 btn-menu 变红 ←§一.2 */
+body.draw-mode #btn-menu {
+  color: var(--color-warn);
+}
+
+.btn-key {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  background: rgba(var(--primary-rgb), 0.08);
+  border-radius: 3px;
+  padding: 0 3px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+}
+
+.btn-label {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* ===== 颜色选择器 ←§一.3 彩色圆点，无文字标签 ===== */
+#color-picker-wrap {
+  position: relative;
+}
+
+#btn-color {
+  position: relative;
+}
+
+#color-dot-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  display: block;
+  background: var(--color-pen-default); /* 初始蓝色，JS 会覆盖 */
+}
+
+#color-picker-popup {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(var(--bg-mid-rgb, 30, 40, 56), 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 600;
+  box-shadow: var(--card-shadow);
+}
+
+#color-picker-popup.open {
+  display: flex;
+}
+
+.color-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+  padding: 0;
+  min-height: unset;
+}
+
+.color-dot:hover {
+  transform: scale(1.15);
+}
+
+.color-dot.selected {
+  border-color: var(--color-white); /* 选中白圈 ←§一.3 */
+}
+
+/* ===== 侧边菜单 ←§一.4 目录分组铁律 ===== */
+#menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 800;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#menu-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#side-menu {
+  position: fixed;
+  left: -340px;
+  top: 0;
+  bottom: 0;
+  width: 320px;
+  background: rgba(var(--bg-deep-rgb, 20, 26, 38), 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--card-border);
+  z-index: 900;
+  overflow-y: auto;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+#side-menu.open {
+  left: 0;
+}
+
+#menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+
+.menu-logo {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+}
+
+.menu-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.menu-close-btn:hover {
+  color: var(--text-primary);
+}
+
+#menu-list {
+  padding: 0.75rem 0.75rem 1.5rem;
+  flex: 1;
+}
+
+/* ←§一.4 章级标题：蓝色粗体，不可点 */
+.menu-chapter {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.9rem 0.5rem 0.35rem;
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.15);
+  margin-bottom: 0.25rem;
+  user-select: none;
+  cursor: default;
+}
+
+/* ←§一.4 缩进子项：序号 + 标题，可点跳转 */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem 0.45rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.menu-item:hover {
+  background: rgba(var(--primary-rgb), 0.08);
+  color: var(--text-primary);
+}
+
+/* ←§一.4 当前页高亮 var(--primary) 10% */
+.menu-item.active {
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.menu-item-num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  min-width: 1.6rem;
+  opacity: 0.7;
+}
+
+.menu-item.active .menu-item-num {
+  color: var(--primary);
+  opacity: 1;
+}
+
+/* ===== 双 canvas ←§一.1 ←§一.2 ===== */
+#pen-trail-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;  /* 默认不截获事件 */
+  display: block;
+}
+
+#pen-trail-canvas.pen-active {
+  pointer-events: all;
+  cursor: crosshair;
+}
+
+#draw-board-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  display: block;
+}
+
+/* ===== 底部导航栏 ===== */
+#nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(var(--bg-deep-rgb, 20, 26, 38), 0.85);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--card-border);
+  z-index: 400;
+  padding: 0 1rem;
+  transition: box-shadow 0.3s;
+}
+
+/* ←§一.2 画板模式：底栏红光晕 */
+body.draw-mode #nav-bar {
+  box-shadow: 0 -2px 20px rgba(var(--color-warn-rgb), 0.35);
+  border-top-color: rgba(var(--color-warn-rgb), 0.4);
+}
+
+#draw-mode-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  color: var(--color-warn);
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+
+body.draw-mode #draw-mode-hint {
+  opacity: 1;
+}
+
+#nav-prev,
+#nav-next {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+#nav-prev:hover,
+#nav-next:hover {
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary);
+  border-color: rgba(var(--primary-rgb), 0.4);
+}
+
+#nav-prev:disabled,
+#nav-next:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+#page-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+#page-current {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.page-sep {
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+/* ===== glass-card 通用组件 ===== */
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ===== animate-ready 入场动画基础 ===== */
+.animate-ready {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.animate-ready.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== 高度断点（三档必须全部包含）===== */
+/* ←§一.5 builder 铁律：700/600/500 三断点禁省略 */
+
+@media (max-height: 700px) {
+  .slide {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  #toolbar {
+    gap: 2px;
+    padding: 6px 4px;
+  }
+  #toolbar button,
+  #color-picker-wrap > #btn-color {
+    min-height: 44px;
+    padding: 4px;
+  }
+  .btn-label {
+    display: none;
+  }
+}
+
+@media (max-height: 600px) {
+  .slide {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  #toolbar {
+    gap: 0;
+    padding: 4px;
+    border-radius: 12px;
+  }
+  #toolbar button,
+  #color-picker-wrap > #btn-color {
+    min-height: 38px;
+    width: 44px;
+  }
+  #toolbar svg {
+    width: 16px;
+    height: 16px;
+  }
+  .btn-key {
+    display: none;
+  }
+  #nav-bar {
+    height: 40px;
+  }
+}
+
+@media (max-height: 500px) {
+  .slide {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  #toolbar {
+    display: none; /* 极小屏隐藏工具栏，键盘快捷键仍有效 */
+  }
+  #nav-bar {
+    height: 36px;
+  }
+  #progress-track {
+    height: 2px;
+  }
+}
+
+/* ===== prefers-reduced-motion ←§一.5 必须包含 ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-ready {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===== 响应式宽度 ===== */
+@media (max-width: 768px) {
+  .slide {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  #side-menu {
+    width: 280px;
+  }
+}

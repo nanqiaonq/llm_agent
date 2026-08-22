@@ -1,0 +1,450 @@
+<style>
+  /* S009 零LLM确定性与可追溯 — edge-to-source-trace */
+  /* P06 极简钢蓝数据感 · dark theme */
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .s009-wrap {
+    transform: scale(0.936);
+    transform-origin: center center;
+    width: 100%;
+    max-width: 900px;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    position: relative;
+    font-style: normal;
+
+    /* CSS Variables — P06 */
+    --bg-deep: #141a26;
+    --bg-mid: #1e2838;
+    --primary: #9bcbd7;
+    --secondary: #6a8ba0;
+    --accent: #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim: #7d8fa4;
+    --card-bg: rgba(30,40,56,0.7);
+    --card-border: rgba(155,203,215,0.18);
+    --card-title: #aadcec;
+    --eyebrow-col: #81a8b9;
+    /* 四关系类型色 */
+    --type-founded: #9bcbd7;
+    --type-works-at: #7ab8c8;
+    --type-invested: #e8a849;
+    --type-advises: #aadcec;
+
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+  }
+
+  .s009-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow-col);
+    font-style: normal;
+    margin-bottom: 0.6rem;
+    text-align: center;
+  }
+
+  .s009-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 0.35rem;
+    line-height: 1.25;
+  }
+
+  .s009-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+    font-weight: 400;
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 1.8rem;
+  }
+
+  /* 主体: 左列(边列表) + 右列(源行预览) */
+  .s009-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+  }
+
+  /* 左列: 边列表 */
+  .s009-edges-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    padding: 1.2rem 1.4rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  .s009-panel-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-style: normal;
+    margin-bottom: 0.4rem;
+  }
+
+  .s009-edge-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    font-style: normal;
+  }
+
+  .s009-edge-item:hover,
+  .s009-edge-item.active {
+    background: rgba(155,203,215,0.08);
+    border-color: var(--card-border);
+  }
+
+  .s009-type-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .s009-edge-from,
+  .s009-edge-to {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--card-title);
+    font-style: normal;
+  }
+
+  .s009-edge-arrow {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .s009-edge-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    margin-left: auto;
+    font-style: normal;
+  }
+
+  .type-founded { background: rgba(155,203,215,0.15); color: var(--type-founded); }
+  .type-works-at { background: rgba(122,184,200,0.15); color: var(--type-works-at); }
+  .type-invested { background: rgba(232,168,73,0.15); color: var(--type-invested); }
+  .type-advises { background: rgba(170,220,236,0.15); color: var(--type-advises); }
+
+  /* 右列: markdown源行预览 */
+  .s009-source-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    padding: 1.2rem 1.4rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  .s009-source-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .s009-source-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-style: normal;
+  }
+
+  .s009-source-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(155,203,215,0.1);
+  }
+
+  .s009-src-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    transition: background 0.25s ease;
+    padding: 0;
+  }
+
+  .s009-src-line.highlighted {
+    background: rgba(155,203,215,0.12);
+  }
+
+  .s009-line-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.67rem;
+    color: var(--text-dim);
+    padding: 0.35rem 0.6rem;
+    min-width: 2.4rem;
+    text-align: right;
+    border-right: 1px solid rgba(155,203,215,0.1);
+    user-select: none;
+    font-style: normal;
+    flex-shrink: 0;
+  }
+
+  .s009-line-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.67rem;
+    color: var(--text-primary);
+    padding: 0.35rem 0.7rem;
+    white-space: pre;
+    font-style: normal;
+  }
+
+  .s009-src-line.highlighted .s009-line-code {
+    color: var(--primary);
+  }
+
+  .wikilink {
+    color: var(--accent);
+  }
+
+  .verb {
+    color: var(--type-founded);
+  }
+
+  /* 底部三大特性 */
+  .s009-traits {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.9rem;
+    width: 100%;
+    min-width: 0;
+    margin-top: 1.2rem;
+  }
+
+  .s009-trait-card {
+    background: rgba(30,40,56,0.5);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .s009-trait-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+    font-weight: 700;
+    color: var(--primary);
+    font-style: normal;
+    margin-bottom: 0.25rem;
+  }
+
+  .s009-trait-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-style: normal;
+    line-height: 1.45;
+  }
+
+  .s009-hint {
+    text-align: center;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-style: normal;
+    margin-top: 0.8rem;
+  }
+
+  @media (max-height: 700px) {
+    .s009-wrap { padding: 1.5rem 3rem; }
+    .s009-traits { margin-top: 0.7rem; gap: 0.6rem; }
+  }
+</style>
+
+<div class="slide" id="S009">
+  <div class="s009-wrap">
+
+    <div class="s009-eyebrow">能力一 · 建图 Self-Wiring</div>
+    <div class="s009-title">零 LLM 的确定性与可追溯</div>
+    <div class="s009-subtitle">每条边都能溯源到你写的那一行 Markdown，重跑图一模一样</div>
+
+    <div class="s009-body">
+
+      <!-- 左: 边列表 -->
+      <div class="s009-edges-panel">
+        <div class="s009-panel-label">知识图谱 · 边（点击溯源）</div>
+
+        <div class="s009-edge-item active" data-line="3" onclick="s009Highlight(this, 3)">
+          <div class="s009-type-dot" style="background:var(--type-founded)"></div>
+          <span class="s009-edge-from">Alice</span>
+          <span class="s009-edge-arrow">→</span>
+          <span class="s009-edge-to">NexaFlow</span>
+          <span class="s009-edge-type type-founded">founded</span>
+        </div>
+
+        <div class="s009-edge-item" data-line="5" onclick="s009Highlight(this, 5)">
+          <div class="s009-type-dot" style="background:var(--type-works-at)"></div>
+          <span class="s009-edge-from">Bob</span>
+          <span class="s009-edge-arrow">→</span>
+          <span class="s009-edge-to">NexaFlow</span>
+          <span class="s009-edge-type type-works-at">works_at</span>
+        </div>
+
+        <div class="s009-edge-item" data-line="7" onclick="s009Highlight(this, 7)">
+          <div class="s009-type-dot" style="background:var(--type-invested)"></div>
+          <span class="s009-edge-from">AlphaVentures</span>
+          <span class="s009-edge-arrow">→</span>
+          <span class="s009-edge-to">NexaFlow</span>
+          <span class="s009-edge-type type-invested">invested_in</span>
+        </div>
+
+        <div class="s009-edge-item" data-line="9" onclick="s009Highlight(this, 9)">
+          <div class="s009-type-dot" style="background:var(--type-advises)"></div>
+          <span class="s009-edge-from">Carol</span>
+          <span class="s009-edge-arrow">→</span>
+          <span class="s009-edge-to">SparkField</span>
+          <span class="s009-edge-type type-advises">advises</span>
+        </div>
+
+        <div style="border-top:1px solid rgba(155,203,215,0.1); margin-top:0.3rem; padding-top:0.5rem;">
+          <div class="s009-panel-label" style="margin-bottom:0.3rem;">解析规则（无 LLM）</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.63rem;color:var(--text-dim);line-height:1.6;font-style:normal;">
+            正文 <span style="color:var(--accent)">[[wikilink]]</span> + 动词 → 类型<br>
+            frontmatter 字段 → 直接映射<br>
+            正则规则 · 零 LLM · 零推断
+          </div>
+        </div>
+      </div>
+
+      <!-- 右: 源行预览 -->
+      <div class="s009-source-panel">
+        <div class="s009-source-header">
+          <div class="s009-panel-label" style="margin-bottom:0;">Markdown 源文件（点击边查看来源）</div>
+        </div>
+        <div class="s009-source-filename">people/alice.md</div>
+
+        <div class="s009-source-lines" id="s009-source">
+          <div class="s009-src-line" data-srcline="1">
+            <div class="s009-line-num">1</div>
+            <div class="s009-line-code">---</div>
+          </div>
+          <div class="s009-src-line" data-srcline="2">
+            <div class="s009-line-num">2</div>
+            <div class="s009-line-code">title: Alice Chen</div>
+          </div>
+          <div class="s009-src-line highlighted" data-srcline="3" id="s009-line-3">
+            <div class="s009-line-num">3</div>
+            <div class="s009-line-code">Alice is the <span class="verb">founder</span> of <span class="wikilink">[[companies/nexaflow]]</span></div>
+          </div>
+          <div class="s009-src-line" data-srcline="4">
+            <div class="s009-line-num">4</div>
+            <div class="s009-line-code">---</div>
+          </div>
+          <div class="s009-src-line" data-srcline="5" id="s009-line-5">
+            <div class="s009-line-num">5</div>
+            <div class="s009-line-code">Bob <span class="verb">works at</span> <span class="wikilink">[[companies/nexaflow]]</span></div>
+          </div>
+          <div class="s009-src-line" data-srcline="6">
+            <div class="s009-line-num">6</div>
+            <div class="s009-line-code">&nbsp;</div>
+          </div>
+          <div class="s009-src-line" data-srcline="7" id="s009-line-7">
+            <div class="s009-line-num">7</div>
+            <div class="s009-line-code"><span class="wikilink">[[funds/alphaventures]]</span> <span class="verb">invested in</span> us</div>
+          </div>
+          <div class="s009-src-line" data-srcline="8">
+            <div class="s009-line-num">8</div>
+            <div class="s009-line-code">&nbsp;</div>
+          </div>
+          <div class="s009-src-line" data-srcline="9" id="s009-line-9">
+            <div class="s009-line-num">9</div>
+            <div class="s009-line-code">Carol <span class="verb">advises</span> <span class="wikilink">[[companies/sparkfield]]</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:0.5rem; padding: 0.45rem 0.7rem; background: rgba(155,203,215,0.07); border-radius:0.4rem; border-left: 3px solid var(--primary);">
+          <div style="font-family:'Noto Sans SC',sans-serif;font-size:0.72rem;color:var(--card-title);font-style:normal;line-height:1.5;">
+            溯源闭环：图上每条边 = 源文件特定一行<br>
+            <span style="color:var(--text-dim);">重跑 self-wiring → 同一行 → 同一条边 · 结果确定</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /s009-body -->
+
+    <!-- 底部三特性 -->
+    <div class="s009-traits">
+      <div class="s009-trait-card">
+        <div class="s009-trait-title">零 LLM</div>
+        <div class="s009-trait-desc">纯正则解析 wikilink<br>不依赖任何推断，成本 $0.00</div>
+      </div>
+      <div class="s009-trait-card">
+        <div class="s009-trait-title">确定性</div>
+        <div class="s009-trait-desc">相同 markdown 重跑 N 次<br>图拓扑完全一致，可单测</div>
+      </div>
+      <div class="s009-trait-card">
+        <div class="s009-trait-title">可追溯</div>
+        <div class="s009-trait-desc">每条边映射到源文件行<br>改一行 → 对应边变化</div>
+      </div>
+    </div>
+
+    <div class="s009-hint">点击左侧任意一条边 → 右侧对应源行高亮跳亮</div>
+
+  </div>
+</div>
+
+<script>
+function s009Highlight(el, lineNum) {
+  var panel = document.getElementById('s009-source');
+  if (!panel) return;
+  // 清除所有 active
+  var allItems = document.querySelectorAll('.s009-edge-item');
+  allItems.forEach(function(item) { item.classList.remove('active'); });
+  el.classList.add('active');
+  // 清除所有高亮源行
+  var allLines = panel.querySelectorAll('.s009-src-line');
+  allLines.forEach(function(line) { line.classList.remove('highlighted'); });
+  // 高亮目标行
+  var target = document.getElementById('s009-line-' + lineNum);
+  if (target) { target.classList.add('highlighted'); }
+}
+</script>

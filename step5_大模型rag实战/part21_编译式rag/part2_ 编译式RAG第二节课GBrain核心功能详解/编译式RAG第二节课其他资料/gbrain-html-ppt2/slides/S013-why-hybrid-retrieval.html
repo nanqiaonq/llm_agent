@@ -1,0 +1,358 @@
+<style>
+  /* S013 为什么要混合检索 — venn-blindspot-overlap */
+  /* P06 极简钢蓝数据感 · dark theme */
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .s013-wrap {
+    transform: scale(1.144);
+    transform-origin: center center;
+    width: 100%;
+    max-width: 900px;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    position: relative;
+    font-style: normal;
+
+    --bg-deep: #141a26;
+    --bg-mid: #1e2838;
+    --primary: #9bcbd7;
+    --secondary: #6a8ba0;
+    --accent: #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim: #7d8fa4;
+    --card-bg: rgba(30,40,56,0.7);
+    --card-border: rgba(155,203,215,0.18);
+    --card-title: #aadcec;
+    --eyebrow-col: #81a8b9;
+    --col-bm25: #9bcbd7;
+    --col-vec: #e8a849;
+    --col-overlap: #aadcec;
+    --border-primary-25: rgba(155,203,215,0.25);
+    --border-accent-25: rgba(232,168,73,0.25);
+    --border-overlap-30: rgba(170,220,236,0.3);
+
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+  }
+
+  .s013-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow-col);
+    font-style: normal;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .s013-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 0.3rem;
+    line-height: 1.25;
+  }
+
+  .s013-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 1.3rem;
+  }
+
+  /* 主体: 韦恩图区 + 右侧说明 */
+  .s013-body {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.3rem;
+    align-items: center;
+    min-width: 0;
+    margin-bottom: 1.1rem;
+  }
+
+  /* 韦恩图 SVG 容器 */
+  .s013-venn-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.5 / 1;
+    min-width: 0;
+    max-height: 240px;
+  }
+
+  .s013-venn-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* 右侧说明卡 */
+  .s013-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .s013-legend-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+    min-width: 0;
+    font-style: normal;
+  }
+
+  .s013-legend-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .s013-legend-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .s013-legend-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  .s013-legend-role {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-style: normal;
+    font-weight: 400;
+    margin-left: 0.2rem;
+  }
+
+  .s013-legend-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .s013-legend-miss {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.72rem;
+    font-style: normal;
+    margin-top: 0.3rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.3rem;
+    line-height: 1.4;
+  }
+
+  .miss-bm25 {
+    background: rgba(155,203,215,0.08);
+    color: var(--col-bm25);
+  }
+
+  .miss-vec {
+    background: rgba(232,168,73,0.08);
+    color: var(--col-vec);
+  }
+
+  .miss-overlap {
+    background: rgba(170,220,236,0.1);
+    color: var(--col-overlap);
+  }
+
+  /* 底部: 结论横幅 */
+  .s013-conclusion {
+    width: 100%;
+    background: rgba(155,203,215,0.06);
+    border: 1px solid rgba(155,203,215,0.2);
+    border-left: 3px solid var(--primary);
+    border-radius: 0.75rem;
+    padding: 0.8rem 1.2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.8rem;
+    min-width: 0;
+  }
+
+  .s013-concl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    min-width: 0;
+    font-style: normal;
+  }
+
+  .s013-concl-arrow {
+    color: var(--primary);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+
+  .s013-concl-text {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .s013-concl-text strong {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  @media (max-height: 700px) {
+    .s013-wrap { padding: 1.5rem 3rem; }
+    .s013-body { gap: 0.9rem; margin-bottom: 0.8rem; }
+    .s013-venn-wrap { max-height: 190px; }
+    .s013-conclusion { padding: 0.6rem 1rem; }
+  }
+</style>
+
+<div class="slide" id="S013">
+  <div class="s013-wrap">
+
+    <div class="s013-eyebrow">支撑层 Retrieval</div>
+    <div class="s013-title">为什么要混合检索</div>
+    <div class="s013-subtitle">BM25（关键词）只认字面，向量（语义）对精确词钝 — 两路盲区互补</div>
+
+    <div class="s013-body">
+
+      <!-- 韦恩图 SVG -->
+      <div class="s013-venn-wrap">
+        <svg class="s013-venn-svg" viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- 定义: 渐变/滤镜 -->
+          <defs>
+            <radialGradient id="gradBm25" cx="40%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#9bcbd7" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#9bcbd7" stop-opacity="0.04"/>
+            </radialGradient>
+            <radialGradient id="gradVec" cx="60%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#e8a849" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#e8a849" stop-opacity="0.04"/>
+            </radialGradient>
+            <radialGradient id="gradOverlap" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#aadcec" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#aadcec" stop-opacity="0.12"/>
+            </radialGradient>
+          </defs>
+
+          <!-- BM25 圆 -->
+          <circle cx="138" cy="100" r="80" fill="url(#gradBm25)" stroke="#9bcbd7" stroke-width="1.5" stroke-opacity="0.5"/>
+
+          <!-- 向量圆 -->
+          <circle cx="222" cy="100" r="80" fill="url(#gradVec)" stroke="#e8a849" stroke-width="1.5" stroke-opacity="0.5"/>
+
+          <!-- 交集高亮 (clip) -->
+          <clipPath id="bm25clip">
+            <circle cx="138" cy="100" r="80"/>
+          </clipPath>
+          <circle cx="222" cy="100" r="80" fill="url(#gradOverlap)" clip-path="url(#bm25clip)"/>
+
+          <!-- 圆标签 -->
+          <text x="90" y="88" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#9bcbd7" text-anchor="middle">BM25</text>
+          <text x="90" y="103" font-family="Noto Sans SC, sans-serif" font-size="10" fill="#9bcbd7" text-anchor="middle" opacity="0.8">关键词检索</text>
+
+          <text x="272" y="88" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#e8a849" text-anchor="middle">向量</text>
+          <text x="272" y="103" font-family="Noto Sans SC, sans-serif" font-size="10" fill="#e8a849" text-anchor="middle" opacity="0.8">语义检索</text>
+
+          <!-- 交集标签 -->
+          <text x="180" y="93" font-family="Noto Sans SC, sans-serif" font-size="10" font-weight="600" fill="#aadcec" text-anchor="middle">互补</text>
+          <text x="180" y="107" font-family="Noto Sans SC, sans-serif" font-size="9" fill="#aadcec" text-anchor="middle" opacity="0.85">盲区覆盖</text>
+
+          <!-- 左盲区标注 -->
+          <text x="72" y="145" font-family="Noto Sans SC, sans-serif" font-size="9" fill="#9bcbd7" text-anchor="middle" opacity="0.7">漏同义词</text>
+          <text x="72" y="157" font-family="Noto Sans SC, sans-serif" font-size="9" fill="#9bcbd7" text-anchor="middle" opacity="0.7">漏跨语言</text>
+
+          <!-- 右盲区标注 -->
+          <text x="285" y="145" font-family="Noto Sans SC, sans-serif" font-size="9" fill="#e8a849" text-anchor="middle" opacity="0.7">对精确词钝</text>
+          <text x="285" y="157" font-family="Noto Sans SC, sans-serif" font-size="9" fill="#e8a849" text-anchor="middle" opacity="0.7">PGLite/Postgres</text>
+        </svg>
+      </div>
+
+      <!-- 右侧图例 -->
+      <div class="s013-legend">
+
+        <div class="s013-legend-item" style="border-color:var(--border-primary-25);">
+          <div class="s013-legend-header">
+            <div class="s013-legend-dot" style="background:var(--col-bm25);"></div>
+            <span class="s013-legend-name" style="color:var(--col-bm25);">BM25</span>
+            <span class="s013-legend-role">· 字面匹配</span>
+          </div>
+          <div class="s013-legend-desc">精准字面 TF-IDF 权重打分，快速命中精确词汇</div>
+          <div class="s013-legend-miss miss-bm25">盲区：漏同义词 / 跨语言检索 / 语义改写</div>
+        </div>
+
+        <div class="s013-legend-item" style="border-color:var(--border-accent-25);">
+          <div class="s013-legend-header">
+            <div class="s013-legend-dot" style="background:var(--col-vec);"></div>
+            <span class="s013-legend-name" style="color:var(--col-vec);">HNSW</span>
+            <span class="s013-legend-role">· 语义向量</span>
+          </div>
+          <div class="s013-legend-desc">余弦相似度捕捉语义，"明日会议"≈"明天开会"</div>
+          <div class="s013-legend-miss miss-vec">盲区：对精确术语/数字/品牌名敏感度低</div>
+        </div>
+
+        <div class="s013-legend-item" style="border-color:var(--border-overlap-30);">
+          <div class="s013-legend-header">
+            <div class="s013-legend-dot" style="background:var(--col-overlap);"></div>
+            <span class="s013-legend-name" style="color:var(--col-overlap);">RRF 融合</span>
+            <span class="s013-legend-role">· 互补结果</span>
+          </div>
+          <div class="s013-legend-desc">两路并行，名次平权融合 → 单路漏检的被另一路接住</div>
+          <div class="s013-legend-miss miss-overlap">互补：字面漏的同义词被向量接住，语义钝的精确词被 BM25 接住</div>
+        </div>
+
+      </div>
+    </div><!-- /s013-body -->
+
+    <!-- 底部结论 -->
+    <div class="s013-conclusion">
+      <div class="s013-concl-item">
+        <div class="s013-concl-arrow">&#8594;</div>
+        <div class="s013-concl-text">
+          <strong>不是 OR 选一</strong>，而是 AND 两路并行 — 并发查询再融合
+        </div>
+      </div>
+      <div class="s013-concl-item">
+        <div class="s013-concl-arrow">&#8594;</div>
+        <div class="s013-concl-text">
+          <strong>量纲不可比</strong>，不能直接加分 — 下页 RRF 专门解决这个
+        </div>
+      </div>
+      <div class="s013-concl-item">
+        <div class="s013-concl-arrow">&#8594;</div>
+        <div class="s013-concl-text">
+          <strong>各自漏检率降低</strong>：组合后比任何单路召回率都高
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,381 @@
+<style>
+/* S008 DSPy 同名异义辨析 · 左右对照卡 · 🟡 轻交互（hover 联动）· G1 月白灰蓝 */
+/* font-style:normal 关键元素 ≥3 次显式声明 */
+
+.s008-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;   /* 纵向铺开 */
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1640px;               /* 整体加宽，卡片区撑满 */
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+/* 标题区（窄 · 上窄下宽的"窄"顶） */
+.s008-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+.s008-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s008-hooksub {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.6rem;
+}
+
+/* 顶部警示横幅（窄） */
+.s008-warning-banner {
+  width: 100%;
+  max-width: 1120px;
+  background: rgba(183, 150, 131, 0.1);
+  border: 1.5px solid rgba(183, 150, 131, 0.4);
+  border-radius: 0.85rem;
+  padding: 0.85rem 1.3rem;        /* +21% */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.s008-warning-icon {
+  font-size: 1.2rem;              /* +14% */
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.s008-warning-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);    /* +10% */
+  font-weight: 600;
+  font-style: normal;
+  color: var(--color-interpret);
+}
+
+.s008-warning-sub {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 0.88rem;             /* +4% */
+}
+
+/* 对照标题行 */
+.s008-header-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 3.8rem;
+}
+
+.s008-col-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;             /* +11% */
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.s008-col-label.dspy  { color: var(--color-interpret); }
+.s008-col-label.this  { color: var(--color-compile);   }
+
+/* 对照卡容器 */
+.s008-cards {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-width: 0;
+  gap: 3.8rem;
+  position: relative;
+}
+
+/* 中央 VS 圆徽章 */
+.s008-vs-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: 3.7rem;
+  height: 3.7rem;
+  border-radius: 50%;
+  background: #FCFDFE;
+  border: 2px solid var(--primary);
+  box-shadow: 0 6px 22px rgba(47, 91, 197, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+}
+
+/* 单张卡片 */
+.s008-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.5rem 1.6rem;         /* +15% */
+  backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+}
+
+.s008-card.dspy-card:hover {
+  border-color: rgba(183, 150, 131, 0.5);
+  box-shadow: 0 8px 28px rgba(183, 150, 131, 0.1);
+}
+
+.s008-card.this-card:hover {
+  border-color: rgba(110, 140, 136, 0.5);
+  box-shadow: 0 8px 28px rgba(110, 140, 136, 0.1);
+}
+
+/* 卡片顶部身份 */
+.s008-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.s008-card-name {
+  font-family: var(--font-mono);
+  font-size: clamp(1.1rem, 1.75vw, 1.35rem);   /* +13% */
+  font-weight: 700;
+  font-style: normal;
+}
+
+.s008-card-name.dspy  { color: var(--color-interpret); }
+.s008-card-name.this  { color: var(--color-compile); }
+
+.s008-card-tagline {
+  font-family: var(--font-body);
+  font-size: 0.85rem;             /* +9% */
+  font-style: normal;
+  color: var(--text-dim);
+}
+
+/* 核心区别块（卡片主角 · 突出"编译对象"这一根本区别） */
+.s008-core {
+  border-radius: 0.7rem;
+  padding: 1rem 1.1rem 1.1rem;
+}
+.s008-core.dspy { background: rgba(183, 150, 131, 0.1); border: 1px solid rgba(183, 150, 131, 0.3); }
+.s008-core.this { background: rgba(110, 140, 136, 0.1); border: 1px solid rgba(110, 140, 136, 0.3); }
+
+.s008-core-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.4rem;
+}
+.s008-core-obj {
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-primary);
+  margin-bottom: 0.45rem;
+}
+.s008-core-hl {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2.5vw, 2.05rem);
+  font-weight: 800;
+  font-style: normal;
+  line-height: 1.12;
+}
+.s008-core-hl.dspy { color: var(--color-interpret); }
+.s008-core-hl.this { color: var(--color-compile); }
+.s008-core-hl small {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-style: normal;
+  color: var(--text-secondary);
+}
+
+/* 次要细节三行（弱化 · 佐证支撑） */
+.s008-minor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.2rem 0.2rem 0;
+}
+.s008-minor-row { display: flex; gap: 0.7rem; align-items: baseline; }
+.s008-minor-key {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex: 0 0 3.6rem;
+}
+.s008-minor-val {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  flex: 1;
+}
+.s008-card .mono-chip {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  background: rgba(110, 126, 140, 0.1);
+  border: 1px solid var(--card-border);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.36rem;
+  color: var(--text-secondary);
+}
+
+/* 底部共同点说明（窄） */
+.s008-shared {
+  width: 100%;
+  max-width: 1120px;
+  padding: 0.8rem 1.3rem;         /* +14% */
+  background: rgba(110, 126, 140, 0.06);
+  border: 1px solid var(--card-border);
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.s008-shared-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;              /* +8% */
+  font-weight: 600;
+  font-style: normal;
+  color: var(--secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.s008-shared-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 1.2vw, 0.97rem);   /* +10% */
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* 入场动画 */
+.s008-heading        { animation: s008Up 0.4s ease both 0ms; }
+.s008-warning-banner { animation: s008Up 0.4s ease both 40ms; }
+.s008-header-row     { animation: s008Up 0.4s ease both 80ms; }
+.s008-cards          { animation: s008Up 0.4s ease both 110ms; }
+.s008-shared         { animation: s008Up 0.4s ease both 160ms; }
+
+@keyframes s008Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="8">
+  <div class="s008-wrap">
+
+    <!-- 标题区（窄顶） -->
+    <div class="s008-heading">
+      <h2 class="s008-title">DSPy 同名异义辨析</h2>
+      <p class="s008-hooksub">都叫 "compiled RAG"，编译的对象却完全不同</p>
+    </div>
+
+    <!-- 课后搜索警示（窄） -->
+    <div class="s008-warning-banner">
+      <span class="s008-warning-icon">⚠</span>
+      <div class="s008-warning-text">
+        课后搜索 "compiled RAG" 必撞 DSPy——先钉死这个区别再往下走
+      </div>
+    </div>
+
+    <!-- 列标题 -->
+    <div class="s008-header-row">
+      <div class="s008-col-label dspy">DSPy · 框架</div>
+      <div class="s008-col-label this">本课 · LLM Wiki</div>
+    </div>
+
+    <!-- 对照卡 -->
+    <div class="s008-cards">
+
+      <!-- 左卡：DSPy -->
+      <div class="s008-card dspy-card">
+        <div class="s008-card-header">
+          <div class="s008-card-name dspy">DSPy</div>
+          <div class="s008-card-tagline">Stanford NLP 出品的 pipeline 优化框架</div>
+        </div>
+        <div class="s008-core dspy">
+          <div class="s008-core-label">编译的对象</div>
+          <div class="s008-core-obj">Prompt / pipeline</div>
+          <div class="s008-core-hl dspy">优化「怎么问」<small>提问的方式</small></div>
+        </div>
+        <div class="s008-minor">
+          <div class="s008-minor-row"><span class="s008-minor-key">核心动作</span><span class="s008-minor-val">自动搜索最优 prompt 组合，优化 few-shot 示例与推理链条</span></div>
+          <div class="s008-minor-row"><span class="s008-minor-key">经典术语</span><span class="s008-minor-val"><span class="mono-chip">teleprompter</span>（提词器）——自动优化提示词的组件</span></div>
+          <div class="s008-minor-row"><span class="s008-minor-key">产物</span><span class="s008-minor-val">更好的 prompt 模板；不改动知识存储方式</span></div>
+        </div>
+      </div>
+
+      <!-- 中央 VS 圆徽章 -->
+      <div class="s008-vs-circle">VS</div>
+
+      <!-- 右卡：本课 -->
+      <div class="s008-card this-card">
+        <div class="s008-card-header">
+          <div class="s008-card-name this">本课 · LLM Wiki</div>
+          <div class="s008-card-tagline">Karpathy 提出的知识编译范式</div>
+        </div>
+        <div class="s008-core this">
+          <div class="s008-core-label">编译的对象</div>
+          <div class="s008-core-obj">知识本身</div>
+          <div class="s008-core-hl this">优化「怎么存」<small>存储的方式</small></div>
+        </div>
+        <div class="s008-minor">
+          <div class="s008-minor-row"><span class="s008-minor-key">核心动作</span><span class="s008-minor-val">把 raw 原料一次性编译成互链 wiki 产物，查询直接读产物</span></div>
+          <div class="s008-minor-row"><span class="s008-minor-key">核心路径</span><span class="s008-minor-val"><span class="mono-chip">raw/</span> → <span class="mono-chip">〔编译〕</span> → <span class="mono-chip">wiki/</span>（append-only 生长）</span></div>
+          <div class="s008-minor-row"><span class="s008-minor-key">产物</span><span class="s008-minor-val">结构化互链 wiki；可直接被 agent 查询命中</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 共同点提示 -->
+    <div class="s008-shared">
+      <span class="s008-shared-label">记住一句话</span>
+      <span class="s008-shared-text">DSPy 编译"怎么问"；本课编译"知识本身"——两条路解决完全不同的问题，名字撞车是巧合</span>
+    </div>
+
+  </div>
+</div>

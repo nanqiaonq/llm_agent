@@ -1,0 +1,59 @@
+{
+  "course_title": "GBrain：从笔记到会思考的大脑",
+  "course_subtitle": "编译式 RAG 的生产级实现 — 它不只给你页面，而是给你答案",
+  "audience": "任何人皆讲得通的概念全景受众（无需 Python/ML 背景，面向理解 GBrain 完整功能）",
+  "duration_minutes": 90,
+  "estimated_pages": 24,
+  "module_count": 9,
+  "input_material_path": "/Users/mac/大模型资料/编译式RAG/GBrain/lesson-2/lesson.md",
+  "brief_path": "/Users/mac/大模型资料/编译式RAG/GBrain/gbrain-brain-layer/courseware-brief.md",
+  "creativity_level": "medium",
+  "image_mode": "none",
+  "image_folder_path": null,
+
+  "preset": "P06",
+  "preset_name": "极简钢蓝数据感",
+  "direction": "C · 极简理性",
+  "theme_mode": "dark",
+  "harmony": "钢蓝灰单色系 + 暖金跨色温点睛",
+
+  "primary_hex": "#9bcbd7",
+  "secondary_hex": "#6a8ba0",
+  "accent_hex": "#e8a849",
+  "warm_accent_hex": "#e8a849",
+  "bg_deep_hex": "#141a26",
+  "bg_mid_hex": "#1e2838",
+  "text_primary_hex": "#e2e8ee",
+  "text_dim_hex": "#7d8fa4",
+  "card_bg": "rgba(30,40,56,0.7)",
+  "card_border": "rgba(155,203,215,0.18)",
+  "card_title_hex": "#aadcec",
+  "card_text_hex": "#8b9aaf",
+  "eyebrow_hex": "#81a8b9",
+  "bg_pattern": "grid",
+  "palette_colors": ["#344364", "#4f6783", "#6a8ba0", "#81a8b9", "#9bcbd7", "#aee3eb"],
+
+  "font_pair": "Sora/Noto Sans SC",
+  "font_mono": "JetBrains Mono",
+  "font_rationale": "极简理性方向用 Sora 几何无衬线强化数据感与排版秩序；中文 Noto Sans SC 保可读；代码/技术词 JetBrains Mono 等宽对齐。符合 AD-04 三档字体系统。",
+
+  "motion_level": "high",
+  "motion_rationale": "C2 动态建图演示（全课件第一记忆锚点：逐条扫描发现 wikilink → 有向边逐条飞出带四色类型标签 → 边数 0→16 + 柱状图同步 → 角标恒亮 LLM 0 次）需高密度动效；B2 两大能力大脑点亮、E3 RRF 名次滑块、F1 search/think 切换同属重交互。全局档 high，但 interaction-architect 须按页分级——概念页（A3/B1/B3/G/H 等）克制收敛、亮点页（标 🔴🔴）才放开动效，避免极简方向被过度动效冲淡冷静理性气质。",
+
+  "density_level": "normal",
+  "density_rationale": "24 页全景概念课，信息承载适中；极简钢蓝方向讲究留白与排版秩序，禁信息过载，单页内容高 ≥ 视口 60% 但不堆砌。",
+
+  "reduced_motion_required": false,
+
+  "aesthetic_constraints": {
+    "methodology_required": "AD-01~AD-08 全 8 项强制：css var() 禁硬编码 / 三色克制（钢蓝主+次+暖金 accent ≤4，benchmark 四类型/精度梯度等功能性场景标 functional_palette 例外）/ flex column center max-width 1400px / Sora+Noto+JetBrains 三字体 / font-style:normal ≥3 次 / 🔴🔴 页 FM 顶部注释 / fr 单位+min-width:0 / 深色克制阴影 0.35",
+    "accent_usage": "暖金 #e8a849 严格留作点睛（10% 面积）：C2 角标 LLM 0 次 / H1 benchmark DO-NOT-MIX 红线提示 / F2 gap 三信号警示 / 关键论断与结论，禁大面积铺暖色破坏冷静数据感。",
+    "bg_pattern_note": "grid 网格底（极简方向标识，呼应 hermes AD-13 blueprint_grid 但更克制 0.18 opacity），背景装饰须左/右分治禁居中与标题重叠（v1.5 教训 8）。",
+    "diversity_break": "用户选 C 极简数据感而非深空星云，天然 break 了 llm-intro-script 的 deep_space_nebula 高频 pattern；C2 建图演示采用图谱织网 + 逐条飞边的独有交互（非历史样本任一现成 pattern），满足 diversity_constraint 至少 1 slide 完全不同。",
+    "title_discipline": "标题忠于源码术语，禁文学隐喻（v1.5 教训 9）；I1 '一把判断的尺' 是 brief 既定教学隐喻可保留。"
+  },
+
+  "confirmed_by_user": true,
+  "confirmed_at": "2026-06-22T00:00:00",
+  "gate": "Gate 1 PASS — 用户经 palette-picker.html 拍板 C · 极简钢蓝数据感 P06"
+}

@@ -1,0 +1,459 @@
+<style>
+/* S015 心智地图小结 · 知识地图路径型 · G1 月白灰蓝 */
+/* font-style:normal 关键元素 ≥3 次显式声明 */
+
+.s015-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1640px;
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+/* ── 标题区（窄顶） ── */
+.s015-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+
+.s015-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.s015-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.55rem;
+  line-height: 1.5;
+}
+
+/* ── 路径图区域（宽顶） ── */
+.s015-path-wrap {
+  width: 100%;
+  position: relative;
+}
+
+/* 横向路径轨道线（绝对定位，位于圆心高度） */
+.s015-track {
+  position: absolute;
+  /* 圆形节点顶部 = 步骤标签(0.85rem*1.4≈1.19rem) + gap(0.55rem) = 1.74rem；
+     圆半径 = 2rem（直径 4rem）；所以圆心在 top ≈ 3.74rem ≈ 3.7rem */
+  top: 3.65rem;
+  /* 左右各留半个节点宽度(2rem)，让连线从圆心出发 */
+  left: calc(12.5% + 0rem);
+  right: calc(12.5% + 0rem);
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--color-interpret),
+    var(--primary) 33%,
+    var(--color-compile) 66%,
+    var(--accent)
+  );
+  opacity: 0.4;
+  z-index: 0;
+}
+
+/* 4 里程碑节点容器 */
+.s015-milestones {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0;
+}
+
+.s015-milestone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* 步骤标签（上方小字） */
+.s015-step-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.65rem;
+  border-radius: 0.3rem;
+  line-height: 1.4;
+}
+.s015-step-tag.m1 { color: var(--color-interpret);  background: rgba(183,150,131,0.1); border: 1px solid rgba(183,150,131,0.3); }
+.s015-step-tag.m2 { color: var(--primary);          background: rgba(110,126,140,0.1); border: 1px solid rgba(110,126,140,0.3); }
+.s015-step-tag.m3 { color: var(--color-compile);    background: rgba(110,140,136,0.1); border: 1px solid rgba(110,140,136,0.3); }
+.s015-step-tag.m4 { color: var(--accent);           background: rgba(79,96,110,0.1);  border: 1px solid rgba(79,96,110,0.3); }
+
+/* 圆形节点 */
+.s015-node {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 2.5px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-style: normal;
+  background: var(--bg-surface);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+.s015-node.m1 { border-color: var(--color-interpret); color: var(--color-interpret); }
+.s015-node.m2 { border-color: var(--primary);         color: var(--primary); }
+.s015-node.m3 { border-color: var(--color-compile);   color: var(--color-compile); }
+.s015-node.m4 { border-color: var(--accent);          color: var(--accent); }
+
+/* 节点下方：名称 + tags + 一行说明 */
+.s015-node-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.s015-node-name {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.s015-node-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.s015-ntag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  font-style: normal;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  background: rgba(110,126,140,0.08);
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+}
+
+.s015-node-desc {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-dim);
+  line-height: 1.5;
+  max-width: 200px;
+  text-align: center;
+}
+
+/* ── 带走卡区域（宽底） ── */
+.s015-cards {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+  align-items: stretch;
+}
+
+.s015-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.3rem 1.3rem 1.3rem 1rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  position: relative;
+  overflow: hidden;
+  font-style: normal;
+}
+
+/* 左侧彩色竖条 */
+.s015-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 1rem 0 0 1rem;
+}
+.s015-card.c1::before { background: var(--color-interpret); }
+.s015-card.c2::before { background: var(--primary); }
+.s015-card.c3::before { background: var(--color-compile); }
+.s015-card.c4::before { background: var(--accent); }
+
+/* 卡片标题行 */
+.s015-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.s015-card-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.s015-card-title {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.35vw, 1.1rem);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.25;
+}
+.s015-card.c1 .s015-card-title { color: var(--color-interpret); }
+.s015-card.c2 .s015-card-title { color: var(--primary); }
+.s015-card.c3 .s015-card-title { color: var(--color-compile); }
+.s015-card.c4 .s015-card-title { color: var(--accent); }
+
+/* 核心结论（卡片主角） */
+.s015-card-core {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.35vw, 1.1rem);
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* 佐证细节 */
+.s015-card-detail {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* mono chip */
+.s015-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.05rem 0.38rem;
+  border-radius: 0.25rem;
+  background: rgba(110,126,140,0.09);
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+  font-style: normal;
+  vertical-align: middle;
+}
+
+/* ── 结语条（底部窄） ── */
+.s015-outro {
+  width: 100%;
+  max-width: 1120px;
+  padding: 0.8rem 1.4rem;
+  background: rgba(110, 140, 136, 0.07);
+  border: 1px solid rgba(110, 140, 136, 0.25);
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.s015-outro-icon {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.s015-outro-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 1.25vw, 1rem);
+  font-weight: 500;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.s015-outro-text strong {
+  color: var(--color-compile);
+  font-weight: 700;
+}
+
+/* ── 入场动画 ── */
+.s015-heading    { animation: s015Up 0.4s ease both 0ms; }
+.s015-path-wrap  { animation: s015Up 0.4s ease both 60ms; }
+.s015-cards      { animation: s015Up 0.4s ease both 110ms; }
+.s015-outro      { animation: s015Up 0.4s ease both 160ms; }
+
+@keyframes s015Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="15">
+  <div class="s015-wrap">
+
+    <!-- 标题区（窄顶） -->
+    <div class="s015-heading">
+      <h2 class="s015-title">本课小结：编译式 RAG 心智地图</h2>
+      <p class="s015-subtitle">你已走完编译式 RAG 的认知地图</p>
+    </div>
+
+    <!-- 路径图（分野 → 隐喻 → 骨架 → 边界） -->
+    <div class="s015-path-wrap">
+      <!-- 横向轨道连线 -->
+      <div class="s015-track"></div>
+
+      <div class="s015-milestones">
+
+        <!-- 里程碑 ① 分野 -->
+        <div class="s015-milestone">
+          <span class="s015-step-tag m1">C1 · 分野</span>
+          <div class="s015-node m1">①</div>
+          <div class="s015-node-body">
+            <div class="s015-node-name">两种中间产物</div>
+            <div class="s015-node-tags">
+              <span class="s015-ntag">机器索引</span>
+              <span class="s015-ntag">可读 wiki</span>
+            </div>
+            <div class="s015-node-desc">传统 RAG 维护索引、编译式维护 wiki；源材料变化后都要更新</div>
+          </div>
+        </div>
+
+        <!-- 里程碑 ② 隐喻 -->
+        <div class="s015-milestone">
+          <span class="s015-step-tag m2">C2 · 隐喻</span>
+          <div class="s015-node m2">②</div>
+          <div class="s015-node-body">
+            <div class="s015-node-name">编译 vs 解释执行</div>
+            <div class="s015-node-tags">
+              <span class="s015-ntag">一次编译</span>
+              <span class="s015-ntag">反复命中</span>
+            </div>
+            <div class="s015-node-desc">知识从一次性消费变为复利资产（compounding asset）</div>
+          </div>
+        </div>
+
+        <!-- 里程碑 ③ 骨架 -->
+        <div class="s015-milestone">
+          <span class="s015-step-tag m3">C3 · 骨架</span>
+          <div class="s015-node m3">③</div>
+          <div class="s015-node-body">
+            <div class="s015-node-name">三层架构 + 三操作</div>
+            <div class="s015-node-tags">
+              <span class="s015-ntag">raw / wiki / CLAUDE.md</span>
+            </div>
+            <div class="s015-node-desc">Ingest 编译 · Query 只读产物 · Lint 一致性巡检</div>
+          </div>
+        </div>
+
+        <!-- 里程碑 ④ 边界 -->
+        <div class="s015-milestone">
+          <span class="s015-step-tag m4">C4 · 边界</span>
+          <div class="s015-node m4">④</div>
+          <div class="s015-node-body">
+            <div class="s015-node-name">不是银弹</div>
+            <div class="s015-node-tags">
+              <span class="s015-ntag">20× 成本</span>
+              <span class="s015-ntag">有适用域</span>
+            </div>
+            <div class="s015-node-desc">vs GraphRAG 的区别轴是构图方式，非贵贱之别</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 四张带走卡 -->
+    <div class="s015-cards">
+
+      <!-- 卡 1：分野 -->
+      <div class="s015-card c1">
+        <div class="s015-card-header">
+          <span class="s015-card-icon">⚡</span>
+          <span class="s015-card-title">两种中间产物</span>
+        </div>
+        <div class="s015-card-core">机器索引 · 可读 wiki · 源变都需更新</div>
+        <div class="s015-card-detail">
+          传统 RAG 强在规模、速度和高频更新；编译式强在稳定知识的可读合成与审计治理。
+        </div>
+      </div>
+
+      <!-- 卡 2：隐喻 -->
+      <div class="s015-card c2">
+        <div class="s015-card-header">
+          <span class="s015-card-icon">⚙</span>
+          <span class="s015-card-title">编译执行的核心转变</span>
+        </div>
+        <div class="s015-card-core">先把稳定知识编译成互链 wiki，查询读取当前 wiki 产物</div>
+        <div class="s015-card-detail">
+          raw 更新后要重新 ingest；"复利资产"指知识结构复用，不等于单次 query token 更低（见第 13 页 20×）。
+        </div>
+      </div>
+
+      <!-- 卡 3：骨架 -->
+      <div class="s015-card c3">
+        <div class="s015-card-header">
+          <span class="s015-card-icon">◫</span>
+          <span class="s015-card-title">三层架构的所有权边界</span>
+        </div>
+        <div class="s015-card-core"><span class="s015-chip">raw/</span> 人类维护 · <span class="s015-chip">wiki/</span> LLM 持续维护 · <span class="s015-chip">CLAUDE.md</span> 人类立规</div>
+        <div class="s015-card-detail">
+          Ingest 只读 raw/ 写 wiki/；Query 只读 wiki/；Lint 只读检查一致性不写任何层。
+        </div>
+      </div>
+
+      <!-- 卡 4：边界 -->
+      <div class="s015-card c4">
+        <div class="s015-card-header">
+          <span class="s015-card-icon">⊘</span>
+          <span class="s015-card-title">成本真相：适用与不适用</span>
+        </div>
+        <div class="s015-card-core">查询成本约 20× 更贵；知识稳定 + 需跨源合成 + 规模可控才合适</div>
+        <div class="s015-card-detail">
+          vs GraphRAG：区别轴是构图方式（显式链接 vs 大模型抽实体），不是贵贱——各有适用场景。
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 结语条 -->
+    <div class="s015-outro">
+      <span class="s015-outro-icon">✓</span>
+      <p class="s015-outro-text">
+        <strong>判断「我的场景该维护机器索引，还是可读 wiki」</strong>比学会怎么搭它同样重要——学会这条选型判断，本课目标完成。
+      </p>
+    </div>
+
+  </div>
+</div>

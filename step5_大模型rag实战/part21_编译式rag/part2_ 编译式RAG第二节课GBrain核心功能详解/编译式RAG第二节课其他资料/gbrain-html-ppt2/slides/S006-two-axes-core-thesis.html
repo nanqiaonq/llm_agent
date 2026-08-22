@@ -1,0 +1,506 @@
+<style>
+  /* S006 两根轴 + 核心论断 — 因果双卡 + 中央编译枢纽（方案 C 重构） */
+  /* P06 极简钢蓝数据感 · dark theme */
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  .s006-wrap {
+    transform: scale(1.0);
+    transform-origin: center center;
+    width: 100%;
+    max-width: 1120px;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    font-style: normal;
+    position: relative;
+
+    --bg-deep: #141a26;
+    --bg-mid: #1e2838;
+    --primary: #9bcbd7;
+    --secondary: #6a8ba0;
+    --accent: #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim: #7d8fa4;
+    --card-bg: rgba(30,40,56,0.7);
+    --card-border: rgba(155,203,215,0.18);
+    --card-title: #aadcec;
+    --eyebrow-col: #81a8b9;
+    --col-source: #6a8ba0;
+    --col-brain: #9bcbd7;
+    --border-source-35: rgba(106,139,160,0.4);
+    --border-brain-35: rgba(155,203,215,0.38);
+    --border-accent-35: rgba(232,168,73,0.4);
+
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+  }
+
+  /* 标题区 */
+  .s006-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow-col);
+    font-style: normal;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .s006-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.4rem, 2.4vw, 1.95rem);
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 0.3rem;
+    line-height: 1.25;
+  }
+
+  .s006-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 1.1rem;
+  }
+
+  /* 正交论断条 */
+  .s006-orthogonal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 1rem;
+    border: 1px solid rgba(155,203,215,0.25);
+    border-radius: 2rem;
+    background: rgba(155,203,215,0.06);
+    margin-bottom: 1.6rem;
+  }
+
+  .s006-orthogonal .ortho-sym {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    font-style: normal;
+  }
+
+  .s006-orthogonal .ortho-text {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    font-style: normal;
+  }
+
+  /* 舞台：左卡 + 中央枢纽 + 右卡 */
+  .s006-stage {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+  }
+
+  /* 因果卡 */
+  .s006-card {
+    flex: 1;
+    min-width: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    padding: 1.2rem 1.4rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .s006-card-source { border-color: var(--border-source-35); }
+  .s006-card-brain  { border-color: var(--border-brain-35); }
+
+  .s006-card-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.18rem 0.6rem;
+    border-radius: 0.35rem;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-style: normal;
+    width: fit-content;
+  }
+
+  .role-source { background: rgba(106,139,160,0.18); color: var(--col-source); }
+  .role-brain  { background: rgba(155,203,215,0.16); color: var(--col-brain); }
+
+  .s006-card-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1.2;
+  }
+
+  .s006-card-source .s006-card-name { color: var(--col-source); }
+  .s006-card-brain  .s006-card-name { color: var(--col-brain); }
+
+  .s006-card-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-style: normal;
+    line-height: 1.5;
+    min-height: 2.3em;
+  }
+
+  /* 属性对照 */
+  .s006-attrs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+    border-top: 1px solid rgba(155,203,215,0.1);
+    padding-top: 0.7rem;
+  }
+
+  .s006-attr {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .s006-attr-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-style: normal;
+    opacity: 0.8;
+  }
+
+  .s006-attr-val {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  /* 中央编译枢纽 */
+  .s006-hub {
+    flex-shrink: 0;
+    width: 132px;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0 0.4rem;
+    cursor: pointer;
+  }
+
+  .s006-hub-node {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-accent-35);
+    background: rgba(232,168,73,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .s006-hub:hover .s006-hub-node {
+    box-shadow: 0 0 22px rgba(232,168,73,0.3);
+    transform: scale(1.05);
+  }
+
+  .s006-hub-node .hub-glyph {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .s006-hub-arrow {
+    position: relative;
+    width: 100%;
+    height: 18px;
+    overflow: hidden;
+  }
+
+  .s006-hub-arrow .arrow-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 12px;
+    height: 2px;
+    background: linear-gradient(to right, var(--col-source), var(--accent), var(--col-brain));
+    transform: translateY(-50%);
+  }
+
+  .s006-hub-arrow .arrow-head {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 9px solid var(--col-brain);
+  }
+
+  /* 流光（点击枢纽时） */
+  .s006-flow-dot {
+    position: absolute;
+    top: 50%;
+    left: -8px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    transform: translateY(-50%);
+    opacity: 0;
+  }
+
+  .s006-hub-arrow.s006-flowing .s006-flow-dot {
+    animation: s006-flow 0.9s ease-in-out;
+  }
+
+  @keyframes s006-flow {
+    0%   { left: -8px; opacity: 0; }
+    15%  { opacity: 1; }
+    85%  { opacity: 1; }
+    100% { left: calc(100% - 10px); opacity: 0; }
+  }
+
+  .s006-hub-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: center;
+    font-style: normal;
+    white-space: nowrap;
+  }
+
+  .s006-hub-dir {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+  }
+
+  .s006-hub-hint {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.56rem;
+    color: var(--accent);
+    text-align: center;
+    font-style: normal;
+    opacity: 0.85;
+  }
+
+  /* 脉冲态 */
+  .s006-card.s006-pulse {
+    border-color: var(--accent);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 0 18px rgba(232,168,73,0.22);
+  }
+
+  .s006-card-brain.s006-rebuilding {
+    animation: s006-rebuild 0.7s ease;
+  }
+
+  @keyframes s006-rebuild {
+    0%   { opacity: 1; }
+    35%  { opacity: 0.35; transform: translateY(3px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 底注：类比 + 纪律 */
+  .s006-footer {
+    width: 100%;
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .s006-foot-card {
+    flex: 1;
+    min-width: 0;
+    border-radius: 0.75rem;
+    padding: 0.8rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .s006-analogy {
+    background: rgba(232,168,73,0.05);
+    border: 1px solid rgba(232,168,73,0.2);
+    border-left: 3px solid var(--accent);
+  }
+
+  .s006-discipline {
+    background: rgba(155,203,215,0.05);
+    border: 1px solid rgba(155,203,215,0.2);
+    border-left: 3px solid var(--primary);
+  }
+
+  .s006-foot-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+
+  .s006-analogy .s006-foot-label    { color: var(--accent); }
+  .s006-discipline .s006-foot-label { color: var(--primary); }
+
+  .s006-foot-text {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .s006-foot-text .em-source { color: var(--col-source); font-weight: 600; }
+  .s006-foot-text .em-brain  { color: var(--col-brain); font-weight: 600; }
+  .s006-foot-text .em-accent { color: var(--accent); font-weight: 600; }
+  .s006-foot-text .dim       { color: var(--text-dim); font-size: 0.72rem; }
+
+  /* 入场（main.js animate-ready 机制驱动） */
+  .animate-ready { opacity: 0; transform: translateY(14px); }
+  .animate-ready.animated {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  @media (max-height: 740px) {
+    .s006-wrap { padding: 1.5rem 3.5rem; }
+    .s006-orthogonal { margin-bottom: 1rem; }
+    .s006-footer { margin-top: 0.9rem; }
+    .s006-card-desc { min-height: 0; }
+  }
+</style>
+
+<div class="slide" id="S006">
+  <div class="s006-wrap">
+
+    <div class="s006-eyebrow">GBrain 全景与两大能力</div>
+    <div class="s006-title">两根轴 + 核心论断</div>
+    <div class="s006-subtitle">brain（数据库）⊥ source（git）— 两个正交的角色：谁是真相，谁是产物</div>
+
+    <div class="s006-orthogonal animate-ready" data-delay="0.1">
+      <span class="ortho-sym">⊥</span>
+      <span class="ortho-text">两轴正交，互不混淆 —— 谁也替代不了谁</span>
+    </div>
+
+    <div class="s006-stage">
+
+      <!-- 左卡：source（因·源真相） -->
+      <div class="s006-card s006-card-source animate-ready" id="s006-card-source" data-delay="0.25">
+        <div class="s006-card-role role-source">因 · 源真相</div>
+        <div class="s006-card-name">source / git</div>
+        <div class="s006-card-desc">你在 git 里手写、版本管理的 markdown 文件——系统里唯一的事实来源。</div>
+        <div class="s006-attrs">
+          <div class="s006-attr">
+            <div class="s006-attr-label">谁维护</div>
+            <div class="s006-attr-val">你，手写 · git 提交</div>
+          </div>
+          <div class="s006-attr">
+            <div class="s006-attr-label">可变性</div>
+            <div class="s006-attr-val">只读 · 唯一权威</div>
+          </div>
+          <div class="s006-attr">
+            <div class="s006-attr-label">丢了怎么办</div>
+            <div class="s006-attr-val">不可恢复——它就是真相本身</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中央编译枢纽 -->
+      <div class="s006-hub" id="s006-hub">
+        <div class="s006-hub-node"><span class="hub-glyph">⊙</span></div>
+        <div class="s006-hub-arrow" id="s006-hub-arrow">
+          <div class="arrow-line"></div>
+          <div class="s006-flow-dot"></div>
+          <div class="arrow-head"></div>
+        </div>
+        <div class="s006-hub-label">compile</div>
+        <div class="s006-hub-dir">单向 · source → brain</div>
+        <div class="s006-hub-hint">点击演示重建 ›</div>
+      </div>
+
+      <!-- 右卡：brain（果·编译产物） -->
+      <div class="s006-card s006-card-brain animate-ready" id="s006-card-brain" data-delay="0.4">
+        <div class="s006-card-role role-brain">果 · 编译产物</div>
+        <div class="s006-card-name">brain / 数据库</div>
+        <div class="s006-card-desc">GBrain 把 source 编译进的数据库：wiki 页面、embedding 向量、知识图谱都住这里。</div>
+        <div class="s006-attrs">
+          <div class="s006-attr">
+            <div class="s006-attr-label">谁维护</div>
+            <div class="s006-attr-val">机器，自动编译生成</div>
+          </div>
+          <div class="s006-attr">
+            <div class="s006-attr-label">可变性</div>
+            <div class="s006-attr-val">可重建 · 可丢弃</div>
+          </div>
+          <div class="s006-attr">
+            <div class="s006-attr-label">丢了怎么办</div>
+            <div class="s006-attr-val">重编译即可——从 source 再长一遍</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /s006-stage -->
+
+    <!-- 底注：类比 + 纪律 -->
+    <div class="s006-footer">
+      <div class="s006-foot-card s006-analogy animate-ready" data-delay="0.55">
+        <div class="s006-foot-label">类比降门槛</div>
+        <div class="s006-foot-text">
+          = <span class="em-source">源代码</span> ⊥ <span class="em-brain">可执行文件</span>
+          <span class="dim">　exe 丢了能重新编译；源码丢了，是真没了。</span>
+        </div>
+      </div>
+      <div class="s006-foot-card s006-discipline animate-ready" data-delay="0.7">
+        <div class="s006-foot-label">判断的尺 · 第一刻度</div>
+        <div class="s006-foot-text">
+          永远改 <span class="em-source">source</span>，改完<span class="em-accent">必重编译</span>，<span class="em-brain">brain</span> 才更新。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,371 @@
+<style>
+/* S014 四范式选型对照 · 四列对照表+点列高亮 · 🟡 轻交互 · G1 月白灰蓝 */
+/* FM 防御注释：font-style:normal 关键元素 ≥3 次显式声明 */
+/* window.slideHooks 注册点列高亮交互 */
+
+.s014-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1640px;
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal; /* FM 防御 ① */
+}
+
+/* 标题（窄顶） */
+.s014-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+.s014-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: normal; /* FM 防御 ② */
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s014-subtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+/* 四列对照表（宽） */
+.s014-table-wrap {
+  width: 100%;
+  overflow: hidden;
+}
+.s014-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* 列标题行 */
+.s014-th-row th {
+  padding: 0.65rem 0.8rem 0.55rem;
+  text-align: left;
+  font-family: var(--font-body);
+  font-style: normal; /* FM 防御 ③ */
+  font-size: clamp(0.85rem, 1.2vw, 0.98rem);
+  font-weight: 700;
+  border-bottom: 2px solid var(--card-border);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+.s014-th-row th:first-child {
+  cursor: default;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: 12%;
+}
+/* 范式名称 + 颜色条 */
+.s014-paradigm-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.s014-paradigm-bar {
+  height: 3px;
+  border-radius: 2px;
+  width: 2rem;
+}
+.s014-paradigm-name {
+  font-family: var(--font-display);
+  font-size: clamp(0.92rem, 1.3vw, 1.05rem);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.3;
+}
+.s014-paradigm-en {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  font-style: normal;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+
+/* 数据行 */
+.s014-data-row td {
+  padding: 0.65rem 0.8rem;
+  font-family: var(--font-body);
+  font-size: clamp(0.82rem, 1.1vw, 0.93rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  vertical-align: top;
+  border-bottom: 1px solid rgba(110,126,140,0.1);
+  line-height: 1.5;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.s014-data-row td:first-child {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.s014-data-row:last-child td { border-bottom: none; }
+
+/* chip 小标签 */
+.s014-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-style: normal;
+  background: rgba(110,126,140,0.1);
+  border: 1px solid var(--card-border);
+  border-radius: 0.22rem;
+  padding: 0.05rem 0.32rem;
+  color: var(--text-dim);
+  margin: 0 0.1rem;
+}
+
+/* 重点关键词标红（砖红，协调突出，rgb 数值合规） */
+.s014-key { color: rgb(188, 75, 75); font-weight: 600; }
+
+/* 列高亮加重：背景加深 + 文字加深加粗（点列后非常突出） */
+.s014-table.hl-1 td:nth-child(2), .s014-table.hl-1 th:nth-child(2) { background: rgba(110,140,136,0.2); }
+.s014-table.hl-2 td:nth-child(3), .s014-table.hl-2 th:nth-child(3) { background: rgba(183,150,131,0.2); }
+.s014-table.hl-3 td:nth-child(4), .s014-table.hl-3 th:nth-child(4) { background: rgba(130,148,172,0.2); }
+.s014-table.hl-4 td:nth-child(5), .s014-table.hl-4 th:nth-child(5) { background: rgba(185,168,146,0.22); }
+.s014-table.hl-1 .s014-data-row td:nth-child(2),
+.s014-table.hl-2 .s014-data-row td:nth-child(3),
+.s014-table.hl-3 .s014-data-row td:nth-child(4),
+.s014-table.hl-4 .s014-data-row td:nth-child(5) { color: var(--text-primary); font-weight: 600; }
+
+/* 非高亮范式列变暗（第2列起、排除高亮列）→ 强聚焦对比 */
+.s014-table.hl-1 td:nth-child(n+2):not(:nth-child(2)), .s014-table.hl-1 th:nth-child(n+2):not(:nth-child(2)),
+.s014-table.hl-2 td:nth-child(n+2):not(:nth-child(3)), .s014-table.hl-2 th:nth-child(n+2):not(:nth-child(3)),
+.s014-table.hl-3 td:nth-child(n+2):not(:nth-child(4)), .s014-table.hl-3 th:nth-child(n+2):not(:nth-child(4)),
+.s014-table.hl-4 td:nth-child(n+2):not(:nth-child(5)), .s014-table.hl-4 th:nth-child(n+2):not(:nth-child(5)) { opacity: 0.32; }
+
+/* 表格外框 */
+.s014-table-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+}
+
+/* 红线警示（窄） */
+.s014-redline {
+  width: 100%;
+  max-width: 1120px;
+  background: rgba(183,150,131,0.08);
+  border: 1.5px solid rgba(183,150,131,0.35);
+  border-radius: 0.7rem;
+  padding: 0.8rem 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.s014-redline-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 1.2vw, 1rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+}
+.s014-redline-text strong { color: var(--color-interpret); font-weight: 700; }
+
+/* 点击提示 */
+.s014-hint {
+  font-size: 0.78rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* 入场 */
+.s014-heading    { animation: s014Up 0.4s ease both 0ms; }
+.s014-table-card { animation: s014Up 0.4s ease both 60ms; }
+.s014-hint       { animation: s014Up 0.4s ease both 100ms; }
+.s014-redline    { animation: s014Up 0.4s ease both 130ms; }
+@keyframes s014Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="14">
+  <div class="s014-wrap">
+
+    <!-- 标题（窄顶） -->
+    <div class="s014-heading">
+      <h2 class="s014-title">四范式选型对照</h2>
+      <p class="s014-subtitle">点击范式列标题高亮整列，聚焦对比</p>
+    </div>
+
+    <!-- 表格（宽） -->
+    <div class="s014-table-card">
+      <table class="s014-table" id="s014-table">
+        <colgroup>
+          <col style="width:11%">
+          <col style="width:22.25%">
+          <col style="width:22.25%">
+          <col style="width:22.25%">
+          <col style="width:22.25%">
+        </colgroup>
+        <thead>
+          <tr class="s014-th-row">
+            <th></th>
+            <th id="s014-th-1" title="点击高亮此列">
+              <div class="s014-paradigm-header">
+                <div class="s014-paradigm-bar" style="background:var(--color-compiled-rag);"></div>
+                <div class="s014-paradigm-name" style="color:var(--color-compiled-rag);">编译式 RAG</div>
+                <div class="s014-paradigm-en">LLM Wiki</div>
+              </div>
+            </th>
+            <th id="s014-th-2" title="点击高亮此列">
+              <div class="s014-paradigm-header">
+                <div class="s014-paradigm-bar" style="background:var(--color-vector-rag);"></div>
+                <div class="s014-paradigm-name" style="color:var(--color-vector-rag);">向量 RAG</div>
+                <div class="s014-paradigm-en">Vector RAG</div>
+              </div>
+            </th>
+            <th id="s014-th-3" title="点击高亮此列">
+              <div class="s014-paradigm-header">
+                <div class="s014-paradigm-bar" style="background:var(--color-graph-rag);"></div>
+                <div class="s014-paradigm-name" style="color:var(--color-graph-rag);">GraphRAG</div>
+                <div class="s014-paradigm-en">Graph-based</div>
+              </div>
+            </th>
+            <th id="s014-th-4" title="点击高亮此列">
+              <div class="s014-paradigm-header">
+                <div class="s014-paradigm-bar" style="background:var(--color-long-ctx);"></div>
+                <div class="s014-paradigm-name" style="color:var(--color-long-ctx);">长上下文</div>
+                <div class="s014-paradigm-en">Long Context</div>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="s014-data-row">
+            <td>执行方式</td>
+            <td><span class="s014-key">编译执行</span>——预先把原料编译成互链 wiki，查询读产物</td>
+            <td><span class="s014-key">解释执行</span>——查询期临时检索片段、拼 prompt、当场归纳</td>
+            <td><span class="s014-key">建图（大模型构图）</span>——读散文、抽实体、推关系、建三元组</td>
+            <td><span class="s014-key">解释执行</span>——把全部原料塞进超长上下文，每次重读</td>
+          </tr>
+          <tr class="s014-data-row">
+            <td>核心优势</td>
+            <td><span class="s014-key">跨源合成质量高</span>，产物人类可读可审计，知识沉淀可复用</td>
+            <td>召回宽泛、对新数据响应快、<span class="s014-key">token 成本低</span></td>
+            <td>能从纯文本抽关系、<span class="s014-key">多跳关系推理强</span></td>
+            <td><span class="s014-key">无需预处理</span>，实现最简单，无遗漏风险</td>
+          </tr>
+          <tr class="s014-data-row">
+            <td>主要代价</td>
+            <td>查询约 <span class="s014-chip">20×</span> token、<span class="s014-key">raw 变更需重新 ingest</span>、有规模天花板、关系推理弱</td>
+            <td><span class="s014-key">索引不可读（黑箱）、源变需重建索引</span>、生成层答案抖动</td>
+            <td><span class="s014-key">大模型构图成本高</span>、结果不确定、需图数据库基础设施</td>
+            <td>每次查询重读全部，<span class="s014-key">token 线性增长</span></td>
+          </tr>
+          <tr class="s014-data-row">
+            <td>适用场景</td>
+            <td><span class="s014-key">知识稳定、需跨源合成</span>、规模可控（数百页以内）</td>
+            <td><span class="s014-key">海量文档、高频更新</span>、单跳事实查找</td>
+            <td><span class="s014-key">非结构化散文 + 多跳关系推理</span>（需要三元组图谱）</td>
+            <td><span class="s014-key">资料量小、一次性问答</span>、对准确性要求极高</td>
+          </tr>
+          <tr class="s014-data-row">
+            <td>构图方式</td>
+            <td>解析人写好的 <span class="s014-chip">[[链接]]</span>（<span class="s014-key">self-wiring，零大模型</span>）</td>
+            <td><span class="s014-key">无图结构</span>——依赖向量相似度检索</td>
+            <td>大模型从散文里<span class="s014-key">抽实体、推关系</span>（三元组）</td>
+            <td><span class="s014-key">无图结构</span>——全量文本直接塞入上下文窗口</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 点击提示 -->
+    <div class="s014-hint">&#8593; 点击范式标题列高亮整列 · 再点取消高亮</div>
+
+    <!-- 红线（窄） -->
+    <div class="s014-redline">
+      <span style="font-size:1rem;">&#9888;</span>
+      <div class="s014-redline-text">
+        课程红线：<strong>编译式 vs GraphRAG 的区别轴是「构图方式 + 基础设施足迹」，不是「贵不贵」</strong>——
+        一个解析人写好的显式链接（零大模型、无需图数据库），一个用大模型从散文里抽实体（需图数据库等专用基础设施）。
+        「GBrain 就是便宜版 GraphRAG」是稻草人，请删除。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+window.slideHooks = window.slideHooks || {};
+window.slideHooks['slides/S014-four-paradigm-selection.html'] = function() {
+  var table = document.getElementById('s014-table');
+  var ths = [
+    document.getElementById('s014-th-1'),
+    document.getElementById('s014-th-2'),
+    document.getElementById('s014-th-3'),
+    document.getElementById('s014-th-4')
+  ];
+  var activeCol = null;
+
+  function clearHighlight() {
+    if (table) {
+      table.classList.remove('hl-1','hl-2','hl-3','hl-4');
+    }
+    ths.forEach(function(th) {
+      if (th) th.style.borderBottomWidth = '';
+    });
+  }
+
+  function makeHandler(colIdx) {
+    return function() {
+      if (activeCol === colIdx) {
+        clearHighlight();
+        activeCol = null;
+      } else {
+        clearHighlight();
+        activeCol = colIdx;
+        if (table) table.classList.add('hl-' + colIdx);
+        // Thicken the bottom border of the active header
+        var th = ths[colIdx - 1];
+        if (th) th.style.borderBottomWidth = '3px';
+      }
+    };
+  }
+
+  var handlers = [];
+  ths.forEach(function(th, i) {
+    var h = makeHandler(i + 1);
+    handlers.push(h);
+    if (th) th.addEventListener('click', h);
+  });
+
+  return function() {
+    ths.forEach(function(th, i) {
+      if (th && handlers[i]) th.removeEventListener('click', handlers[i]);
+    });
+  };
+};
+</script>

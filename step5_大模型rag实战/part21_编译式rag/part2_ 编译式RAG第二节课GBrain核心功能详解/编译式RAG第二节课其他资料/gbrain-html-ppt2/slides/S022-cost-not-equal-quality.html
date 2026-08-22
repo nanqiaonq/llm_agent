@@ -1,0 +1,279 @@
+<style>
+/* S022 成本贵 ≠ 质量差 */
+:root {
+  --bg-deep: #141a26;
+  --bg-mid: #1e2838;
+  --primary: #9bcbd7;
+  --secondary: #6a8ba0;
+  --accent: #e8a849;
+  --text-primary: #e2e8ee;
+  --text-dim: #7d8fa4;
+  --card-bg: rgba(30,40,56,0.7);
+  --card-border: rgba(155,203,215,0.18);
+  --card-title: #aadcec;
+  --eyebrow: #81a8b9;
+  --danger: #e05c5c;
+}
+
+.s022-wrap {
+    transform: scale(0.88);
+    transform-origin: center center;
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  background-color: var(--bg-deep);
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 4rem;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.s022-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eyebrow);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.s022-title {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.35rem;
+  line-height: 1.25;
+}
+
+.s022-subtitle {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(0.88rem, 1.3vw, 1rem);
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* === 正交坐标系示意 === */
+.s022-canvas-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  min-width: 0;
+}
+
+.s022-axes-container {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  aspect-ratio: 16 / 7;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+
+/* SVG 正交坐标 */
+.s022-axes-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* === 两张解释卡 === */
+.s022-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.s022-info-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.8rem;
+  padding: 1rem 1.1rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+  font-style: normal;
+}
+
+.s022-info-card--cost {
+  border-color: rgba(155,203,215,0.3);
+}
+
+.s022-info-card--quality {
+  border-color: rgba(232,168,73,0.28);
+}
+
+.s022-card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.s022-card-label--cost    { color: var(--primary); }
+.s022-card-label--quality { color: var(--accent); }
+
+.s022-card-headline {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
+}
+
+.s022-card-headline--cost    { color: var(--primary); }
+.s022-card-headline--quality { color: var(--accent); }
+
+.s022-card-body {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.83rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.s022-card-body em {
+  font-style: normal;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* === 结论行 === */
+.s022-conclusion {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  background: rgba(155,203,215,0.07);
+  border: 1px solid rgba(155,203,215,0.2);
+  border-radius: 0.6rem;
+  padding: 0.65rem 1.2rem;
+  font-style: normal;
+}
+
+.s022-conclusion-text {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.9rem;
+  color: var(--card-title);
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.45;
+}
+
+.s022-conclusion-text strong {
+  color: var(--accent);
+}
+</style>
+
+<div class="slide s022-wrap" id="S022">
+  <p class="s022-eyebrow">判断力 benchmark — 成本解读</p>
+  <h1 class="s022-title">成本贵 ≠ 质量差</h1>
+  <p class="s022-subtitle">约 21× token 是 think 多跳综合换来的，不是用高成本换低质量</p>
+
+  <div class="s022-canvas-area">
+
+    <!-- SVG 正交坐标示意 -->
+    <div class="s022-axes-container">
+      <svg class="s022-axes-svg" viewBox="0 0 780 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <!-- 网格背景 -->
+        <defs>
+          <pattern id="s022-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(155,203,215,0.07)" stroke-width="0.8"/>
+          </pattern>
+        </defs>
+        <rect width="780" height="240" fill="url(#s022-grid)"/>
+
+        <!-- X 轴: 查询成本 (水平) -->
+        <line x1="60" y1="180" x2="720" y2="180" stroke="rgba(155,203,215,0.4)" stroke-width="1.5"/>
+        <polygon points="720,176 730,180 720,184" fill="rgba(155,203,215,0.5)"/>
+        <text x="390" y="218" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(155,203,215,0.7)">查询成本（token 用量）</text>
+        <text x="100" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="rgba(155,203,215,0.5)">低</text>
+        <text x="680" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="rgba(155,203,215,0.5)">高（~21×）</text>
+
+        <!-- Y 轴: 综合质量 (垂直) -->
+        <line x1="60" y1="200" x2="60" y2="20" stroke="rgba(232,168,73,0.4)" stroke-width="1.5"/>
+        <polygon points="56,20 60,10 64,20" fill="rgba(232,168,73,0.5)"/>
+        <text x="28" y="115" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(232,168,73,0.7)" transform="rotate(-90,28,115)">综合质量</text>
+        <text x="50" y="175" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="rgba(232,168,73,0.5)">低</text>
+        <text x="50" y="45" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="rgba(232,168,73,0.5)">高</text>
+
+        <!-- 象限标注 -->
+        <!-- 右上象限：高成本 + 高质量 → GBrain think 所在 -->
+        <rect x="400" y="28" width="300" height="148" rx="6" fill="rgba(155,203,215,0.04)" stroke="rgba(155,203,215,0.08)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="550" y="55" text-anchor="middle" font-family="Noto Sans SC,sans-serif" font-size="11" fill="rgba(155,203,215,0.5)">高成本 · 高质量</text>
+        <text x="550" y="70" text-anchor="middle" font-family="Noto Sans SC,sans-serif" font-size="10" fill="rgba(155,203,215,0.38)">GBrain think 的定位</text>
+
+        <!-- 误解区: 右下 高成本+低质量 -->
+        <rect x="400" y="180" width="300" height="2" fill="rgba(224,92,92,0.2)"/>
+        <text x="550" y="170" text-anchor="middle" font-family="Noto Sans SC,sans-serif" font-size="10" fill="rgba(224,92,92,0.5)">误解区：以为"贵 = 差"</text>
+
+        <!-- 点: 传统 search 方式 (低成本, 低综合质量) -->
+        <circle cx="130" cy="155" r="9" fill="var(--secondary)" opacity="0.75"/>
+        <text x="130" y="143" text-anchor="middle" font-family="Noto Sans SC,sans-serif" font-size="10" fill="rgba(155,203,215,0.7)">search</text>
+        <text x="130" y="132" text-anchor="middle" font-family="Noto Sans SC,monospace" font-size="9" fill="rgba(155,203,215,0.5)">1× token</text>
+
+        <!-- 点: think (高成本, 高综合质量) -->
+        <circle cx="620" cy="60" r="12" fill="var(--accent)" opacity="0.9"/>
+        <text x="645" y="56" font-family="Noto Sans SC,sans-serif" font-size="11" fill="var(--accent)" font-weight="700">think</text>
+        <text x="645" y="70" font-family="JetBrains Mono,monospace" font-size="9" fill="rgba(232,168,73,0.8)">~21× token</text>
+
+        <!-- 箭头: 两点不是线性相关 -->
+        <path d="M 150 150 C 300 140 400 90 610 68" stroke="rgba(155,203,215,0.25)" stroke-width="1.5" fill="none" stroke-dasharray="5,4"/>
+
+        <!-- 两轴正交强调 -->
+        <text x="390" y="120" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="rgba(155,203,215,0.25)">两轴独立 · 非线性相关</text>
+      </svg>
+    </div>
+
+    <!-- 两张解释卡 -->
+    <div class="s022-cards-row">
+      <div class="s022-info-card s022-info-card--cost">
+        <div class="s022-card-label s022-card-label--cost">为什么贵</div>
+        <div class="s022-card-headline s022-card-headline--cost">~21× token：多跳综合的代价</div>
+        <p class="s022-card-body">
+          think 不只读一页——它跨多个 wiki 页做<em>多跳推理</em>，合并不同来源信息，生成带引用的成文答案，还附空白分析报告。<em>每一步都要 token 代价</em>，成本高是功能设计的结果，不是效率低。
+        </p>
+      </div>
+      <div class="s022-info-card s022-info-card--quality">
+        <div class="s022-card-label s022-card-label--quality">质量换来了什么</div>
+        <div class="s022-card-headline s022-card-headline--quality">三样 search 给不了的东西</div>
+        <p class="s022-card-body">
+          ① <em>跨源综合</em>——把散在多页的信息拼成一个答案；② <em>可读知识库</em>——产物是真实 wiki 页，人可审计；③ <em>可溯源引用</em>——每条结论都有来源页，而不是黑箱生成。
+        </p>
+      </div>
+    </div>
+
+    <!-- 结论 -->
+    <div class="s022-conclusion">
+      <div class="s022-conclusion-text">
+        贵与好是<strong>正交的两个维度</strong>——判断值不值，要看场景是否需要跨源深综合；如果只查单条信息，search 1× 更合适
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,32 @@
+# 编译式 RAG / LLM Wiki 课件 · Python 运行依赖
+# 用法：
+#   conda create -n compiled-rag-wiki python=3.12 -y
+#   conda activate compiled-rag-wiki
+#   pip install -r requirements.txt
+#   python -m ipykernel install --user --name compiled-rag-wiki   # 注册为 Jupyter kernel
+#
+# 这些依赖仅用于运行课件里的 Python 代码 cell：
+#   · llama-index-core / openai / python-dotenv：第一章 1.6 节用最小 RAG（LlamaIndex 核心 + OpenAI 兼容 embedding/LLM）
+#       复现"不更新中间产物就答旧值"；课件直接用 openai SDK 自己包 BaseEmbedding/CustomLLM，无需 LlamaIndex 的 embedding 集成包
+#   · claude-agent-sdk：第三章 3.6/3.8/3.9/3.10 节的 Agent SDK 路径（包装本机 claude CLI、走订阅鉴权、无需 API key）
+#   · networkx / matplotlib：第四章画带类型的有向知识图谱
+# 编译式 RAG 范式本身不需要 Python（一个 LLM agent + 终端即可）。
+# 外部工具 claude CLI（订阅登录）、gbrain（源码 + bun link，见 4.4 节）不是 pip 包，不在此文件。
+# 版本说明：全部经 PyPI 可装性逐项核对 + pip install --dry-run 全集解析验证，无版本冲突（2026-06 核验）。
+
+# ── 第一章 1.6 最小 RAG 实验（LlamaIndex 核心 + OpenAI 兼容 embedding/LLM）──
+llama-index-core==0.14.12
+openai==1.109.1
+python-dotenv==1.2.1
+
+# ── 第三章 Agent SDK 路径（包装本机 claude CLI、走订阅鉴权）──
+claude-agent-sdk==0.2.101
+
+# ── 第四章 知识图谱可视化 ──
+networkx==3.6.1
+matplotlib==3.11.0
+
+# ── 运行 .ipynb 的 Jupyter 环境 ──
+jupyter==1.1.1
+notebook==7.2.2
+ipykernel==6.29.5

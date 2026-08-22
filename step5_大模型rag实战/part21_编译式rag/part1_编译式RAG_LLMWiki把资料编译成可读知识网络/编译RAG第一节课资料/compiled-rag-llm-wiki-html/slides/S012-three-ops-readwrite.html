@@ -1,0 +1,440 @@
+<style>
+/* S012 三操作读写边界 · 操作选择器+三层高亮 · 🔴 交互 · G1 月白灰蓝 */
+/* FM 防御注释：font-style:normal 关键元素 ≥3 次显式声明 */
+/* window.slideHooks 注册交互，禁裸 <script> */
+
+.s012-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1640px;
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal; /* FM 防御 ① */
+}
+
+/* 标题（窄顶） */
+.s012-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+.s012-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: normal; /* FM 防御 ② */
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s012-subtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+/* 操作选择按钮组（窄） */
+.s012-op-tabs {
+  width: 100%;
+  max-width: 1120px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.4rem;
+  align-items: stretch;
+}
+.s012-op-tab {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 0.85rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(12px);
+  align-self: stretch;
+}
+.s012-op-tab:hover {
+  background: rgba(110,126,140,0.06);
+  border-color: var(--secondary);
+}
+.s012-op-tab.active-ingest {
+  border-color: var(--color-compile);
+  background: rgba(110,140,136,0.08);
+  box-shadow: 0 4px 16px rgba(110,140,136,0.15);
+}
+.s012-op-tab.active-query {
+  border-color: var(--color-interpret);
+  background: rgba(183,150,131,0.08);
+  box-shadow: 0 4px 16px rgba(183,150,131,0.12);
+}
+.s012-op-tab.active-lint {
+  border-color: var(--secondary);
+  background: rgba(110,126,140,0.08);
+  box-shadow: 0 4px 16px rgba(110,126,140,0.12);
+}
+
+.s012-op-name {
+  font-family: var(--font-mono);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  font-weight: 700;
+  font-style: normal; /* FM 防御 ③ */
+  color: var(--text-primary);
+}
+.s012-op-name.ingest { color: var(--color-compile); }
+.s012-op-name.query  { color: var(--color-interpret); }
+.s012-op-name.lint   { color: var(--secondary); }
+
+.s012-op-cn {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-style: normal;
+  color: var(--text-dim);
+}
+.s012-op-desc {
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-top: 0.2rem;
+}
+
+/* 三层架构高亮区（宽） */
+.s012-layers {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.s012-layer {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 0.85rem;
+  padding: 0.9rem 1.3rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  min-width: 0;
+}
+
+/* 层名 */
+.s012-layer-name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.s012-layer-dir {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+}
+.s012-layer-role {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-style: normal;
+  color: var(--text-dim);
+}
+
+/* 层描述 */
+.s012-layer-body {
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 1.3vw, 1rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* 状态徽章 */
+.s012-layer-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  white-space: nowrap;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  border: 1.5px solid transparent;
+  flex-shrink: 0;
+}
+
+/* 默认态：中性 */
+.s012-layer-badge.default {
+  background: rgba(110,126,140,0.08);
+  color: var(--text-dim);
+  border-color: var(--card-border);
+}
+
+/* 读（绿） */
+.s012-layer-badge.read {
+  background: rgba(110,140,136,0.14);
+  color: var(--color-compile);
+  border-color: rgba(110,140,136,0.35);
+}
+.s012-layer.highlight-read {
+  border-color: rgba(110,140,136,0.4);
+  background: rgba(110,140,136,0.05);
+  box-shadow: 0 4px 18px rgba(110,140,136,0.12);
+}
+
+/* 写（蓝灰） */
+.s012-layer-badge.write {
+  background: rgba(110,126,140,0.14);
+  color: var(--color-link-line);
+  border-color: rgba(110,126,140,0.35);
+}
+.s012-layer.highlight-write {
+  border-color: rgba(110,126,140,0.4);
+  background: rgba(110,126,140,0.06);
+  box-shadow: 0 4px 18px rgba(110,126,140,0.1);
+}
+
+/* 禁碰（灰） */
+.s012-layer-badge.off {
+  background: rgba(110,126,140,0.05);
+  color: var(--text-dim);
+  border-color: var(--card-border);
+  opacity: 0.6;
+}
+.s012-layer.highlight-off {
+  opacity: 0.55;
+  filter: grayscale(0.3);
+}
+
+/* 底部说明（窄） */
+.s012-note {
+  width: 100%;
+  max-width: 1120px;
+  background: rgba(110,126,140,0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 0.6rem;
+  padding: 0.7rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.s012-note-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 1.2vw, 0.97rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+}
+.s012-note-text .chip {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-style: normal;
+  background: rgba(110,126,140,0.1);
+  border: 1px solid var(--card-border);
+  border-radius: 0.2rem;
+  padding: 0.05rem 0.35rem;
+  color: var(--text-secondary);
+}
+
+/* 入场 */
+.s012-heading  { animation: s012Up 0.4s ease both 0ms; }
+.s012-op-tabs  { animation: s012Up 0.4s ease both 60ms; }
+.s012-layers   { animation: s012Up 0.4s ease both 110ms; }
+.s012-note     { animation: s012Up 0.4s ease both 160ms; }
+@keyframes s012Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="12">
+  <div class="s012-wrap">
+
+    <!-- 标题（窄顶） -->
+    <div class="s012-heading">
+      <h2 class="s012-title">三个操作：Ingest / Query / Lint</h2>
+      <p class="s012-subtitle">点选操作——查看它对每一层的读写权限</p>
+    </div>
+
+    <!-- 操作选择器（窄） -->
+    <div class="s012-op-tabs">
+      <div class="s012-op-tab" id="s012-tab-ingest" data-op="ingest">
+        <div class="s012-op-name ingest">Ingest</div>
+        <div class="s012-op-cn">编译 · 写 wiki</div>
+        <div class="s012-op-desc">读 raw/ 新原料，按 schema 在 wiki/ 编译互链页，更新 index.md 与 log.md</div>
+      </div>
+      <div class="s012-op-tab" id="s012-tab-query" data-op="query">
+        <div class="s012-op-name query">Query</div>
+        <div class="s012-op-cn">查询 · 只读 wiki</div>
+        <div class="s012-op-desc">只读 wiki/，从 index.md 导航定位相关页，给出带引用的回答，不重读 raw/（前提：wiki 已由最新 raw ingest）</div>
+      </div>
+      <div class="s012-op-tab" id="s012-tab-lint" data-op="lint">
+        <div class="s012-op-name lint">Lint</div>
+        <div class="s012-op-cn">巡检 · 只读检查</div>
+        <div class="s012-op-desc">检查 wiki 一致性（断链 / 孤儿页 / 过期内容），只产出问题报告，不写任何层</div>
+      </div>
+    </div>
+
+    <!-- 三层高亮区（宽） -->
+    <div class="s012-layers">
+
+      <!-- raw/ 层 -->
+      <div class="s012-layer" id="s012-layer-raw">
+        <div class="s012-layer-name-wrap">
+          <div class="s012-layer-dir">raw/</div>
+          <div class="s012-layer-role">原料层 · 人类拥有</div>
+        </div>
+        <div class="s012-layer-body">
+          事实源头，编译的输入。Agent Ingest 时只 Read 不 Write；人类可更新 raw，更新后需重新 Ingest。
+          编译期 raw 不变，是整个范式可信的地基。
+        </div>
+        <div class="s012-layer-badge default" id="s012-badge-raw">— 选择操作查看 —</div>
+      </div>
+
+      <!-- wiki/ 层 -->
+      <div class="s012-layer" id="s012-layer-wiki">
+        <div class="s012-layer-name-wrap">
+          <div class="s012-layer-dir">wiki/</div>
+          <div class="s012-layer-role">知识层 · LLM 拥有</div>
+        </div>
+        <div class="s012-layer-body">
+          编译产物，由 LLM 增删改的互链页面（包含 index.md 与 log.md）。
+          Ingest 写、Query 读、Lint 检查——是三个操作最活跃的战场。
+        </div>
+        <div class="s012-layer-badge default" id="s012-badge-wiki">— 选择操作查看 —</div>
+      </div>
+
+      <!-- CLAUDE.md 层 -->
+      <div class="s012-layer" id="s012-layer-schema">
+        <div class="s012-layer-name-wrap">
+          <div class="s012-layer-dir">CLAUDE.md</div>
+          <div class="s012-layer-role">规则层 · 人类撰写</div>
+        </div>
+        <div class="s012-layer-body">
+          schema 立规矩，约束 LLM 怎么编译。定义页面命名 / 链接语法 / 三操作边界。
+          LLM 只 Read 不 Write——执行前读规则，不修改规则本身。
+        </div>
+        <div class="s012-layer-badge default" id="s012-badge-schema">— 选择操作查看 —</div>
+      </div>
+
+    </div>
+
+    <!-- 底部说明（窄） -->
+    <div class="s012-note">
+      <div class="s012-note-text">
+        三个操作就是编译式 RAG 的全部交互词汇：<span class="chip">Ingest</span>（编译知识）· <span class="chip">Query</span>（查询结论）· <span class="chip">Lint</span>（巡检一致性）。
+        读写边界是整套范式可信的制度保证。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+window.slideHooks = window.slideHooks || {};
+window.slideHooks['slides/S012-three-ops-readwrite.html'] = function() {
+
+  // 三操作的读写配置
+  var opConfig = {
+    ingest: {
+      raw:    { cls: 'read',  text: '&#10003; 只读（Read）', layerCls: 'highlight-read' },
+      wiki:   { cls: 'write', text: '&#10003; 读+写（Write）', layerCls: 'highlight-write' },
+      schema: { cls: 'read',  text: '&#10003; 只读（Read）', layerCls: 'highlight-read' }
+    },
+    query: {
+      raw:    { cls: 'off',   text: '&#10007; 禁止读取', layerCls: 'highlight-off' },
+      wiki:   { cls: 'read',  text: '&#10003; 只读（Read）', layerCls: 'highlight-read' },
+      schema: { cls: 'read',  text: '&#10003; 只读（Read）', layerCls: 'highlight-read' }
+    },
+    lint: {
+      raw:    { cls: 'off',   text: '&#10007; 不涉及', layerCls: 'highlight-off' },
+      wiki:   { cls: 'read',  text: '&#10003; 只读检查', layerCls: 'highlight-read' },
+      schema: { cls: 'read',  text: '&#10003; 只读（Read）', layerCls: 'highlight-read' }
+    }
+  };
+
+  var tabs = {
+    ingest: document.getElementById('s012-tab-ingest'),
+    query:  document.getElementById('s012-tab-query'),
+    lint:   document.getElementById('s012-tab-lint')
+  };
+  var layers = {
+    raw:    document.getElementById('s012-layer-raw'),
+    wiki:   document.getElementById('s012-layer-wiki'),
+    schema: document.getElementById('s012-layer-schema')
+  };
+  var badges = {
+    raw:    document.getElementById('s012-badge-raw'),
+    wiki:   document.getElementById('s012-badge-wiki'),
+    schema: document.getElementById('s012-badge-schema')
+  };
+
+  var activeOp = null;
+
+  function clearAll() {
+    Object.values(tabs).forEach(function(t) {
+      if (t) { t.className = 's012-op-tab'; }
+    });
+    Object.values(layers).forEach(function(l) {
+      if (l) { l.className = 's012-layer'; l.style.opacity = ''; l.style.filter = ''; }
+    });
+    Object.values(badges).forEach(function(b) {
+      if (b) { b.className = 's012-layer-badge default'; b.innerHTML = '— 选择操作查看 —'; }
+    });
+  }
+
+  function applyOp(op) {
+    clearAll();
+    activeOp = op;
+    var tab = tabs[op];
+    if (tab) { tab.classList.add('active-' + op); }
+    var cfg = opConfig[op];
+    ['raw', 'wiki', 'schema'].forEach(function(layer) {
+      var c = cfg[layer];
+      var layerEl = layers[layer];
+      var badgeEl = badges[layer];
+      if (layerEl) {
+        layerEl.classList.add(c.layerCls);
+        if (c.cls === 'off') {
+          layerEl.style.opacity = '0.5';
+          layerEl.style.filter = 'grayscale(0.3)';
+        }
+      }
+      if (badgeEl) {
+        badgeEl.className = 's012-layer-badge ' + c.cls;
+        badgeEl.innerHTML = c.text;
+      }
+    });
+  }
+
+  function makeHandler(op) {
+    return function() { applyOp(op); };
+  }
+
+  var handlers = {};
+  Object.keys(tabs).forEach(function(op) {
+    handlers[op] = makeHandler(op);
+    if (tabs[op]) { tabs[op].addEventListener('click', handlers[op]); }
+  });
+
+  return function() {
+    Object.keys(tabs).forEach(function(op) {
+      if (tabs[op] && handlers[op]) { tabs[op].removeEventListener('click', handlers[op]); }
+    });
+  };
+};
+</script>

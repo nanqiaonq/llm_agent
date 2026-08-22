@@ -1,0 +1,460 @@
+<style>
+  /* S003B GBrain 从哪来 — origin-genealogy-timeline */
+  /* P06 极简钢蓝数据感 · dark theme */
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .s003b-wrap {
+    transform: scale(1.06);
+    transform-origin: center center;
+    width: 100%;
+    max-width: 1060px;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    position: relative;
+    font-style: normal;
+
+    --bg-deep: #141a26;
+    --bg-mid: #1e2838;
+    --primary: #9bcbd7;
+    --secondary: #6a8ba0;
+    --accent: #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim: #7d8fa4;
+    --card-bg: rgba(30,40,56,0.7);
+    --card-border: rgba(155,203,215,0.18);
+    --card-title: #aadcec;
+    --eyebrow-col: #81a8b9;
+    --border-primary-30: rgba(155,203,215,0.3);
+    --border-accent-35: rgba(232,168,73,0.35);
+
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+  }
+
+  .s003b-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow-col);
+    font-style: normal;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .s003b-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 0.3rem;
+    line-height: 1.25;
+  }
+
+  .s003b-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 1.6rem;
+  }
+
+  /* 谱系时间轴 */
+  .s003b-timeline {
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+  }
+
+  /* 节点卡 */
+  .s003b-node {
+    min-width: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    padding: 1.1rem 1.25rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .s003b-node:hover {
+    transform: translateY(-4px);
+  }
+
+  /* 节点1 Memex — 远源，视觉权重最低 */
+  .s003b-node-remote {
+    flex: 0.82;
+    opacity: 0.9;
+  }
+
+  /* 节点2 LLM Wiki — 思想原点 */
+  .s003b-node-origin {
+    flex: 1;
+    border-color: var(--border-primary-30);
+  }
+
+  /* 节点3 GBrain — 本课主角，暖金点睛 */
+  .s003b-node-main {
+    flex: 1.12;
+    border-color: var(--border-accent-35);
+    box-shadow: 0 6px 28px rgba(0,0,0,0.35), 0 0 22px rgba(232,168,73,0.12);
+  }
+
+  .s003b-node-main:hover {
+    box-shadow: 0 10px 34px rgba(0,0,0,0.35), 0 0 26px rgba(232,168,73,0.18);
+  }
+
+  .s003b-year {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.18rem 0.6rem;
+    border-radius: 0.35rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    font-weight: 500;
+    font-style: normal;
+    width: fit-content;
+    background: rgba(155,203,215,0.12);
+    color: var(--primary);
+  }
+
+  .s003b-node-main .s003b-year {
+    background: rgba(232,168,73,0.14);
+    color: var(--accent);
+  }
+
+  .s003b-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.14rem 0.55rem;
+    border-radius: 0.3rem;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-style: normal;
+    width: fit-content;
+  }
+
+  .tag-origin { background: rgba(155,203,215,0.14); color: var(--primary); }
+  .tag-main   { background: rgba(232,168,73,0.16); color: var(--accent); }
+
+  .s003b-node-name {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.05rem, 1.7vw, 1.28rem);
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1.2;
+    color: var(--card-title);
+  }
+
+  .s003b-node-main .s003b-node-name { color: var(--accent); }
+
+  .s003b-node-actor {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem;
+    color: var(--text-dim);
+    font-style: normal;
+    margin-top: -0.2rem;
+  }
+
+  .s003b-node-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  /* GBrain 两步增量，常显，强调 */
+  .s003b-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.1rem;
+  }
+
+  .s003b-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.74rem;
+    color: var(--text-primary);
+    font-style: normal;
+    line-height: 1.45;
+  }
+
+  .s003b-step-num {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* 展开详情 — 点击节点揭示 */
+  .s003b-detail {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.74rem;
+    color: var(--secondary);
+    font-style: normal;
+    line-height: 1.5;
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+  }
+
+  .s003b-node.s003b-expanded .s003b-detail {
+    max-height: 160px;
+    opacity: 1;
+    margin-top: 0.2rem;
+  }
+
+  .s003b-hint {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    font-style: normal;
+    letter-spacing: 0.03em;
+    opacity: 0.7;
+    margin-top: auto;
+    padding-top: 0.3rem;
+  }
+
+  .s003b-node.s003b-expanded .s003b-hint { opacity: 0; }
+
+  /* 连接桥 — 节点间单向箭头 + 脉冲 */
+  .s003b-connector {
+    flex-shrink: 0;
+    width: 64px;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0 0.15rem;
+  }
+
+  .s003b-arrow-track {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .s003b-arrow-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 12px;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+
+  .line-1 { background: linear-gradient(to right, var(--secondary), var(--primary)); }
+  .line-2 { background: linear-gradient(to right, var(--primary), var(--accent)); }
+
+  .s003b-arrow-head {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+  }
+
+  .head-1 { border-left: 9px solid var(--primary); }
+  .head-2 { border-left: 9px solid var(--accent); }
+
+  @keyframes s003b-pulse {
+    0% { left: 0; opacity: 0; }
+    12% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { left: calc(100% - 16px); opacity: 0; }
+  }
+
+  .s003b-pulse-dot {
+    position: absolute;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    animation: s003b-pulse 2.4s ease-in-out infinite;
+  }
+
+  .dot-1 { background: var(--primary); }
+  .dot-2 { background: var(--accent); animation-delay: 1.2s; }
+
+  .s003b-conn-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+    white-space: nowrap;
+  }
+
+  /* 底注钩子：出题 → 答题 */
+  .s003b-hook {
+    width: 100%;
+    margin-top: 1.4rem;
+    background: rgba(232,168,73,0.05);
+    border: 1px solid rgba(232,168,73,0.2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0.75rem;
+    padding: 0.85rem 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .s003b-hook-main {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    font-style: normal;
+    text-align: center;
+  }
+
+  .s003b-hook-q { color: var(--primary); }
+  .s003b-hook-a { color: var(--accent); }
+  .s003b-hook-arrow { color: var(--text-dim); margin: 0 0.3rem; }
+
+  .s003b-hook-sub {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    font-style: normal;
+    text-align: center;
+  }
+
+  /* 入场动画（main.js animate-ready 机制驱动） */
+  .animate-ready { opacity: 0; transform: translateY(14px); }
+  .animate-ready.animated {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .s003b-node-remote.animate-ready.animated { opacity: 0.9; }
+
+  @media (max-height: 720px) {
+    .s003b-wrap { padding: 1.6rem 3rem; }
+    .s003b-hook { margin-top: 0.9rem; padding: 0.7rem 1.1rem; }
+    .s003b-subtitle { margin-bottom: 1rem; }
+  }
+</style>
+
+<div class="slide" id="S003B">
+  <div class="s003b-wrap">
+
+    <div class="s003b-eyebrow">范式溯源 · 从一页想法到能跑的大脑</div>
+    <div class="s003b-title">GBrain 从哪来</div>
+    <div class="s003b-subtitle">它不是凭空冒出来的工具，而是一个有明确思想源头的范式落地</div>
+
+    <div class="s003b-timeline">
+
+      <!-- 节点1 Memex — 远源（从属） -->
+      <div class="s003b-node s003b-node-remote animate-ready" data-delay="0.15">
+        <div class="s003b-year">1945</div>
+        <div class="s003b-node-name">Memex</div>
+        <div class="s003b-node-actor">Vannevar Bush</div>
+        <div class="s003b-node-desc">最早设想了一个互相链接的个人知识库。</div>
+        <div class="s003b-detail">但他没解决「谁来维护」——而大模型恰好把这件苦差事的成本压到了趋近于零。</div>
+        <div class="s003b-hint">点击展开 ›</div>
+      </div>
+
+      <!-- 连接桥 1 -->
+      <div class="s003b-connector animate-ready" data-delay="0.3">
+        <div class="s003b-arrow-track">
+          <div class="s003b-arrow-line line-1"></div>
+          <div class="s003b-pulse-dot dot-1"></div>
+          <div class="s003b-arrow-head head-1"></div>
+        </div>
+        <div class="s003b-conn-label">精神上溯</div>
+      </div>
+
+      <!-- 节点2 LLM Wiki — 思想原点 -->
+      <div class="s003b-node s003b-node-origin animate-ready" data-delay="0.45">
+        <div class="s003b-year">2026.4</div>
+        <div class="s003b-tag tag-origin">思想原点</div>
+        <div class="s003b-node-name">LLM Wiki</div>
+        <div class="s003b-node-actor">Andrej Karpathy</div>
+        <div class="s003b-node-desc">一篇只有概念、不含代码的 GitHub Gist。主张：别每次从零检索，让大模型把资料「编译」成结构化、互相链接的 markdown，查询直接命中复利积累的产物。</div>
+        <div class="s003b-detail">有意保持抽象——目录结构、schema、工具选择都留给读者和 Agent 自己落地。这正是本系列所称「编译式 RAG」的思想原点。</div>
+        <div class="s003b-hint">点击展开 ›</div>
+      </div>
+
+      <!-- 连接桥 2 — 渐变到暖金，强调落地 -->
+      <div class="s003b-connector animate-ready" data-delay="0.6">
+        <div class="s003b-arrow-track">
+          <div class="s003b-arrow-line line-2"></div>
+          <div class="s003b-pulse-dot dot-2"></div>
+          <div class="s003b-arrow-head head-2"></div>
+        </div>
+        <div class="s003b-conn-label">亲手落地</div>
+      </div>
+
+      <!-- 节点3 GBrain — 本课主角（暖金点睛） -->
+      <div class="s003b-node s003b-node-main animate-ready" data-delay="0.75">
+        <div class="s003b-year">2026.4 开源</div>
+        <div class="s003b-tag tag-main">本课主角</div>
+        <div class="s003b-node-name">GBrain</div>
+        <div class="s003b-node-actor">Garry Tan · MIT 开源</div>
+        <div class="s003b-node-desc">把一页概念变成可安装、可跑、有 benchmark 的生产级系统，并在原版上往前走了两步：</div>
+        <div class="s003b-steps">
+          <div class="s003b-step"><span class="s003b-step-num">01</span><span>零 LLM 的 self-wiring 自动建图</span></div>
+          <div class="s003b-step"><span class="s003b-step-num">02</span><span>综合层：替你跨页综合成带引用的答案，并诚实标出知识空白</span></div>
+        </div>
+        <div class="s003b-detail">作者自用：十几万页规模、几十个 cron job 夜间自动维护——这不是 Demo。</div>
+        <div class="s003b-hint">点击展开 ›</div>
+      </div>
+
+    </div><!-- /s003b-timeline -->
+
+    <!-- 底注钩子 -->
+    <div class="s003b-hook animate-ready" data-delay="0.95">
+      <div class="s003b-hook-main">
+        <span class="s003b-hook-q">Karpathy 出题</span>（概念 · 思路）
+        <span class="s003b-hook-arrow">→</span>
+        <span class="s003b-hook-a">GBrain 答题</span>（实现 · 落地）
+      </div>
+      <div class="s003b-hook-sub">本课主角：借 GBrain，把那页「想法文件」亲手落到能运行的代码。</div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<!-- T1 阶段过渡页 · 能力一 建图 Connect（插入 S006 后 / S007 前） -->
+<style>
+  .trans-wrap {
+    height: 100vh; max-height: 100vh; overflow-y: auto; overflow-x: hidden;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    max-width: 1400px; margin: 0 auto; padding: 3rem 7rem; box-sizing: border-box;
+    text-align: center; font-style: normal; position: relative;
+  }
+  .trans-deco {
+    position: fixed; right: 0; top: 18%; width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(155,203,215,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 1;
+  }
+  .trans-badge {
+    display: inline-block; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid rgba(232,168,73,0.4);
+    border-radius: 999px; padding: 0.4rem 1.1rem; margin-bottom: 1.6rem;
+    position: relative; z-index: 2; font-style: normal;
+  }
+  .trans-title {
+    font-family: 'Sora', 'Noto Sans SC', sans-serif; font-weight: 700;
+    font-size: clamp(2.2rem, 4.5vw, 3.6rem); color: var(--text-primary);
+    line-height: 1.2; margin-bottom: 1rem; position: relative; z-index: 2;
+    font-style: normal;
+  }
+  .trans-title .acc { color: var(--primary); }
+  .trans-sub {
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem); color: var(--text-dim);
+    max-width: 640px; line-height: 1.7; margin-bottom: 2.4rem;
+    position: relative; z-index: 2; font-style: normal;
+  }
+  .trans-chips {
+    display: flex; gap: 1.4rem; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 2rem; position: relative; z-index: 2;
+  }
+  .trans-chip {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 1rem 1.6rem; min-width: 120px;
+    box-shadow: 0 8px 24px var(--p06-shadow);
+  }
+  .trans-chip .num {
+    font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.8rem;
+    color: var(--primary); line-height: 1; font-style: normal;
+  }
+  .trans-chip .num.gold { color: var(--accent); }
+  .trans-chip .lbl {
+    font-size: 0.75rem; color: var(--text-dim); margin-top: 0.4rem; letter-spacing: 0.04em;
+  }
+  .trans-note {
+    max-width: 680px; font-size: 0.85rem; color: var(--text-dim); line-height: 1.7;
+    border-top: 1px solid var(--card-border); padding-top: 1.3rem;
+    position: relative; z-index: 2; font-style: normal;
+  }
+  .trans-note strong { color: var(--primary); font-weight: 600; }
+</style>
+
+<div class="trans-wrap">
+  <div class="trans-deco"></div>
+  <div class="trans-badge animate-ready" data-delay="0.1">能力一 · STAGE 01</div>
+  <h1 class="trans-title animate-ready" data-delay="0.3">建图 · <span class="acc">Connect</span></h1>
+  <p class="trans-sub animate-ready" data-delay="0.5">把一堆孤立笔记，零成本织成一张带类型的知识图谱</p>
+  <div class="trans-chips animate-ready" data-delay="0.7">
+    <div class="trans-chip"><div class="num gold">0</div><div class="lbl">LLM 调用</div></div>
+    <div class="trans-chip"><div class="num">4</div><div class="lbl">关系类型</div></div>
+    <div class="trans-chip"><div class="num">16</div><div class="lbl">条 typed 边</div></div>
+  </div>
+  <div class="trans-note animate-ready" data-delay="0.9">关系是你在 markdown 里<strong>显式写的</strong>，不是机器猜的 —— 改一行 wikilink，图就跟着变</div>
+</div>

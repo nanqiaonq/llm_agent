@@ -1,0 +1,581 @@
+<style>
+/* S006 同源分叉模拟器 · 一批原料·两种命运 · G1 月白灰蓝 */
+/* font-style:normal 关键元素 ≥3 次显式声明 */
+
+.s006-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1500px;
+  padding: 1.6rem 5rem 1.6rem 7rem;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+/* 标题区 */
+.s006-heading { width: 100%; text-align: center; }
+.s006-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s006-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 1.4vw, 1.08rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+/* ===== 共同源头 raw（窄·居中·上窄）===== */
+.s006-source {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 100%;
+  max-width: 680px;
+  padding: 0.7rem 1.4rem;
+  background: rgba(154, 170, 182, 0.1);
+  border: 1.5px solid rgba(154, 170, 182, 0.4);
+  border-radius: 0.8rem;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+  font-style: normal;
+}
+.s006-source.reading {
+  border-color: var(--color-raw);
+  background: rgba(154, 170, 182, 0.18);
+  box-shadow: 0 0 0 3px rgba(154, 170, 182, 0.18);
+}
+.s006-source-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; letter-spacing: -0.15rem; }
+.s006-source-main {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-primary);
+}
+.s006-source-sub {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-style: normal;
+  color: var(--color-raw);
+  margin-top: 0.1rem;
+}
+.s006-source-badge {
+  margin-left: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  color: var(--color-raw);
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(154, 170, 182, 0.5);
+  border-radius: 0.35rem;
+  background: rgba(247, 249, 250, 0.6);
+  white-space: nowrap;
+}
+
+/* 分叉提示 */
+.s006-fork {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-style: normal;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.s006-fork b { color: var(--accent); font-weight: 600; }
+.s006-fork.asking {
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(79, 96, 110, 0.1);
+  border: 1.5px solid rgba(79, 96, 110, 0.4);
+  border-radius: 0.7rem;
+  padding: 0.7rem 1.6rem;
+  box-shadow: 0 4px 16px rgba(79, 96, 110, 0.15);
+  animation: s006QPop 0.42s ease;
+}
+@keyframes s006QPop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+.s006-q-tag {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--bg-surface);
+  padding: 0.22rem 0.7rem;
+  margin-right: 0.7rem;
+  background: var(--accent);
+  border-radius: 0.4rem;
+  white-space: nowrap;
+}
+
+/* ===== 双路（宽·下宽）===== */
+.s006-paths {
+  width: 100%;
+  max-width: 1440px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.6rem;
+  align-items: stretch;
+}
+.s006-path {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.1rem 1.3rem 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  min-width: 0;
+  font-style: normal;
+}
+.s006-path.interpret {
+  background: rgba(183, 150, 131, 0.06);
+  border: 1.5px solid rgba(183, 150, 131, 0.3);
+}
+.s006-path.compile {
+  background: rgba(110, 140, 136, 0.06);
+  border: 1.5px solid rgba(110, 140, 136, 0.3);
+}
+
+/* 路头 */
+.s006-path-head { display: flex; align-items: center; gap: 0.7rem; }
+.s006-path-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.4rem;
+  flex-shrink: 0;
+}
+.s006-path.interpret .s006-path-badge {
+  background: rgba(183, 150, 131, 0.16);
+  color: var(--color-interpret);
+  border: 1px solid rgba(183, 150, 131, 0.4);
+}
+.s006-path.compile .s006-path-badge {
+  background: rgba(110, 140, 136, 0.16);
+  color: var(--color-compile);
+  border: 1px solid rgba(110, 140, 136, 0.4);
+}
+.s006-path-name {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* —— 左路：三子步 —— */
+.s006-steps {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+}
+.s006-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.4rem;
+  border-radius: 0.7rem;
+  border: 1.5px solid var(--card-border);
+  background: rgba(247, 249, 250, 0.6);
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  transition: background 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0.38;
+}
+.s006-step.active {
+  background: rgba(183, 150, 131, 0.14);
+  border-color: rgba(183, 150, 131, 0.55);
+  opacity: 1;
+  transform: translateY(-2px);
+}
+.s006-step-icon { font-size: 1.25rem; line-height: 1; }
+.s006-step-name {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.s006-step.active .s006-step-name { color: var(--color-interpret); }
+.s006-step-arrow {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-interpret);
+  font-size: 0.95rem;
+  padding: 0 0.25rem;
+  opacity: 0.5;
+}
+
+/* 左路答案区 + 焚毁 */
+.s006-answer-zone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 4.4rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 1px dashed rgba(183, 150, 131, 0.4);
+  background: rgba(247, 249, 250, 0.45);
+  position: relative;
+}
+.s006-answer {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--color-interpret);
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.5s ease;
+}
+.s006-answer.visible { opacity: 1; }
+.s006-answer.burning { opacity: 0; transform: translateY(-10px) scale(0.96); }
+.s006-answer-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  min-height: 0.9rem;
+}
+.s006-jitter {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-style: normal;
+  color: rgba(183, 150, 131, 0.85);
+  font-weight: 600;
+}
+.s006-burn-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-style: normal;
+  color: var(--color-interpret);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.s006-burn-tag.show { opacity: 0.9; }
+
+/* —— 右路：编译舞台 —— */
+.s006-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 4.4rem;
+  justify-content: center;
+  padding: 0.4rem 0.5rem;
+}
+.s006-stage-placeholder {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+}
+.s006-wiki {
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  max-width: 17.5rem;
+  border-radius: 0.75rem;
+  transition: background 0.5s ease, border-color 0.5s ease;
+}
+.s006-stage.compiling .s006-wiki,
+.s006-stage.done .s006-wiki {
+  display: flex;
+  padding: 0.55rem 0.7rem;
+  background: rgba(110, 140, 136, 0.07);
+  border: 1.5px dashed rgba(110, 140, 136, 0.3);
+}
+.s006-stage.done .s006-wiki {
+  background: rgba(110, 140, 136, 0.11);
+  border-style: solid;
+  border-color: rgba(110, 140, 136, 0.4);
+}
+
+.s006-wiki-page {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  padding: 0.32rem 0.7rem;
+  border-radius: 0.4rem;
+  border: 1.5px solid rgba(154, 170, 182, 0.45);
+  background: rgba(154, 170, 182, 0.1);
+  opacity: 0;
+  transform: translateY(-14px);
+  transition: opacity 0.45s ease, transform 0.5s ease, border-color 0.5s ease, background 0.5s ease, color 0.5s ease;
+}
+.s006-stage.compiling .s006-wiki-page { opacity: 1; transform: translateY(0); }
+.s006-stage.done .s006-wiki-page {
+  opacity: 1;
+  transform: translateY(0);
+  border-color: rgba(110, 140, 136, 0.65);
+  background: rgba(110, 140, 136, 0.2);
+  color: var(--color-compile);
+  font-weight: 700;
+}
+.s006-wiki-page:nth-child(1) { transition-delay: 0s; }
+.s006-wiki-page:nth-child(3) { transition-delay: 0.12s; }
+.s006-wiki-page:nth-child(5) { transition-delay: 0.24s; }
+.s006-wiki-dot { font-size: 0.7rem; line-height: 1; }
+
+.s006-wiki-link {
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--color-compile);
+  padding: 0.12rem 0;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.3s;
+}
+.s006-stage.done .s006-wiki-link { opacity: 0.95; }
+
+/* 产物标签（done 常驻） */
+.s006-wiki-tag {
+  display: none;
+  margin-top: 0.45rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  color: var(--color-compile);
+}
+.s006-stage.done .s006-wiki-tag { display: block; }
+
+/* 秒回命中 pulse */
+@keyframes s006Hit {
+  0%   { box-shadow: 0 0 0 0 rgba(110, 140, 136, 0); }
+  35%  { box-shadow: 0 0 0 5px rgba(110, 140, 136, 0.28); }
+  100% { box-shadow: 0 0 0 0 rgba(110, 140, 136, 0); }
+}
+.s006-stage.hit .s006-wiki { animation: s006Hit 0.7s ease; }
+
+/* 右路状态 label */
+.s006-compile-status {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--color-compile);
+  text-align: center;
+  min-height: 1rem;
+  transition: color 0.3s ease;
+}
+
+/* —— 两路累计条 —— */
+.s006-tally {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-style: normal;
+  line-height: 1.35;
+}
+.s006-path.interpret .s006-tally {
+  background: rgba(183, 150, 131, 0.1);
+  color: var(--color-interpret);
+}
+.s006-path.compile .s006-tally {
+  background: rgba(110, 140, 136, 0.1);
+  color: var(--color-compile);
+}
+.s006-tally-num { font-family: var(--font-mono); font-weight: 700; font-style: normal; }
+.s006-tally-verdict { font-weight: 700; margin-left: auto; white-space: nowrap; }
+
+/* ===== 控制区 ===== */
+.s006-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+}
+.s006-btn-row { display: flex; align-items: center; gap: 0.7rem; }
+.s006-ask-btn {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--bg-surface);
+  background: var(--accent);
+  border: none;
+  border-radius: 0.65rem;
+  padding: 0.65rem 2rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(79, 96, 110, 0.3);
+}
+.s006-ask-btn:hover:not(:disabled) { background: var(--primary); transform: translateY(-1px); }
+.s006-ask-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.s006-ctrl-btn {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-secondary);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.45rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.s006-ctrl-btn:hover { background: rgba(110, 126, 140, 0.12); color: var(--accent); }
+.s006-stage-ind {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-style: normal;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  text-align: center;
+  min-height: 1rem;
+}
+
+/* 入场动画 */
+.s006-heading { animation: s006Up 0.4s ease both 0ms; }
+.s006-source  { animation: s006Up 0.4s ease both 60ms; }
+.s006-fork    { animation: s006Up 0.4s ease both 100ms; }
+.s006-paths   { animation: s006Up 0.4s ease both 140ms; }
+.s006-controls{ animation: s006Up 0.4s ease both 180ms; }
+@keyframes s006Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: none; }
+}
+</style>
+
+<div class="slide" data-slide="6">
+  <div class="s006-wrap">
+
+    <!-- 标题 -->
+    <div class="s006-heading">
+      <h2 class="s006-title">核心隐喻：编译执行 vs 解释执行</h2>
+      <p class="s006-subtitle">同一批原料，一类问题（换问法 / 相关追问），两种命运</p>
+    </div>
+
+    <!-- 共同源头：raw 原料（只读·常驻） -->
+    <div class="s006-source" id="s006-source">
+      <div class="s006-source-icon">📄📄📄</div>
+      <div>
+        <div class="s006-source-main">raw/ 三篇原始资料</div>
+        <div class="s006-source-sub">事实源头 · 两条路都从这里出发</div>
+      </div>
+      <div class="s006-source-badge" id="s006-source-badge">只读 · 0 改动</div>
+    </div>
+
+    <!-- 分叉提示 / 当前问题（提问后由 JS 替换为本轮问题） -->
+    <div class="s006-fork" id="s006-fork">点「提问」，对同一批原料问一<b>类</b>问题（换问法 / 相关追问）——看 <b>解释执行</b> 与 <b>编译执行</b> 两条命运 ↓</div>
+
+    <!-- 双路 -->
+    <div class="s006-paths">
+
+      <!-- 左路：解释执行 -->
+      <div class="s006-path interpret">
+        <div class="s006-path-head">
+          <div class="s006-path-badge">解释执行</div>
+          <div class="s006-path-name">这类问题的每一个，都从机器索引召回片段、再临时综合</div>
+        </div>
+        <div class="s006-steps">
+          <div class="s006-step" id="s006-step-retrieve">
+            <div class="s006-step-icon">🔍</div>
+            <div class="s006-step-name">检索</div>
+          </div>
+          <div class="s006-step-arrow">→</div>
+          <div class="s006-step" id="s006-step-prompt">
+            <div class="s006-step-icon">📝</div>
+            <div class="s006-step-name">拼 prompt</div>
+          </div>
+          <div class="s006-step-arrow">→</div>
+          <div class="s006-step" id="s006-step-summarize">
+            <div class="s006-step-icon">🧠</div>
+            <div class="s006-step-name">临时归纳</div>
+          </div>
+        </div>
+        <div class="s006-answer-zone">
+          <div class="s006-answer" id="s006-answer">点「提问」后，这里临时归纳出一个答案……</div>
+          <div class="s006-answer-meta">
+            <span class="s006-jitter" id="s006-jitter"></span>
+            <span class="s006-burn-tag" id="s006-burn">💨 答案不沉淀为可维护的知识页</span>
+          </div>
+        </div>
+        <div class="s006-tally">
+          <span>累计 <span class="s006-tally-num" id="s006-tally-i">0</span> 个问题 · 重走 <span class="s006-tally-num" id="s006-tally-i-steps">0</span> 步</span>
+          <span class="s006-tally-verdict" id="s006-verdict-i">— 待观察</span>
+        </div>
+      </div>
+
+      <!-- 右路：编译执行 -->
+      <div class="s006-path compile">
+        <div class="s006-path-head">
+          <div class="s006-path-badge">编译执行</div>
+          <div class="s006-path-name">这类问题换啥问法，都命中同一产物</div>
+        </div>
+        <div class="s006-stage" id="s006-stage">
+          <div class="s006-stage-placeholder" id="s006-stage-ph">首次提问触发「编译」：raw 碎片凝聚成互链 wiki 产物</div>
+          <div class="s006-wiki" id="s006-wiki">
+            <div class="s006-wiki-page"><span class="s006-wiki-dot">●</span>概念基础.md</div>
+            <div class="s006-wiki-link">🔗 [[链接]]</div>
+            <div class="s006-wiki-page"><span class="s006-wiki-dot">●</span>实现模式.md</div>
+            <div class="s006-wiki-link">🔗 [[链接]]</div>
+            <div class="s006-wiki-page"><span class="s006-wiki-dot">●</span>证伪实验.md</div>
+            <div class="s006-wiki-tag">编译产物 · wiki/ · 可复用（raw 更新需 re-ingest）</div>
+          </div>
+        </div>
+        <div class="s006-compile-status" id="s006-compile-status">等待首次编译……</div>
+        <div class="s006-tally">
+          <span><span class="s006-tally-num" id="s006-tally-c">0</span> 份产物 · 覆盖 <span class="s006-tally-num" id="s006-tally-c-hit">0</span> 个问题</span>
+          <span class="s006-tally-verdict" id="s006-verdict-c">— 产物待生成</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 控制区 -->
+    <div class="s006-controls">
+      <div class="s006-btn-row">
+        <button class="s006-ask-btn" id="s006-ask-btn">首次提问</button>
+        <button class="s006-ctrl-btn" id="s006-replay-btn" title="重置重播">↺ 重置</button>
+      </div>
+      <div class="s006-stage-ind" id="s006-stage-ind">准备好后点「首次提问」——左路重走三步、右路一次编译出产物</div>
+    </div>
+
+  </div>
+</div>

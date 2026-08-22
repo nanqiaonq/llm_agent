@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GBrain：从笔记到会思考的大脑</title>
+
+  <!-- Google Fonts: Sora / Noto Sans SC / JetBrains Mono (per style_manifest P06) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP 3.12.x CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+  <!-- ←§一.4 目录分组菜单：章级标题(蓝色粗体不可点) + 缩进子项(可点跳转) -->
+  <div id="menu-overlay" onclick="window.__toggleMenu()"></div>
+  <aside id="side-menu">
+    <div id="menu-header">
+      <span class="menu-logo">GBrain</span>
+      <button class="menu-close-btn" onclick="window.__toggleMenu()" aria-label="关闭菜单">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div id="menu-list"><!-- buildMenu() 动态填充，禁止平铺无分组 --></div>
+  </aside>
+
+  <!-- 主容器 -->
+  <main id="app">
+
+    <!-- ←§一.5 进度条 -->
+    <div id="progress-track">
+      <div id="progress-bar"></div>
+    </div>
+
+    <!-- ←§一.5 工具栏五件套 — 左侧垂直胶囊，五件套缺一不可 -->
+    <!-- T16 验证：每个按钮必须有显式 onclick 绑定，禁止依赖 DOMContentLoaded 动态绑定 -->
+    <nav id="toolbar">
+
+      <!-- ←§一.5 M 目录按钮 -->
+      <button id="btn-menu" onclick="window.__toggleMenu()" aria-label="目录">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <span class="btn-key">M</span>
+        <span class="btn-label">目录</span>
+      </button>
+
+      <!-- ←§一.5 T 钢笔拖尾按钮 -->
+      <button id="btn-pen" onclick="window.__togglePenTrail()" aria-label="钢笔">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+          <path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/>
+        </svg>
+        <span class="btn-key">T</span>
+        <span class="btn-label">钢笔</span>
+      </button>
+
+      <!-- ←§一.5 D 画板按钮 -->
+      <button id="btn-draw" onclick="window.__toggleDrawBoard()" aria-label="画板">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        </svg>
+        <span class="btn-key">D</span>
+        <span class="btn-label">画板</span>
+      </button>
+
+      <!-- ←§一.3 颜色选择器：彩色圆点，无文字标签 -->
+      <div id="color-picker-wrap">
+        <button id="btn-color" onclick="window.__toggleColorPicker()" aria-label="颜色选择器">
+          <span id="color-dot-indicator"></span>
+        </button>
+        <div id="color-picker-popup">
+          <button class="color-dot" data-color="#ef4444" style="background:#ef4444;"
+                  onclick="window.__setDrawColor('#ef4444')" aria-label="红色"></button>
+          <button class="color-dot" data-color="#3B82F6" style="background:#3B82F6;"
+                  onclick="window.__setDrawColor('#3B82F6')" aria-label="蓝色"></button>
+          <button class="color-dot" data-color="#ffffff" style="background:#ffffff;"
+                  onclick="window.__setDrawColor('#ffffff')" aria-label="白色"></button>
+          <button class="color-dot" data-color="#1e293b" style="background:#1e293b;"
+                  onclick="window.__setDrawColor('#1e293b')" aria-label="黑色"></button>
+        </div>
+      </div>
+
+      <!-- ←§一.5 F 全屏按钮 -->
+      <button id="btn-fullscreen" onclick="window.__toggleFullscreen()" aria-label="全屏">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <span class="btn-key">F</span>
+        <span class="btn-label">全屏</span>
+      </button>
+
+    </nav><!-- /toolbar -->
+
+    <!-- slide 内容区域 -->
+    <div id="slide-viewport">
+      <!-- loadSlide() 动态注入 .slide 容器 + 内容片段 -->
+    </div>
+
+    <!-- 底部导航 + 页码 -->
+    <div id="nav-bar">
+      <div id="draw-mode-hint">画板模式 — 再按 D 或 Esc 清除并退出</div>
+      <button id="nav-prev" onclick="window.__prevSlide()" aria-label="上一页">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+      </button>
+      <div id="page-indicator">
+        <span id="page-current">1</span>
+        <span class="page-sep">/</span>
+        <span id="page-total">29</span>
+      </div>
+      <button id="nav-next" onclick="window.__nextSlide()" aria-label="下一页">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9,18 15,12 9,6"/>
+        </svg>
+      </button>
+    </div>
+
+  </main><!-- /app -->
+
+  <!-- ←§一.1 双 canvas 标配：画笔拖尾 z-index:9999 / 画板 z-index:9998 -->
+  <canvas id="pen-trail-canvas" aria-hidden="true"></canvas>  <!-- T键画笔拖尾 ←§一.1 -->
+  <canvas id="draw-board-canvas" aria-hidden="true"></canvas> <!-- D键画板     ←§一.2 -->
+
+  <!-- slideHooks 注册壳（interactive-eng 填充） -->
+  <script src="js/interactive.js"></script>
+  <!-- 主控制器（导航/工具栏/钢笔/画板/颜色/菜单） -->
+  <script src="js/main.js"></script>
+
+</body>
+</html>

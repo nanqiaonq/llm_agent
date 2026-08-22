@@ -1,0 +1,295 @@
+{
+  "version": "1.0",
+  "courseware_meta": {
+    "courseware_dir": "gbrain-brain-layer",
+    "title": "GBrain：从笔记到会思考的大脑",
+    "creativity_level": "medium",
+    "source_type": "materials",
+    "total_slides": 29,
+    "estimated_duration_min": 90
+  },
+  "learning_objectives": {
+    "core": {
+      "goal": "用一把判断的尺拆开任何 RAG/记忆系统的存储/检索/综合三层，判断 benchmark 诚不诚实、成本值不值",
+      "target_slide_ids": ["S002", "S006", "S024"],
+      "verify": "给学员一个陌生 RAG/记忆系统描述，能拆出其存储/检索/综合三层、指出 benchmark 口径是否可比、判断成本结构是否合理"
+    },
+    "sub": [
+      { "goal": "区分编译式 RAG（编译成可读 wiki）vs 传统向量 RAG（机器黑箱索引）", "target_slide_ids": ["S002"] },
+      { "goal": "解释 self-wiring 零 LLM 把 wikilink 织成 typed 图谱", "target_slide_ids": ["S008"] },
+      { "goal": "说清 search 给页面 vs think 给答案+citation+gap", "target_slide_ids": ["S016", "S017"] },
+      { "goal": "看懂两 benchmark 口径差异、严禁混引", "target_slide_ids": ["S021"] }
+    ]
+  },
+  "chapters": [
+    { "chapter_id": "C1", "title": "开篇与全景", "slide_ids": ["S001", "S002", "S003", "S003B", "S004", "S005", "S006"] },
+    { "chapter_id": "C2", "title": "能力一：建图 self-wiring", "slide_ids": ["T1", "S007", "S008", "S009", "S010"] },
+    { "chapter_id": "C3", "title": "支撑层：存与取", "slide_ids": ["T2", "S011", "S012", "S013", "S014", "S015"] },
+    { "chapter_id": "C4", "title": "能力二：读+想 综合", "slide_ids": ["T3", "S016", "S017", "S018"] },
+    { "chapter_id": "C5", "title": "生态与判断力", "slide_ids": ["T4", "S019", "S020", "S021", "S022", "S023"] },
+    { "chapter_id": "C6", "title": "收尾", "slide_ids": ["S024"] }
+  ],
+  "slides": [
+    {
+      "id": "S001", "title": "GBrain：从笔记到会思考的大脑", "chapter_id": "C1",
+      "teaching_role": "hook", "interaction_level": "🟢", "assignee": "slide-writer",
+      "chosen_pattern": "T-COVER", "layout": "cover",
+      "file": "slides/S001-gbrain-cover.html",
+      "estimated_content_height": "70vh",
+      "four_axis_score": {"EP": 3, "MV": 1, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S001"
+    },
+    {
+      "id": "S002", "title": "编译式 RAG 是什么", "chapter_id": "C1",
+      "teaching_role": "mechanism", "interaction_level": "🔴", "assignee": "slide-writer",
+      "chosen_pattern": "toggle-dual-path-highlight", "layout": "dual-path-toggle",
+      "file": "slides/S002-compiled-rag-what.html",
+      "estimated_content_height": "78vh",
+      "four_axis_score": {"EP": 3, "MV": 2, "IC": 2, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S002"
+    },
+    {
+      "id": "S003", "title": "三层 + 三操作骨架", "chapter_id": "C1",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "layered-pyramid-reveal", "layout": "pyramid-loop",
+      "file": "slides/S003-three-layer-three-op.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 2, "MV": 2, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S003"
+    },
+    {
+      "id": "S003B", "title": "GBrain 从哪来", "chapter_id": "C2",
+      "teaching_role": "background", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "origin-genealogy-timeline", "layout": "genealogy-timeline",
+      "file": "slides/S003B-gbrain-origin.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 2, "MV": 2, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S003B"
+    },
+    {
+      "id": "S004", "title": "GBrain 是什么 + 三层架构", "chapter_id": "C2",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "layered-arch-support", "layout": "layered-arch",
+      "file": "slides/S004-gbrain-three-layer-arch.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 2, "MV": 2, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S004"
+    },
+    {
+      "id": "S005", "title": "两大核心能力总览", "chapter_id": "C2",
+      "teaching_role": "mechanism", "interaction_level": "🔴", "assignee": "slide-writer",
+      "chosen_pattern": "brain-dual-capability-reveal", "layout": "brain-dual-reveal",
+      "file": "slides/S005-two-capabilities-overview.html",
+      "estimated_content_height": "80vh",
+      "four_axis_score": {"EP": 2, "MV": 2, "IC": 2, "OL": 2, "total": 8},
+      "ia_ref": "interaction_architecture.md#S005"
+    },
+    {
+      "id": "S006", "title": "两根轴 + 核心论断", "chapter_id": "C2",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "cause-effect-compile-hub", "layout": "cause-effect-dual-card",
+      "file": "slides/S006-two-axes-core-thesis.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 3, "MV": 1, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S006"
+    },
+    {
+      "id": "T1", "title": "能力一 · 建图 Connect", "chapter_id": "C2",
+      "teaching_role": "transition", "interaction_level": "🟢", "assignee": "slide-writer",
+      "chosen_pattern": "stage-transition-cover", "layout": "center-focus",
+      "file": "slides/T1-stage-connect.html",
+      "estimated_content_height": "70vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#T1"
+    },
+    {
+      "id": "S007", "title": "建图的起点：你怎么声明关系", "chapter_id": "C2",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "markdown-wikilink-highlight", "layout": "markdown-highlight",
+      "file": "slides/S007-declare-relationship.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 3, "MV": 2, "IC": 3, "OL": 3, "total": 11},
+      "ia_ref": "interaction_architecture.md#S007"
+    },
+    {
+      "id": "S008", "title": "动态建图演示：看图自己长出来", "chapter_id": "C3",
+      "teaching_role": "mechanism", "interaction_level": "🔴🔴", "assignee": "interactive-eng",
+      "chosen_pattern": "graph-self-wiring-grow", "layout": "graph-grow-sim",
+      "file": "slides/S008-dynamic-graph-grow.html",
+      "estimated_content_height": "85vh",
+      "four_axis_score": {"EP": 3, "MV": 3, "IC": 1, "OL": 2, "total": 9},
+      "ia_ref": "interaction_architecture.md#S008"
+    },
+    {
+      "id": "S009", "title": "零 LLM 的确定性与可追溯", "chapter_id": "C3",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "edge-to-source-trace", "layout": "edge-trace",
+      "file": "slides/S009-zero-llm-deterministic.html",
+      "estimated_content_height": "78vh",
+      "four_axis_score": {"EP": 3, "MV": 2, "IC": 2, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S009"
+    },
+    {
+      "id": "S010", "title": "self-wiring vs GraphRAG", "chapter_id": "C3",
+      "teaching_role": "example", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "comparison-matrix-dual-input", "layout": "comparison-matrix",
+      "file": "slides/S010-selfwiring-vs-graphrag.html",
+      "estimated_content_height": "78vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#S010"
+    },
+    {
+      "id": "T2", "title": "支撑层 · 存与取 Storage + Retrieval", "chapter_id": "C3",
+      "teaching_role": "transition", "interaction_level": "🟢", "assignee": "slide-writer",
+      "chosen_pattern": "stage-transition-cover", "layout": "center-focus",
+      "file": "slides/T2-stage-storage-retrieval.html",
+      "estimated_content_height": "70vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#T2"
+    },
+    {
+      "id": "S011", "title": "源真相 vs 编译产物双轨", "chapter_id": "C3",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "dual-track-one-way-compile", "layout": "dual-track",
+      "file": "slides/S011-source-vs-compiled-dual-track.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 3, "MV": 2, "IC": 3, "OL": 3, "total": 11},
+      "ia_ref": "interaction_architecture.md#S011"
+    },
+    {
+      "id": "S012", "title": "两引擎一契约 + embedding 是什么", "chapter_id": "C4",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "engine-contract-semantic-space", "layout": "engine-contract",
+      "file": "slides/S012-two-engines-one-contract.html",
+      "estimated_content_height": "78vh",
+      "four_axis_score": {"EP": 2, "MV": 2, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S012"
+    },
+    {
+      "id": "S013", "title": "为什么要混合检索", "chapter_id": "C5",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "venn-blindspot-overlap", "layout": "venn-overlap",
+      "file": "slides/S013-why-hybrid-retrieval.html",
+      "estimated_content_height": "72vh",
+      "four_axis_score": {"EP": 3, "MV": 2, "IC": 3, "OL": 3, "total": 11},
+      "ia_ref": "interaction_architecture.md#S013"
+    },
+    {
+      "id": "S014", "title": "三路合流 HNSW+BM25+RRF", "chapter_id": "C5",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "parallel-merge-flow", "layout": "parallel-merge",
+      "file": "slides/S014-three-way-merge-flow.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 3, "MV": 2, "IC": 3, "OL": 3, "total": 11},
+      "ia_ref": "interaction_architecture.md#S014"
+    },
+    {
+      "id": "S015", "title": "RRF 为什么不能直接加分", "chapter_id": "C5",
+      "teaching_role": "mechanism", "interaction_level": "🔴🔴", "assignee": "interactive-eng",
+      "chosen_pattern": "rrf-rank-slider-sandbox", "layout": "rrf-slider-sandbox",
+      "file": "slides/S015-rrf-rank-slider.html",
+      "estimated_content_height": "82vh",
+      "four_axis_score": {"EP": 3, "MV": 3, "IC": 1, "OL": 2, "total": 9},
+      "ia_ref": "interaction_architecture.md#S015"
+    },
+    {
+      "id": "T3", "title": "能力二 · 读+想 Read & Think", "chapter_id": "C4",
+      "teaching_role": "transition", "interaction_level": "🟢", "assignee": "slide-writer",
+      "chosen_pattern": "stage-transition-cover", "layout": "center-focus",
+      "file": "slides/T3-stage-think.html",
+      "estimated_content_height": "70vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#T3"
+    },
+    {
+      "id": "S016", "title": "search 给页面 vs think 给答案", "chapter_id": "C4",
+      "teaching_role": "mechanism", "interaction_level": "🔴", "assignee": "slide-writer",
+      "chosen_pattern": "search-think-toggle", "layout": "search-think-toggle",
+      "file": "slides/S016-search-vs-think.html",
+      "estimated_content_height": "80vh",
+      "four_axis_score": {"EP": 3, "MV": 2, "IC": 2, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S016"
+    },
+    {
+      "id": "S017", "title": "空白分析 gap：最该先看的", "chapter_id": "C6",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "gap-three-signal-cards", "layout": "signal-cards",
+      "file": "slides/S017-gap-three-signals.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#S017"
+    },
+    {
+      "id": "S018", "title": "find_trajectory：时序复利", "chapter_id": "C4",
+      "teaching_role": "example", "interaction_level": "🔴", "assignee": "interactive-eng",
+      "chosen_pattern": "unified-axis-aligned-lanes", "layout": "unified-time-axis",
+      "file": "slides/S018-find-trajectory-temporal.html",
+      "estimated_content_height": "72vh",
+      "four_axis_score": {"EP": 2, "MV": 2, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S018"
+    },
+    {
+      "id": "T4", "title": "生态与判断力", "chapter_id": "C5",
+      "teaching_role": "transition", "interaction_level": "🟢", "assignee": "slide-writer",
+      "chosen_pattern": "stage-transition-cover", "layout": "center-focus",
+      "file": "slides/T4-stage-ecosystem-judgment.html",
+      "estimated_content_height": "70vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#T4"
+    },
+    {
+      "id": "S019", "title": "51 skills vs 约90 MCP tools", "chapter_id": "C5",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "two-layer-call-arrow", "layout": "two-layer-call",
+      "file": "slides/S019-skills-vs-tools.html",
+      "estimated_content_height": "72vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#S019"
+    },
+    {
+      "id": "S020", "title": "schema 包 + Minions 梦循环", "chapter_id": "C7",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "schema-graph-night-loop", "layout": "schema-night-loop",
+      "file": "slides/S020-schema-minions-loop.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 2, "MV": 2, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S020"
+    },
+    {
+      "id": "S021", "title": "两个 benchmark 严禁混引", "chapter_id": "C8",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "dual-bar-donotmix-hover", "layout": "dual-bar-compare",
+      "file": "slides/S021-two-benchmarks-no-mix.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#S021"
+    },
+    {
+      "id": "S022", "title": "成本贵 ≠ 质量差", "chapter_id": "C8",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "dual-axis-independent", "layout": "dual-axis-plane",
+      "file": "slides/S022-cost-not-equal-quality.html",
+      "estimated_content_height": "72vh",
+      "four_axis_score": {"EP": 3, "MV": 1, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S022"
+    },
+    {
+      "id": "S023", "title": "三维权衡：一把判断的尺", "chapter_id": "C8",
+      "teaching_role": "mechanism", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "radar-or-decision-tree", "layout": "radar-tradeoff",
+      "file": "slides/S023-three-dimension-tradeoff.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 3, "MV": 1, "IC": 3, "OL": 3, "total": 10},
+      "ia_ref": "interaction_architecture.md#S023"
+    },
+    {
+      "id": "S024", "title": "从笔记到会思考的大脑", "chapter_id": "C9",
+      "teaching_role": "summary", "interaction_level": "🟡", "assignee": "slide-writer",
+      "chosen_pattern": "panorama-ruler-recap", "layout": "panorama-recap",
+      "file": "slides/S024-notes-to-thinking-brain.html",
+      "estimated_content_height": "75vh",
+      "four_axis_score": {"EP": 2, "MV": 1, "IC": 3, "OL": 3, "total": 9},
+      "ia_ref": "interaction_architecture.md#S024"
+    }
+  ]
+}

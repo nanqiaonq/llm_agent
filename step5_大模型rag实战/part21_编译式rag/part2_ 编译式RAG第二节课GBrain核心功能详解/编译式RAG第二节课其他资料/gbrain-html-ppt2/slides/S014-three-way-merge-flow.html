@@ -1,0 +1,410 @@
+<style>
+  /* ── P06 极简钢蓝数据感 CSS 变量 ─────────────────────────────── */
+  :root {
+    --bg-deep:      #141a26;
+    --bg-mid:       #1e2838;
+    --primary:      #9bcbd7;
+    --secondary:    #6a8ba0;
+    --accent:       #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim:     #7d8fa4;
+    --card-bg:      rgba(30, 40, 56, 0.75);
+    --card-border:  rgba(155, 203, 215, 0.18);
+    --card-title:   #aadcec;
+    --eyebrow:      #81a8b9;
+    --shadow:       0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ── slide wrapper ──────────────────────────────────────────── */
+  .s14-wrap {
+    transform: scale(1.04);
+    transform-origin: center center;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 4rem 3rem 7rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    background-color: var(--bg-deep);
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-style: normal;
+    color: var(--text-primary);
+  }
+
+  /* ── header ─────────────────────────────────────────────────── */
+  .s14-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-style: normal;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+    margin-bottom: 0.55rem;
+    align-self: center;
+    text-align: center;
+  }
+
+  .s14-title {
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--text-primary);
+    margin: 0 0 0.4rem 0;
+    align-self: center;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .s14-subtitle {
+    font-size: clamp(0.88rem, 1.3vw, 1rem);
+    font-style: normal;
+    color: var(--text-dim);
+    margin: 0 0 2rem 0;
+    align-self: center;
+    text-align: center;
+  }
+
+  /* ── flow diagram ────────────────────────────────────────────── */
+  .s14-flow {
+    display: grid;
+    grid-template-columns: 1fr 0.18fr 1.2fr 0.18fr 0.9fr 0.18fr 0.85fr;
+    align-items: center;
+    width: 100%;
+    gap: 0;
+    min-width: 0;
+  }
+
+  /* ── query node ─────────────────────────────────────────────── */
+  .s14-query-node {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 3px solid var(--primary);
+    border-radius: 0.75rem;
+    padding: 1.1rem 1.2rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    font-style: normal;
+    text-align: center;
+  }
+
+  .s14-query-label {
+    font-size: 0.7rem;
+    font-style: normal;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .s14-query-text {
+    font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--primary);
+  }
+
+  /* ── split arrow ─────────────────────────────────────────────── */
+  .s14-split-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .s14-split-line-top,
+  .s14-split-line-bottom {
+    width: 100%;
+    height: 1px;
+    background: var(--secondary);
+    opacity: 0.5;
+  }
+
+  .s14-split-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--secondary);
+  }
+
+  /* ── parallel lanes ──────────────────────────────────────────── */
+  .s14-lanes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .s14-lane {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    padding: 1rem 1.2rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    font-style: normal;
+  }
+
+  .s14-lane-hnsw {
+    border-top: 2px solid var(--primary);
+  }
+
+  .s14-lane-bm25 {
+    border-top: 2px solid var(--secondary);
+  }
+
+  .s14-lane-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 0.18rem 0.5rem;
+    border-radius: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .s14-badge-hnsw {
+    background: rgba(155, 203, 215, 0.15);
+    color: var(--primary);
+    border: 1px solid rgba(155, 203, 215, 0.3);
+  }
+
+  .s14-badge-bm25 {
+    background: rgba(106, 139, 160, 0.15);
+    color: var(--secondary);
+    border: 1px solid rgba(106, 139, 160, 0.3);
+  }
+
+  .s14-lane-name {
+    font-size: clamp(0.9rem, 1.2vw, 1rem);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--card-title);
+    margin-bottom: 0.3rem;
+  }
+
+  .s14-lane-desc {
+    font-size: 0.8rem;
+    font-style: normal;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .s14-lane-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-style: normal;
+    color: var(--secondary);
+    margin-top: 0.4rem;
+    opacity: 0.85;
+  }
+
+  /* ── arrows ─────────────────────────────────────────────────── */
+  .s14-arrow-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .s14-arrow {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--secondary), var(--primary));
+    position: relative;
+    opacity: 0.6;
+  }
+
+  .s14-arrow::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -3px;
+    border-left: 6px solid var(--primary);
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    opacity: 0.9;
+  }
+
+  /* ── RRF node ────────────────────────────────────────────────── */
+  .s14-rrf-node {
+    background: var(--card-bg);
+    border: 1px solid rgba(155, 203, 215, 0.28);
+    border-top: 2px solid var(--accent);
+    border-radius: 0.75rem;
+    padding: 1.2rem 1.1rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    font-style: normal;
+    text-align: center;
+  }
+
+  .s14-rrf-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-style: normal;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+
+  .s14-rrf-name {
+    font-size: 0.78rem;
+    font-style: normal;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .s14-rrf-formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-style: normal;
+    color: var(--primary);
+    background: rgba(155, 203, 215, 0.08);
+    border-radius: 0.3rem;
+    padding: 0.25rem 0.4rem;
+    border: 1px solid rgba(155, 203, 215, 0.15);
+  }
+
+  /* ── output node ─────────────────────────────────────────────── */
+  .s14-output-node {
+    background: rgba(155, 203, 215, 0.06);
+    border: 1px solid rgba(155, 203, 215, 0.25);
+    border-radius: 0.75rem;
+    padding: 1.1rem 1rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    font-style: normal;
+    text-align: center;
+  }
+
+  .s14-output-icon {
+    font-size: 1.3rem;
+    margin-bottom: 0.35rem;
+    line-height: 1;
+  }
+
+  .s14-output-label {
+    font-size: 0.8rem;
+    font-style: normal;
+    color: var(--text-dim);
+    margin-bottom: 0.2rem;
+  }
+
+  .s14-output-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-style: normal;
+    color: var(--primary);
+  }
+
+  /* ── bottom caption ──────────────────────────────────────────── */
+  .s14-caption {
+    margin-top: 1.8rem;
+    font-size: 0.82rem;
+    font-style: normal;
+    color: var(--text-dim);
+    text-align: center;
+    width: 100%;
+    line-height: 1.6;
+  }
+
+  .s14-caption strong {
+    color: var(--primary);
+    font-style: normal;
+  }
+
+  .s14-caption em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 600;
+  }
+</style>
+
+<div class="slide s14-wrap" id="S014">
+  <!-- eyebrow -->
+  <div class="s14-eyebrow">支撑层 Retrieval</div>
+
+  <!-- title block -->
+  <h1 class="s14-title">三路合流：HNSW + BM25 + RRF</h1>
+  <p class="s14-subtitle">一个查询并行跑两路检索，再由 RRF（倒数排名融合）汇出统一排名</p>
+
+  <!-- flow diagram -->
+  <div class="s14-flow">
+
+    <!-- 1. Query 节点 -->
+    <div class="s14-query-node">
+      <div class="s14-query-label">输入查询</div>
+      <div class="s14-query-text">"明天见 Alice<br>前该知道什么"</div>
+    </div>
+
+    <!-- 2. 分叉箭头列（纯视觉，用 CSS 模拟） -->
+    <div style="display:flex;flex-direction:column;align-items:center;height:100%;justify-content:center;min-width:0;padding:0 0.2rem;">
+      <div style="width:1px;flex:1;background:var(--secondary);opacity:0.45;margin-bottom:-1px;"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--secondary);flex-shrink:0;"></div>
+      <div style="width:1px;flex:1;background:var(--secondary);opacity:0.45;margin-top:-1px;"></div>
+    </div>
+
+    <!-- 3. 两条并行泳道 -->
+    <div class="s14-lanes">
+
+      <!-- HNSW 向量检索 -->
+      <div class="s14-lane s14-lane-hnsw">
+        <span class="s14-lane-badge s14-badge-hnsw">HNSW 向量检索</span>
+        <div class="s14-lane-name">语义相似性 · pgvector</div>
+        <div class="s14-lane-desc">把查询和每个 chunk 编码为 1024 维向量，找余弦方向最接近的邻居——能跨同义词、跨语言捕捉语义相关页</div>
+        <div class="s14-lane-note">分数落区 ≈ 0.7–1.1 · 语义型盲区少</div>
+      </div>
+
+      <!-- BM25 关键词检索 -->
+      <div class="s14-lane s14-lane-bm25">
+        <span class="s14-lane-badge s14-badge-bm25">BM25 关键词检索</span>
+        <div class="s14-lane-name">字面词频精确匹配 · tsvector</div>
+        <div class="s14-lane-desc">PostgreSQL 全文检索，按词频与逆文档频率打分——精确专有名词、罕见术语命中又准又干脆，但漏同义/跨语言</div>
+        <div class="s14-lane-note">tsvector 原始分量纲偏高 · 精确词主场</div>
+      </div>
+    </div>
+
+    <!-- 4. 合流箭头 -->
+    <div style="display:flex;flex-direction:column;align-items:center;height:100%;justify-content:center;min-width:0;padding:0 0.2rem;">
+      <div style="width:1px;flex:1;background:var(--primary);opacity:0.45;margin-bottom:-1px;"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--primary);flex-shrink:0;"></div>
+      <div style="width:1px;flex:1;background:var(--primary);opacity:0.45;margin-top:-1px;"></div>
+    </div>
+
+    <!-- 5. RRF 融合节点 -->
+    <div class="s14-rrf-node">
+      <div class="s14-rrf-label">RRF</div>
+      <div class="s14-rrf-name">倒数排名融合<br>Reciprocal Rank Fusion</div>
+      <div class="s14-rrf-formula">1 / (k + rank) · k=60</div>
+    </div>
+
+    <!-- 6. 输出箭头 -->
+    <div style="display:flex;align-items:center;min-width:0;padding:0 0.2rem;">
+      <div class="s14-arrow"></div>
+    </div>
+
+    <!-- 7. 统一排名输出 -->
+    <div class="s14-output-node">
+      <div class="s14-output-icon">&#9776;</div>
+      <div class="s14-output-label">统一排名<br>Unified Ranking</div>
+      <div class="s14-output-value">#1 · #2 · #3 …</div>
+    </div>
+
+  </div>
+
+  <!-- bottom caption -->
+  <div class="s14-caption">
+    <strong>两路并行、量纲各异 → 不能直接加分</strong>，RRF 只看名次（序数天然可比）给两路<em>平等投票权</em>。下一页：为什么名次融合比分数相加更公平。
+  </div>
+</div>

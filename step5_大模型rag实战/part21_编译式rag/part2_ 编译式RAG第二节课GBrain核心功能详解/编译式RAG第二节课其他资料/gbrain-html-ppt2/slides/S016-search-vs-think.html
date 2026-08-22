@@ -1,0 +1,453 @@
+<!--
+  🔴 FM 防御注释 — search-think-toggle
+  ════════════════════════════════════════
+  FM-1: 初始态 = search 模式完整可见(首屏即见完整态 v1.5 规则10)
+  FM-2: 切换到 think 时，sentences 用 GSAP fromTo stagger 逐句出现(opacity 0→1, y 8→0)
+        citation 标记在 sentences 动画结束后 fromTo scale 0.7→1 + accent glow
+  FM-3: think panel sentences 和 citations 骨架内容 CSS 默认 opacity:0，仅 GSAP 动画时变 1
+        (NOTE: 这是交互揭示元素，不是静态内容，允许 opacity:0 起始)
+  FM-4: cleanup: 解绑 named fn 事件监听 + kill GSAP timeline + 恢复初始 search 态
+  FM-5: 两模式 payoff 都完整展示——search=给你页面列表自己读；think=替你读完给成文答案
+  负责人: slide-writer
+  交互强度: 🔴 (search-think-toggle)
+  ←§FM AD-06
+-->
+<style>
+  /* ── S016 命名空间 ←§AD-09 ── */
+  .s016-wrap {
+    transform: scale(1.056);
+    transform-origin: center center;
+    width: 100%;
+    max-width: 940px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-style: normal; /* ←§AD-05 第1次 */
+  }
+
+  .s016-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--eyebrow);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-style: normal; /* ←§AD-05 第2次 */
+    margin-bottom: 0.4rem;
+    align-self: center;
+    text-align: center;
+  }
+
+  .s016-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    font-style: normal; /* ←§AD-05 第3次 */
+    align-self: center;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .s016-subtitle {
+    font-size: clamp(0.8rem, 1.2vw, 0.92rem);
+    color: var(--text-dim);
+    margin-bottom: 1.1rem;
+    align-self: center;
+    text-align: center;
+  }
+
+  /* 问题条 */
+  .s016-question-bar {
+    width: 100%;
+    background: rgba(155, 203, 215, 0.07);
+    border: 1px solid rgba(155, 203, 215, 0.22);
+    border-radius: 10px;
+    padding: 0.65rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .s016-q-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(232, 168, 73, 0.15);
+    border: 1px solid rgba(232, 168, 73, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    color: var(--accent);
+  }
+
+  .s016-q-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  .s016-q-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+    background: rgba(232, 168, 73, 0.1);
+    border-radius: 4px;
+    padding: 0.15rem 0.45rem;
+    flex-shrink: 0;
+  }
+
+  /* Toggle 栏 */
+  .s016-toggle-bar {
+    display: flex;
+    gap: 0;
+    background: var(--bg-mid);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 1.1rem;
+    align-self: center;
+  }
+
+  .s016-tab {
+    padding: 0.42rem 1.5rem;
+    border-radius: 7px;
+    border: none;
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.22s, color 0.22s;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+
+  .s016-tab.active {
+    background: rgba(155, 203, 215, 0.15);
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .s016-tab-icon {
+    font-size: 0.95rem;
+    opacity: 0.8;
+  }
+
+  /* ── 两个面板：同一容器，互斥显示 ←§AD-07 ── */
+  .s016-panel-container {
+    width: 100%;
+    position: relative;
+    min-height: 260px;
+  }
+
+  /* Search 面板 */
+  .s016-search-panel {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 1rem 1.1rem;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28); /* ←§AD-08 */
+  }
+
+  .s016-search-panel.s016-hidden {
+    display: none;
+  }
+
+  .s016-panel-header {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* 搜索结果列表 */
+  .s016-result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .s016-result-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(155, 203, 215, 0.1);
+    border-radius: 7px;
+    cursor: default;
+  }
+
+  .s016-result-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    background: rgba(155, 203, 215, 0.1);
+    border: 1px solid rgba(155, 203, 215, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+  }
+
+  .s016-result-title {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .s016-result-source {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .s016-search-footer {
+    margin-top: 0.8rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(155, 203, 215, 0.1);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .s016-search-footer-warn {
+    color: var(--secondary);
+    font-weight: 500;
+  }
+
+  /* Think 面板 */
+  .s016-think-panel {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid rgba(155, 203, 215, 0.28);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28); /* ←§AD-08 */
+  }
+
+  .s016-think-panel.s016-hidden {
+    display: none;
+  }
+
+  /* 逐句答案区 */
+  .s016-answer-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  /* 每句话 — 初始 opacity:0(GSAP 揭示，非静态骨架) */
+  .s016-sentence {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    line-height: 1.65;
+    opacity: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  /* citation 标注 */
+  .s016-citation {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: rgba(232, 168, 73, 0.15);
+    border: 1px solid rgba(232, 168, 73, 0.35);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 0;
+    flex-shrink: 0;
+    vertical-align: middle;
+    transform: scale(0.8);
+    box-shadow: 0 0 0 rgba(232, 168, 73, 0);
+    transition: box-shadow 0.4s;
+  }
+
+  .s016-citation.s016-citation-lit {
+    box-shadow: 0 0 10px rgba(232, 168, 73, 0.4);
+  }
+
+  /* Gap 分析区 */
+  .s016-gap-section {
+    border-top: 1px solid rgba(232, 168, 73, 0.2);
+    padding-top: 0.7rem;
+    margin-top: 0.2rem;
+    opacity: 0;
+  }
+
+  .s016-gap-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .s016-gap-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .s016-gap-text {
+    font-size: 0.82rem;
+    color: rgba(232, 168, 73, 0.8);
+    line-height: 1.5;
+  }
+</style>
+
+<div class="s016-wrap">
+  <div class="s016-eyebrow">能力二：读+想 综合</div>
+  <div class="s016-title">search 给页面 vs think 给答案</div>
+  <div class="s016-subtitle">同一句话，两种截然不同的结果——差别在于它替你读完没有</div>
+
+  <!-- 问题条 -->
+  <div class="s016-question-bar">
+    <div class="s016-q-icon">Q</div>
+    <div class="s016-q-text">明天见 Alice 前我该知道什么？</div>
+    <div class="s016-q-label">同一查询</div>
+  </div>
+
+  <!-- Toggle -->
+  <div class="s016-toggle-bar">
+    <button class="s016-tab active" id="s016-btn-search">
+      <span class="s016-tab-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      search
+    </button>
+    <button class="s016-tab" id="s016-btn-think">
+      <span class="s016-tab-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </span>
+      think
+    </button>
+  </div>
+
+  <!-- 面板容器 -->
+  <div class="s016-panel-container">
+
+    <!-- Search 面板（初始可见） -->
+    <div class="s016-search-panel" id="s016-search-panel">
+      <div class="s016-panel-header">搜索结果 · 5 页 · 请自行阅读并对齐</div>
+      <div class="s016-result-list">
+        <div class="s016-result-item">
+          <div class="s016-result-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="s016-result-title">NexaFlow 2025 Q3 财报摘要</div>
+          <div class="s016-result-source">wiki/companies/nexaflow</div>
+        </div>
+        <div class="s016-result-item">
+          <div class="s016-result-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="s016-result-title">Alice Zhang · CEO 履历</div>
+          <div class="s016-result-source">wiki/people/alice-zhang</div>
+        </div>
+        <div class="s016-result-item">
+          <div class="s016-result-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div class="s016-result-title">SparkField B 轮融资公告</div>
+          <div class="s016-result-source">wiki/companies/sparkfield</div>
+        </div>
+        <div class="s016-result-item">
+          <div class="s016-result-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="s016-result-title">NexaFlow × AlphaVentures 合作备忘</div>
+          <div class="s016-result-source">wiki/companies/nexaflow</div>
+        </div>
+        <div class="s016-result-item">
+          <div class="s016-result-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="s016-result-title">Alice 上季度邮件存档摘要</div>
+          <div class="s016-result-source">wiki/people/alice-zhang</div>
+        </div>
+      </div>
+      <div class="s016-search-footer">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span class="s016-search-footer-warn">你还需自行跨 5 页阅读、手动对齐时间线</span>
+      </div>
+    </div>
+
+    <!-- Think 面板（初始隐藏） -->
+    <div class="s016-think-panel s016-hidden" id="s016-think-panel">
+      <div class="s016-panel-header">think · 已跨 5 页综合 · 成文答案</div>
+
+      <div class="s016-answer-body" id="s016-answer-body">
+
+        <div class="s016-sentence" id="s016-s1">
+          Alice Zhang 目前担任 NexaFlow CEO，公司 2025 Q3 营收同比增长 34%，现金流转正。
+          <span class="s016-citation" id="s016-c1">1</span>
+        </div>
+
+        <div class="s016-sentence" id="s016-s2">
+          NexaFlow 最新一轮融资来自 AlphaVentures（B 轮，$12M），双方在 AI 基础设施上有合作协议。
+          <span class="s016-citation" id="s016-c2">2</span>
+          <span class="s016-citation" id="s016-c3">3</span>
+        </div>
+
+        <div class="s016-sentence" id="s016-s3">
+          Alice 上季度曾推动 SparkField 并购谈判，但目前状态不明，值得在会前确认最新进展。
+          <span class="s016-citation" id="s016-c4">4</span>
+        </div>
+
+        <div class="s016-sentence" id="s016-s4">
+          关键关系：Alice advises AlphaVentures，同时是 NexaFlow founder，需注意潜在利益关联。
+          <span class="s016-citation" id="s016-c5">5</span>
+        </div>
+
+      </div>
+
+      <!-- Gap 分析 -->
+      <div class="s016-gap-section" id="s016-gap-section">
+        <div class="s016-gap-label">
+          <div class="s016-gap-dot"></div>
+          知识空白 (gap)
+        </div>
+        <div class="s016-gap-text">Alice 最近 30 天动态缺少更新；SparkField 并购进展无引用论断，建议开会前主动求证。</div>
+      </div>
+
+    </div><!-- /think-panel -->
+
+  </div><!-- /panel-container -->
+</div>

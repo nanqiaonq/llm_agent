@@ -1,0 +1,7 @@
+{
+  "phase_completed": 3,
+  "batch": "C",
+  "slides_completed": ["S009-zero-llm-deterministic.html", "S010-selfwiring-vs-graphrag.html", "S011-source-vs-compiled-dual-track.html", "S012-two-engines-one-contract.html", "S013-why-hybrid-retrieval.html"],
+  "slide_in_progress": null,
+  "last_updated": "2026-06-22T22:13:00"
+}

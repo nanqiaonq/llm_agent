@@ -1,0 +1,450 @@
+<!--
+  🔴 FM 防御注释 — brain-dual-capability-reveal
+  ════════════════════════════════════════════════
+  FM-1: 大脑两半初始态都亮(完整大脑)，点击触发 GSAP fromTo 揭示对应简介卡
+  FM-2: 简介卡初始 opacity:0 + display:none，点击前先 display:flex 再 GSAP fromTo 到 opacity:1
+        (GSAP 无法动画 display，先改 display 再 fromTo opacity/y)
+  FM-3: 两半大脑点亮态互不干扰，点另一半时另一卡仍保持展开(不收起)
+  FM-4: cleanup 时 removeEventListener(named fn ref) + kill GSAP tweens + reset 卡片状态
+  FM-5: 严禁"只用了一半/另一半/补全"等残缺叙事，两大能力完整全景
+  负责人: slide-writer
+  交互强度: 🔴 (brain-dual-capability-reveal · VOE 拍板)
+  ←§FM AD-06
+-->
+<style>
+  /* ── S005 命名空间 ←§AD-09 ── */
+  .s005-wrap {
+    transform: scale(1.16);
+    transform-origin: center center;
+    width: 100%;
+    max-width: 980px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-style: normal; /* ←§AD-05 第1次 */
+  }
+
+  .s005-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--eyebrow);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-style: normal; /* ←§AD-05 第2次 */
+    margin-bottom: 0.4rem;
+    align-self: center;
+    text-align: center;
+  }
+
+  .s005-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    font-style: normal; /* ←§AD-05 第3次 */
+    align-self: center;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .s005-subtitle {
+    font-size: clamp(0.8rem, 1.2vw, 0.92rem);
+    color: var(--text-dim);
+    margin-bottom: 1.3rem;
+    align-self: center;
+    text-align: center;
+  }
+
+  /* 主内容区：大脑 + 两卡 */
+  .s005-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  /* ── 大脑视觉区 ── */
+  .s005-brain-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+  }
+
+  /* 大脑容器 */
+  .s005-brain {
+    position: relative;
+    width: 340px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* 大脑 SVG 可交互区域 */
+  .s005-brain-svg {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    filter: drop-shadow(0 0 18px rgba(155, 203, 215, 0.25));
+    transition: filter 0.3s;
+  }
+
+  /* 左半脑 — 建图 Connect */
+  .s005-half-left {
+    fill: rgba(155, 203, 215, 0.12);
+    stroke: rgba(155, 203, 215, 0.5);
+    stroke-width: 1.5;
+    transition: fill 0.3s, stroke 0.3s;
+    cursor: pointer;
+  }
+
+  .s005-half-left:hover,
+  .s005-half-left.s005-active {
+    fill: rgba(155, 203, 215, 0.22);
+    stroke: var(--primary);
+    stroke-width: 2;
+  }
+
+  /* 右半脑 — 读+想 Read & Think */
+  .s005-half-right {
+    fill: rgba(155, 203, 215, 0.12);
+    stroke: rgba(155, 203, 215, 0.5);
+    stroke-width: 1.5;
+    transition: fill 0.3s, stroke 0.3s;
+    cursor: pointer;
+  }
+
+  .s005-half-right:hover,
+  .s005-half-right.s005-active {
+    fill: rgba(155, 203, 215, 0.22);
+    stroke: var(--primary);
+    stroke-width: 2;
+  }
+
+  /* 大脑中线 */
+  .s005-brain-midline {
+    stroke: rgba(155, 203, 215, 0.25);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+
+  /* 大脑内标签 */
+  .s005-brain-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    fill: var(--primary);
+    font-weight: 600;
+    dominant-baseline: middle;
+    text-anchor: middle;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .s005-brain-icon {
+    font-size: 16px;
+    dominant-baseline: middle;
+    text-anchor: middle;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* 点击提示 */
+  .s005-click-hint {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: -0.3rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── 两大能力卡片区 ←§AD-07 fr ── */
+  .s005-cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+  }
+
+  /* 能力卡片 */
+  .s005-cap-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 1.1rem 1.2rem;
+    display: none; /* 初始隐藏，点击后展开 */
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3); /* ←§AD-08 */
+    opacity: 0;
+  }
+
+  .s005-cap-card.s005-revealed {
+    display: flex;
+  }
+
+  /* 卡片标题行 */
+  .s005-cap-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 0.2rem;
+  }
+
+  .s005-cap-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(155, 203, 215, 0.15);
+    border: 1px solid rgba(155, 203, 215, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .s005-cap-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--card-title);
+    line-height: 1.25;
+  }
+
+  .s005-cap-en {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  /* 能力要点 */
+  .s005-cap-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    padding: 0.22rem 0;
+  }
+
+  .s005-cap-point strong {
+    color: var(--accent);
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .s005-cap-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  /* 占位卡（点击提示卡，未点击时显示） */
+  .s005-placeholder-card {
+    background: rgba(30, 40, 56, 0.4);
+    border: 1px dashed rgba(155, 203, 215, 0.2);
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 120px;
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s;
+  }
+
+  .s005-placeholder-card:hover {
+    border-color: rgba(155, 203, 215, 0.4);
+    background: rgba(30, 40, 56, 0.6);
+  }
+
+  .s005-placeholder-text {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .s005-placeholder-arrow {
+    font-size: 1.2rem;
+    color: var(--primary);
+    opacity: 0.6;
+  }
+</style>
+
+<div class="s005-wrap">
+  <div class="s005-eyebrow">GBrain 全景与两大能力</div>
+  <div class="s005-title">两大核心能力总览</div>
+  <div class="s005-subtitle">一个完整的 brain layer — 连接知识与思考知识，缺一不可</div>
+
+  <div class="s005-main">
+
+    <!-- 大脑 SVG 交互区 -->
+    <div class="s005-brain-row">
+      <div class="s005-brain">
+        <svg class="s005-brain-svg" viewBox="0 0 340 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 左半脑 — 建图 Connect（带脑回起伏轮廓） -->
+          <path class="s005-half-left" id="s005-left-half"
+            d="M168 30
+               C158 25 147 26 139 33
+               C131 25 119 28 113 37
+               C103 32 92 39 87 49
+               C75 47 65 56 62 67
+               C51 69 45 80 47 92
+               C39 98 38 110 45 119
+               C40 128 44 139 53 144
+               C51 155 60 164 72 168
+               C82 176 96 180 109 177
+               C126 181 143 176 156 168
+               C163 164 167 160 168 154
+               L168 30 Z"/>
+
+          <!-- 右半脑 — 读+想 Read & Think（带脑回起伏轮廓） -->
+          <path class="s005-half-right" id="s005-right-half"
+            d="M172 30
+               C182 25 193 26 201 33
+               C209 25 221 28 227 37
+               C237 32 248 39 253 49
+               C265 47 275 56 278 67
+               C289 69 295 80 293 92
+               C301 98 302 110 295 119
+               C300 128 296 139 287 144
+               C289 155 280 164 268 168
+               C258 176 244 180 231 177
+               C214 181 197 176 184 168
+               C177 164 173 160 172 154
+               L172 30 Z"/>
+
+          <!-- 中央纵裂 -->
+          <line class="s005-brain-midline" x1="170" y1="30" x2="170" y2="160"/>
+
+          <!-- 左半脑回沟纹路 -->
+          <path d="M95 62 Q112 74 120 96 Q126 112 118 130"
+                stroke="rgba(155,203,215,0.20)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M66 88 Q86 86 104 98 Q114 105 116 120"
+                stroke="rgba(155,203,215,0.15)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M58 116 Q78 120 92 134"
+                stroke="rgba(155,203,215,0.12)" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+          <!-- 右半脑回沟纹路 -->
+          <path d="M245 62 Q228 74 220 96 Q214 112 222 130"
+                stroke="rgba(155,203,215,0.20)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M274 88 Q254 86 236 98 Q226 105 224 120"
+                stroke="rgba(155,203,215,0.15)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M282 116 Q262 120 248 134"
+                stroke="rgba(155,203,215,0.12)" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+          <!-- 左侧标签 -->
+          <text class="s005-brain-label" x="105" y="108">建图</text>
+          <text class="s005-brain-label" x="105" y="124">Connect</text>
+
+          <!-- 右侧标签 -->
+          <text class="s005-brain-label" x="235" y="100">读+想</text>
+          <text class="s005-brain-label" x="235" y="116">Read &amp; Think</text>
+
+          <!-- 左侧连线小图标 (点阵网络) -->
+          <circle cx="82" cy="148" r="3" fill="rgba(155,203,215,0.5)"/>
+          <circle cx="98" cy="158" r="2.5" fill="rgba(155,203,215,0.4)"/>
+          <circle cx="116" cy="152" r="2" fill="rgba(155,203,215,0.35)"/>
+          <line x1="82" y1="148" x2="98" y2="158" stroke="rgba(155,203,215,0.4)" stroke-width="1"/>
+          <line x1="98" y1="158" x2="116" y2="152" stroke="rgba(155,203,215,0.4)" stroke-width="1"/>
+          <line x1="82" y1="148" x2="116" y2="152" stroke="rgba(155,203,215,0.25)" stroke-width="1"/>
+
+          <!-- 右侧思考波纹 -->
+          <path d="M214 148 Q222 142, 230 148 Q238 154, 246 148"
+                stroke="rgba(155,203,215,0.45)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M220 158 Q228 152, 236 158"
+                stroke="rgba(155,203,215,0.3)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="s005-click-hint">点击左半脑或右半脑，了解该能力详情</div>
+
+    <!-- 两卡区 ←§AD-07 fr -->
+    <div class="s005-cards-row">
+
+      <!-- 左卡：建图 Connect（初始显示占位符） -->
+      <div id="s005-left-placeholder" class="s005-placeholder-card" data-target="left">
+        <div class="s005-placeholder-arrow">↑</div>
+        <div class="s005-placeholder-text">点击左半脑<br>展开「建图 Connect」简介</div>
+      </div>
+      <div class="s005-cap-card" id="s005-card-left">
+        <div class="s005-cap-title-row">
+          <div class="s005-cap-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" color="var(--primary)">
+              <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+              <line x1="6" y1="9" x2="6" y2="15"/><line x1="9" y1="6" x2="15" y2="18"/><line x1="9" y1="18" x2="15" y2="18"/>
+            </svg>
+          </div>
+          <div>
+            <div class="s005-cap-title">能力一 · 建图 Connect</div>
+            <div class="s005-cap-en">self-wiring → typed 知识图谱</div>
+          </div>
+        </div>
+        <div class="s005-cap-point">
+          <div class="s005-cap-dot"></div>
+          <span>解析 Markdown wikilink，<strong>零 LLM</strong> 把显式关系织成<strong>有向图</strong></span>
+        </div>
+        <div class="s005-cap-point">
+          <div class="s005-cap-dot"></div>
+          <span>四类 <strong>typed 边</strong>（founded / works_at / invested_in / advises），<strong>确定性可追溯</strong></span>
+        </div>
+        <div class="s005-cap-point">
+          <div class="s005-cap-dot"></div>
+          <span>改一行 Markdown，<strong>图立即镜像更新</strong>；<strong>重跑结果一模一样</strong></span>
+        </div>
+      </div>
+
+      <!-- 右卡：读+想 Read & Think（初始显示占位符） -->
+      <div id="s005-right-placeholder" class="s005-placeholder-card" data-target="right">
+        <div class="s005-placeholder-arrow">↑</div>
+        <div class="s005-placeholder-text">点击右半脑<br>展开「读+想 Read &amp; Think」简介</div>
+      </div>
+      <div class="s005-cap-card" id="s005-card-right">
+        <div class="s005-cap-title-row">
+          <div class="s005-cap-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" color="var(--primary)">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="s005-cap-title">能力二 · 读+想 Read &amp; Think</div>
+            <div class="s005-cap-en">embedding 检索 + think 综合 → 带引用答案</div>
+          </div>
+        </div>
+        <div class="s005-cap-point">
+          <div class="s005-cap-dot"></div>
+          <span><strong>混合检索</strong>（HNSW 向量 + BM25 关键词 + RRF 融合）覆盖语义与精确匹配</span>
+        </div>
+        <div class="s005-cap-point">
+          <div class="s005-cap-dot"></div>
+          <span>think <strong>跨页综合</strong>，输出成文答案 + <strong>citation 引用标注</strong>，而非页面列表</span>
+        </div>
+        <div class="s005-cap-point">
+          <div class="s005-cap-dot"></div>
+          <span><strong>诚实告诉你知识空白</strong>（gap 分析），过期信息/无引用论断/自相矛盾<strong>三信号</strong></span>
+        </div>
+      </div>
+
+    </div><!-- /s005-cards-row -->
+  </div><!-- /s005-main -->
+</div>

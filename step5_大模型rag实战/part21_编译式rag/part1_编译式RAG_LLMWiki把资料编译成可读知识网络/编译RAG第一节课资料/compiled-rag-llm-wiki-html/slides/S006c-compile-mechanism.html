@@ -1,0 +1,253 @@
+<style>
+/* S006c 编译执行的内在过程 · 读 index.md 目录导航命中 · G1 月白灰蓝 */
+.s6c-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
+  min-height: 84vh; width: 100%; max-width: 1400px;
+  padding: 1.4rem 5rem 1.4rem 7rem; box-sizing: border-box; font-style: normal;
+}
+.s6c-heading { width: 100%; text-align: center; }
+.s6c-title {
+  font-family: var(--font-display); font-size: clamp(1.65rem, 2.7vw, 2.25rem);
+  font-weight: 700; font-style: normal; color: var(--text-primary); line-height: 1.2;
+}
+.s6c-subtitle {
+  font-family: var(--font-body); font-size: clamp(0.85rem, 1.32vw, 1.0rem);
+  font-weight: 400; font-style: normal; color: var(--text-secondary); margin-top: 0.35rem;
+}
+
+/* 本轮问题条 */
+.s6c-qbar {
+  display: flex; align-items: center; justify-content: center; max-width: 860px;
+  padding: 0.6rem 1.5rem; border-radius: 0.7rem;
+  background: rgba(110, 140, 136, 0.1); border: 1.5px solid rgba(110, 140, 136, 0.42);
+  box-shadow: 0 4px 16px rgba(110, 140, 136, 0.14); font-style: normal;
+}
+.s6c-qtag {
+  font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--color-compile);
+  padding: 0.22rem 0.7rem; margin-right: 0.7rem; border-radius: 0.4rem; white-space: nowrap;
+}
+.s6c-qtext { font-family: var(--font-body); font-size: clamp(0.96rem, 1.5vw, 1.12rem); font-weight: 600; font-style: normal; color: var(--text-primary); }
+
+/* 主体：左目录 + 右 wiki 图 */
+.s6c-main { width: 100%; max-width: 1240px; display: grid; grid-template-columns: 1.15fr auto 320px; gap: 1.2rem; align-items: center; }
+
+/* index.md 目录卡 */
+.s6c-index {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  padding: 0.8rem 1rem; border-radius: 0.8rem;
+  background: rgba(110, 140, 136, 0.06); border: 1.5px solid rgba(110, 140, 136, 0.32);
+}
+.s6c-index-head { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; font-style: normal; color: var(--color-compile); margin-bottom: 0.2rem; }
+.s6c-agent-note {
+  font-family: var(--font-body); font-size: 0.76rem; font-style: normal; line-height: 1.45;
+  color: var(--text-secondary); padding: 0.45rem 0.65rem; margin-bottom: 0.3rem;
+  border-radius: 0.4rem; background: rgba(79, 96, 110, 0.08); border: 1px solid rgba(79, 96, 110, 0.22);
+}
+.s6c-agent-note b { color: var(--accent); font-weight: 700; }
+.s6c-idx-item {
+  display: flex; flex-direction: column; gap: 0.1rem; padding: 0.42rem 0.6rem; border-radius: 0.45rem;
+  border: 1px solid transparent; transition: all 0.35s ease;
+}
+.s6c-idx-item.hit { background: rgba(110, 140, 136, 0.16); border-color: var(--color-compile); }
+.s6c-idx-page { font-family: var(--font-mono); font-size: 0.92rem; font-weight: 600; font-style: normal; color: var(--color-compile); }
+.s6c-idx-sum { font-family: var(--font-body); font-size: 0.8rem; font-style: normal; color: var(--text-dim); }
+.s6c-idx-item.hit .s6c-idx-sum { color: var(--text-secondary); }
+.s6c-idx-hit-badge {
+  align-self: flex-start; margin-top: 0.15rem;
+  font-family: var(--font-mono); font-size: 0.64rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--color-compile); padding: 0.1rem 0.45rem; border-radius: 0.25rem;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.s6c-idx-item.hit .s6c-idx-hit-badge { opacity: 1; }
+
+/* 中间箭头 */
+.s6c-arrow { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+.s6c-arrow-line { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--color-compile); }
+.s6c-arrow-tag { font-family: var(--font-mono); font-size: 0.56rem; font-weight: 700; font-style: normal; color: var(--color-compile); white-space: nowrap; }
+
+/* wiki 图 SVG */
+.s6c-graph { width: 320px; }
+.s6c-node rect { fill: rgba(110, 140, 136, 0.1); stroke: rgba(110, 140, 136, 0.4); stroke-width: 1.5; transition: fill 0.35s ease, stroke 0.35s ease, stroke-width 0.35s ease; }
+.s6c-node text { fill: var(--color-compile); font-family: var(--font-mono); font-size: 12.5px; text-anchor: middle; }
+.s6c-node .s6c-node-sub { fill: var(--text-dim); font-size: 9.5px; }
+.s6c-node.dimnode rect { fill: rgba(110, 140, 136, 0.06); stroke: rgba(110, 140, 136, 0.25); }
+.s6c-node.dimnode text { opacity: 0.45; }
+.s6c-node.hit rect { fill: rgba(110, 140, 136, 0.3); stroke: var(--color-compile); stroke-width: 2.6; }
+.s6c-node.ext rect { fill: rgba(110, 140, 136, 0.18); stroke: var(--color-compile); stroke-width: 2; stroke-dasharray: 5 3; }
+.s6c-link { stroke: rgba(110, 140, 136, 0.3); stroke-width: 1.5; fill: none; transition: stroke 0.35s ease, stroke-width 0.35s ease; }
+.s6c-link.active { stroke: var(--color-compile); stroke-width: 3; }
+.s6c-graph-cap { font-family: var(--font-mono); font-size: 0.56rem; fill: var(--text-dim); text-anchor: middle; }
+
+/* 结论卡 */
+.s6c-result {
+  width: 100%; max-width: 1000px; display: flex; align-items: center; gap: 0.8rem;
+  padding: 0.65rem 1.1rem; border-radius: 0.65rem;
+  background: rgba(110, 140, 136, 0.08); border: 1px dashed rgba(110, 140, 136, 0.4);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.s6c-result.show { opacity: 1; }
+.s6c-result-path { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; font-style: normal; color: var(--color-compile); white-space: nowrap; flex-shrink: 0; }
+.s6c-result-text { font-family: var(--font-body); font-size: 0.78rem; font-style: normal; color: var(--text-secondary); line-height: 1.4; }
+.s6c-result-text b { color: var(--color-compile); font-weight: 600; }
+
+/* 三步指示 */
+.s6c-steps { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+.s6c-step {
+  font-family: var(--font-mono); font-size: 0.7rem; font-style: normal; color: var(--text-dim);
+  padding: 0.3rem 0.7rem; border-radius: 0.4rem; border: 1px solid var(--card-border);
+  background: rgba(247, 249, 250, 0.5); transition: all 0.3s ease;
+}
+.s6c-step.active { color: var(--bg-surface); background: var(--color-compile); border-color: var(--color-compile); font-weight: 700; }
+.s6c-step-sep { color: var(--color-compile); font-family: var(--font-mono); }
+
+/* 对比锚 */
+.s6c-compare { width: 100%; max-width: 1240px; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.s6c-cmp-card { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 1rem; border-radius: 0.6rem; font-style: normal; }
+.s6c-cmp-card.interpret { background: rgba(183, 150, 131, 0.08); border: 1px solid rgba(183, 150, 131, 0.25); }
+.s6c-cmp-card.compile { background: rgba(110, 140, 136, 0.08); border: 1px solid rgba(110, 140, 136, 0.25); }
+.s6c-cmp-tag { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; font-style: normal; padding: 0.16rem 0.5rem; border-radius: 0.3rem; flex-shrink: 0; }
+.s6c-cmp-card.interpret .s6c-cmp-tag { color: var(--color-interpret); background: rgba(183, 150, 131, 0.16); }
+.s6c-cmp-card.compile .s6c-cmp-tag { color: var(--color-compile); background: rgba(110, 140, 136, 0.16); }
+.s6c-cmp-text { font-family: var(--font-body); font-size: 0.72rem; font-style: normal; color: var(--text-secondary); line-height: 1.35; }
+.s6c-cmp-text b { font-weight: 700; }
+.s6c-cmp-card.interpret .s6c-cmp-text b { color: var(--color-interpret); }
+.s6c-cmp-card.compile .s6c-cmp-text b { color: var(--color-compile); }
+
+/* 控制 */
+.s6c-controls { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; width: 100%; }
+.s6c-btn-row { display: flex; align-items: center; gap: 0.7rem; }
+.s6c-ask-btn {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--accent); border: none; border-radius: 0.65rem;
+  padding: 0.6rem 1.9rem; cursor: pointer; letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(79, 96, 110, 0.3);
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+.s6c-ask-btn:hover:not(:disabled) { background: var(--primary); transform: translateY(-1px); }
+.s6c-ask-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.s6c-ctrl-btn {
+  font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; font-style: normal;
+  color: var(--text-secondary); background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 0.45rem; padding: 0.38rem 0.9rem; cursor: pointer; transition: background 0.2s ease, color 0.2s ease;
+}
+.s6c-ctrl-btn:hover { background: rgba(110, 126, 140, 0.12); color: var(--accent); }
+.s6c-stage-ind { font-family: var(--font-mono); font-size: 0.7rem; font-style: normal; color: var(--text-dim); letter-spacing: 0.04em; text-align: center; min-height: 1rem; }
+
+/* 入场 */
+.s6c-heading  { animation: s6cUp 0.4s ease both 0ms; }
+.s6c-qbar     { animation: s6cUp 0.4s ease both 60ms; }
+.s6c-main     { animation: s6cUp 0.4s ease both 100ms; }
+.s6c-compare  { animation: s6cUp 0.4s ease both 150ms; }
+.s6c-controls { animation: s6cUp 0.4s ease both 190ms; }
+@keyframes s6cUp { from { opacity: 0; transform: translateY(0.7rem); } to { opacity: 1; transform: none; } }
+</style>
+
+<div class="slide" data-slide="602">
+  <div class="s6c-wrap">
+
+    <div class="s6c-heading">
+      <h2 class="s6c-title">编译执行的内在过程：读 index.md 目录导航命中</h2>
+      <p class="s6c-subtitle">读的是当前 wiki、不读 raw——agent 像查书的目录一样，读 index.md 定位相关页，再沿 [[链接]] 顺藤摸瓜读结论（前提：wiki 已由最新 raw 编译过）</p>
+    </div>
+
+    <!-- 本轮问题 -->
+    <div class="s6c-qbar">
+      <span class="s6c-qtag" id="s6c-qtag">❓ 待提问</span>
+      <span class="s6c-qtext" id="s6c-qtext">点「查询下一个」——看 agent 怎么沿目录和链接命中</span>
+    </div>
+
+    <!-- 主体：index.md 目录 + wiki 图 -->
+    <div class="s6c-main">
+      <!-- index.md 目录 -->
+      <div class="s6c-index">
+        <div class="s6c-index-head">📑 wiki/index.md（查询入口 · 内容目录）</div>
+        <div class="s6c-agent-note">🤖 <b>LLM agent</b> 读这份目录，凭<b>语义理解</b>判断该读哪几页——不是关键词匹配、也不是向量检索</div>
+        <div class="s6c-idx-item" id="idx-concept">
+          <span class="s6c-idx-page">概念基础.md</span>
+          <span class="s6c-idx-sum">— 缓存 vs 编译定义、范式概念</span>
+          <span class="s6c-idx-hit-badge">目录命中</span>
+        </div>
+        <div class="s6c-idx-item" id="idx-impl">
+          <span class="s6c-idx-page">实现模式.md</span>
+          <span class="s6c-idx-sum">— 三层架构、三个操作</span>
+          <span class="s6c-idx-hit-badge">目录命中</span>
+        </div>
+        <div class="s6c-idx-item" id="idx-falsify">
+          <span class="s6c-idx-page">证伪实验.md</span>
+          <span class="s6c-idx-sum">— 20× 成本实测、选型边界</span>
+          <span class="s6c-idx-hit-badge">目录命中</span>
+        </div>
+      </div>
+
+      <!-- 箭头 -->
+      <div class="s6c-arrow">
+        <span class="s6c-arrow-tag">目录定位</span>
+        <span class="s6c-arrow-line">▶</span>
+        <span class="s6c-arrow-tag">沿链接扩展</span>
+      </div>
+
+      <!-- wiki 链接图 -->
+      <svg class="s6c-graph" viewBox="0 0 320 290" xmlns="http://www.w3.org/2000/svg">
+        <!-- 链接线 -->
+        <line class="s6c-link" id="link-ci" x1="160" y1="74" x2="160" y2="114"/>
+        <line class="s6c-link" id="link-if" x1="160" y1="170" x2="160" y2="210"/>
+        <path  class="s6c-link" id="link-cf" d="M 250 48 Q 312 160 250 236"/>
+        <!-- 节点 -->
+        <g class="s6c-node" id="node-concept">
+          <rect x="70" y="18" width="180" height="56" rx="10"/>
+          <text x="160" y="42">概念基础.md</text>
+          <text x="160" y="60" class="s6c-node-sub">缓存 vs 编译定义</text>
+        </g>
+        <g class="s6c-node" id="node-impl">
+          <rect x="70" y="114" width="180" height="56" rx="10"/>
+          <text x="160" y="138">实现模式.md</text>
+          <text x="160" y="156" class="s6c-node-sub">三层架构 · 三操作</text>
+        </g>
+        <g class="s6c-node" id="node-falsify">
+          <rect x="70" y="210" width="180" height="56" rx="10"/>
+          <text x="160" y="234">证伪实验.md</text>
+          <text x="160" y="252" class="s6c-node-sub">20× 成本 · 选型边界</text>
+        </g>
+        <text x="160" y="284" class="s6c-graph-cap">wiki 互链图 · [[链接]] 顺藤摸瓜</text>
+      </svg>
+    </div>
+
+    <!-- 三步指示 -->
+    <div class="s6c-steps">
+      <span class="s6c-step" id="s6c-step-1">① 读 index.md 定位入口页</span>
+      <span class="s6c-step-sep">→</span>
+      <span class="s6c-step" id="s6c-step-2">② 沿 [[链接]] 扩展关联页</span>
+      <span class="s6c-step-sep">→</span>
+      <span class="s6c-step" id="s6c-step-3">③ 读已提炼结论（不归纳）</span>
+    </div>
+
+    <!-- 结论卡 -->
+    <div class="s6c-result" id="s6c-result">
+      <span class="s6c-result-path" id="s6c-result-path">命中路径 → 读结论</span>
+      <span class="s6c-result-text" id="s6c-result-text">—</span>
+    </div>
+
+    <!-- 对比锚 -->
+    <div class="s6c-compare">
+      <div class="s6c-cmp-card interpret">
+        <span class="s6c-cmp-tag">解释执行</span>
+        <span class="s6c-cmp-text">无目录，只能把问题<b>向量化</b>、去一堆碎 chunk 里算距离<b>猜</b>最近邻</span>
+      </div>
+      <div class="s6c-cmp-card compile">
+        <span class="s6c-cmp-tag">编译执行</span>
+        <span class="s6c-cmp-text">有 index.md 目录，agent 读目录、凭<b>理解</b>导航定位、沿链接<b>查</b>到结论页</span>
+      </div>
+    </div>
+
+    <!-- 控制 -->
+    <div class="s6c-controls">
+      <div class="s6c-btn-row">
+        <button class="s6c-ask-btn" id="s6c-ask">查询下一个问题</button>
+        <button class="s6c-ctrl-btn" id="s6c-reset">↺ 重置</button>
+      </div>
+      <div class="s6c-stage-ind" id="s6c-stage">同一份已编译 wiki：每个问题都先读 index.md 目录定位、再沿 [[链接]] 扩展——不同问题进不同入口、走不同路径，读的都是当前 wiki，不是当前 raw</div>
+    </div>
+
+  </div>
+</div>

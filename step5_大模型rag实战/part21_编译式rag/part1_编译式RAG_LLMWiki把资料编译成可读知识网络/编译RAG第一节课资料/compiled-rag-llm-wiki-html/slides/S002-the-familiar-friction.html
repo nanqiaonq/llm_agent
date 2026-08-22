@@ -1,0 +1,332 @@
+<style>
+/* S002 钩子 · 场景对话型 · G1 月白灰蓝 */
+/* font-style:normal 关键元素 ≥3 次显式声明 */
+
+.s002-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;   /* 纵向铺开，替代固定 gap */
+  min-height: 84vh;
+  width: 100%;
+  max-width: 880px;
+  padding: 3rem 4rem 3rem 7rem;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+/* 标题组：eyebrow + title 紧凑不拆散 */
+.s002-heading {
+  text-align: center;
+  /* margin 归零，间距交给 space-evenly */
+}
+
+.s002-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;             /* +10% */
+  font-weight: 600;
+  font-style: normal;
+  color: var(--secondary);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.s002-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.4rem);   /* +14% */
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.s002-hooksub {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.7rem;
+  line-height: 1.5;
+}
+
+/* 聊天窗口框（像网页聊天应用，整体框住对话） */
+.s002-chatbox {
+  width: 100%;
+  margin-top: 1.6rem;
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 22px rgba(40, 48, 60, 0.07);
+  overflow: hidden;
+}
+.s002-chat-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1.1rem;
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--card-border);
+}
+.s002-chat-bar .dot { width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+.s002-chat-bar .dot.r { background: #E0857F; }
+.s002-chat-bar .dot.y { background: #E0B570; }
+.s002-chat-bar .dot.g { background: #8FB596; }
+.s002-chat-title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-left: 0.6rem;
+  letter-spacing: 0.05em;
+}
+
+/* 对话区：左右气泡布局 */
+.s002-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;                    /* 稍增行距 */
+  padding: 1.5rem 1.7rem;
+}
+
+/* 对话行 */
+.s002-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+
+.s002-row.user   { flex-direction: row-reverse; }
+.s002-row.system { flex-direction: row; }
+
+/* 头像 */
+.s002-avatar {
+  width: 2.4rem;                  /* +14% */
+  height: 2.4rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-style: normal;
+  font-family: var(--font-mono);
+}
+
+.s002-avatar.user-avatar {
+  background: rgba(110, 126, 140, 0.15);
+  color: var(--accent);
+  border: 1.5px solid var(--card-border);
+}
+
+.s002-avatar.sys-avatar {
+  background: rgba(110, 140, 136, 0.12);
+  color: var(--color-compile);
+  border: 1.5px solid rgba(110, 140, 136, 0.25);
+}
+
+/* 气泡 */
+.s002-bubble {
+  max-width: 70%;
+  padding: 0.8rem 1.2rem;         /* 更宽裕的内边距 */
+  border-radius: 1rem;
+  font-size: clamp(0.92rem, 1.35vw, 1.08rem);   /* +14% */
+  font-style: normal;
+  line-height: 1.6;
+  position: relative;
+}
+
+.s002-row.user .s002-bubble {
+  background: rgba(110, 126, 140, 0.12);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+  border-bottom-right-radius: 0.25rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+.s002-row.system .s002-bubble {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+  border-bottom-left-radius: 0.25rem;
+  font-family: var(--font-body);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* 系统内部的"重新检索"标签 */
+.s002-process-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;             /* +10% */
+  font-style: normal;
+  color: var(--text-dim);
+  background: rgba(154, 164, 174, 0.12);
+  border: 1px solid var(--card-border);
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  margin-top: 0.45rem;
+}
+
+.s002-process-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-interpret);
+  flex-shrink: 0;
+}
+
+/* 时间分隔线（第二轮开始） */
+.s002-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.s002-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--card-border);
+}
+
+.s002-divider-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;             /* +10% */
+  font-style: normal;
+  color: var(--text-dim);
+  white-space: nowrap;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+/* 根因卡片（底部） */
+.s002-root-card {
+  width: 100%;
+  padding: 0.9rem 1.4rem;         /* 更高 */
+  background: rgba(183, 150, 131, 0.07);
+  border: 1.5px solid rgba(183, 150, 131, 0.3);
+  border-radius: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  text-align: center;
+}
+
+.s002-root-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.s002-root-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.92rem, 1.35vw, 1.05rem);   /* +14% */
+  font-style: normal;
+  color: var(--color-interpret);
+  font-weight: 600;
+}
+
+.s002-root-sub {
+  font-size: 0.88rem;             /* +13% */
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+
+/* 入场动画 */
+.s002-heading  { animation: s002Up 0.45s ease both 0ms; }
+.s002-chatbox  { animation: s002Up 0.45s ease both 80ms; }
+.s002-root-card { animation: s002Up 0.45s ease both 160ms; }
+
+@keyframes s002Up {
+  from { opacity: 0; transform: translateY(0.8rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="2">
+  <div class="s002-wrap">
+
+    <!-- 标题组 -->
+    <div class="s002-heading">
+      <div class="s002-eyebrow">C1 · 开场</div>
+      <h2 class="s002-title">传统 RAG 的通病：知识从不沉淀</h2>
+      <p class="s002-hooksub">你大概率见过的别扭——同一批资料、同一个问题，它每次都像第一次见</p>
+    </div>
+
+    <!-- 对话流（聊天窗口框） -->
+    <div class="s002-chatbox">
+      <div class="s002-chat-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="s002-chat-title">RAG 问答会话</span>
+      </div>
+    <div class="s002-dialog">
+
+      <!-- 第一轮：你问 -->
+      <div class="s002-row user">
+        <div class="s002-avatar user-avatar">你</div>
+        <div class="s002-bubble">
+          编译式 RAG 的查询成本比向量 RAG 高多少？
+        </div>
+      </div>
+
+      <!-- 系统答 -->
+      <div class="s002-row system">
+        <div class="s002-avatar sys-avatar">系</div>
+        <div class="s002-bubble">
+          根据检索结果，编译式查询约为向量 RAG 的 20 倍 token 消耗……
+          <div class="s002-process-tag">
+            <span class="s002-process-dot"></span>
+            ↺ 检索 · 召回 · 当场归纳
+          </div>
+        </div>
+      </div>
+
+      <!-- 分隔线：再问一次 -->
+      <div class="s002-divider">
+        <div class="s002-divider-line"></div>
+        <span class="s002-divider-label">五分钟后，再问一次同样的问题 ↓</span>
+        <div class="s002-divider-line"></div>
+      </div>
+
+      <!-- 第二轮：同问再问 -->
+      <div class="s002-row user">
+        <div class="s002-avatar user-avatar">你</div>
+        <div class="s002-bubble">
+          编译式 RAG 的查询成本比向量 RAG 高多少？
+        </div>
+      </div>
+
+      <!-- 系统又从头检索 -->
+      <div class="s002-row system">
+        <div class="s002-avatar sys-avatar">系</div>
+        <div class="s002-bubble">
+          根据检索结果，编译式的 token 消耗大约是向量 RAG 的二十倍左右……
+          <div class="s002-process-tag">
+            <span class="s002-process-dot"></span>
+            ↺ 又从头检索 · 又当场归纳
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+
+    <!-- 根因提示 -->
+    <div class="s002-root-card">
+      <span class="s002-root-icon">💡</span>
+      <div>
+        <div class="s002-root-text">每次都重新开始，从不沉淀</div>
+        <div class="s002-root-sub">知识在系统里从来没有"积累"——它只是被一次又一次临时消费</div>
+      </div>
+    </div>
+
+  </div>
+</div>

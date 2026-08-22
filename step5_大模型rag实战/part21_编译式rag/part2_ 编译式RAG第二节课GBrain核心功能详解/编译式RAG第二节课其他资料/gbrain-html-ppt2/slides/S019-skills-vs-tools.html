@@ -1,0 +1,380 @@
+<style>
+  /* ── P06 极简钢蓝数据感 CSS 变量 ─────────────────────────────── */
+  :root {
+    --bg-deep:      #141a26;
+    --bg-mid:       #1e2838;
+    --primary:      #9bcbd7;
+    --secondary:    #6a8ba0;
+    --accent:       #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim:     #7d8fa4;
+    --card-bg:      rgba(30, 40, 56, 0.75);
+    --card-border:  rgba(155, 203, 215, 0.18);
+    --card-title:   #aadcec;
+    --eyebrow:      #81a8b9;
+    --shadow:       0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ── slide wrapper ──────────────────────────────────────────── */
+  .s19-wrap {
+    transform: scale(1.0);
+    transform-origin: center center;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 4rem 3rem 7rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    background-color: var(--bg-deep);
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-style: normal;
+    color: var(--text-primary);
+  }
+
+  /* ── header ─────────────────────────────────────────────────── */
+  .s19-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-style: normal;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+    margin-bottom: 0.55rem;
+    align-self: center;
+    text-align: center;
+  }
+
+  .s19-title {
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--text-primary);
+    margin: 0 0 0.3rem 0;
+    align-self: center;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .s19-subtitle {
+    font-size: clamp(0.88rem, 1.3vw, 1rem);
+    font-style: normal;
+    color: var(--text-dim);
+    margin: 0 0 1.8rem 0;
+    align-self: center;
+    text-align: center;
+  }
+
+  /* ── two-layer diagram ───────────────────────────────────────── */
+  .s19-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+  }
+
+  /* skills layer */
+  .s19-layer {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    padding: 1.2rem 1.4rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    font-style: normal;
+    position: relative;
+    min-width: 0;
+  }
+
+  .s19-layer-skills {
+    border-top: 3px solid var(--secondary);
+    margin-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .s19-layer-tools {
+    border-top: 3px solid var(--primary);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-top: 0;
+  }
+
+  /* ── layer header ────────────────────────────────────────────── */
+  .s19-layer-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+    min-width: 0;
+  }
+
+  .s19-count-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .s19-count-skills { color: var(--secondary); }
+  .s19-count-tools  { color: var(--primary); }
+
+  .s19-layer-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .s19-layer-name {
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--card-title);
+    line-height: 1.2;
+  }
+
+  .s19-layer-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-style: normal;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── feature chips ───────────────────────────────────────────── */
+  .s19-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.7rem;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .s19-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-style: normal;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  .s19-feat-dot-s {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--secondary);
+    flex-shrink: 0;
+  }
+
+  .s19-feat-dot-t {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .s19-feature strong {
+    color: var(--text-primary);
+    font-style: normal;
+  }
+
+  /* ── divider with calling arrow ──────────────────────────────── */
+  .s19-call-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.5rem 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .s19-call-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.3;
+    min-width: 0;
+  }
+
+  .s19-call-badge {
+    background: rgba(155, 203, 215, 0.1);
+    border: 1px solid rgba(155, 203, 215, 0.25);
+    border-radius: 1.5rem;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.72rem;
+    font-style: normal;
+    color: var(--primary);
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .s19-call-arrow {
+    font-size: 0.85rem;
+    color: var(--primary);
+    line-height: 1;
+  }
+
+  /* ── example block ───────────────────────────────────────────── */
+  .s19-example {
+    margin-top: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    background: rgba(106, 139, 160, 0.08);
+    border-left: 2px solid var(--secondary);
+    border-radius: 0 0.4rem 0.4rem 0;
+    font-size: 0.78rem;
+    font-style: normal;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .s19-example-skills strong {
+    color: var(--secondary);
+    font-style: normal;
+  }
+
+  .s19-example-tools {
+    border-left-color: var(--primary);
+    background: rgba(155, 203, 215, 0.06);
+    margin-top: 0.5rem;
+  }
+
+  .s19-example-tools strong {
+    color: var(--primary);
+    font-style: normal;
+  }
+
+  /* ── bottom key insight ──────────────────────────────────────── */
+  .s19-insight {
+    margin-top: 1.6rem;
+    width: 100%;
+    background: rgba(155, 203, 215, 0.06);
+    border: 1px solid var(--card-border);
+    border-radius: 0.6rem;
+    padding: 0.75rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-style: normal;
+    min-width: 0;
+  }
+
+  .s19-insight-sep {
+    width: 2px;
+    height: 2.5rem;
+    background: var(--primary);
+    border-radius: 1px;
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+
+  .s19-insight-text {
+    font-size: 0.85rem;
+    font-style: normal;
+    color: var(--text-dim);
+    line-height: 1.5;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .s19-insight-text strong {
+    color: var(--text-primary);
+    font-style: normal;
+  }
+
+  .s19-insight-text em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 600;
+  }
+</style>
+
+<div class="slide s19-wrap" id="S019">
+  <!-- eyebrow -->
+  <div class="s19-eyebrow">生态</div>
+
+  <!-- title block -->
+  <h1 class="s19-title">51 skills vs 约 90 MCP tools：两个维度</h1>
+  <p class="s19-subtitle">两个数字测的不是同一件事——skills 是指令层（WHAT），tools 是执行层（HOW），skills 调用 tools</p>
+
+  <!-- two-layer diagram -->
+  <div class="s19-diagram">
+
+    <!-- ── 上层：Skills 指令层 ── -->
+    <div class="s19-layer s19-layer-skills">
+      <div class="s19-layer-head">
+        <div class="s19-count-badge s19-count-skills">51</div>
+        <div class="s19-layer-meta">
+          <div class="s19-layer-name">Skills · 指令层</div>
+          <div class="s19-layer-tag">WHAT to do · prose 工作流 · 人类可读</div>
+        </div>
+      </div>
+      <div class="s19-features">
+        <div class="s19-feature"><div class="s19-feat-dot-s"></div><span>Operator 手写的<strong>文本工作流文件</strong>，描述"做某件事的步骤是什么"</span></div>
+        <div class="s19-feature"><div class="s19-feat-dot-s"></div><span>带触发词，可被 AI 按语义匹配激活</span></div>
+        <div class="s19-feature"><div class="s19-feat-dot-s"></div><span>本身<strong>不是可执行代码</strong>，读它你能懂它要干嘛</span></div>
+      </div>
+      <div class="s19-example s19-example-skills">
+        示例：<strong>academic-verify</strong> skill — 一段带触发词的文本，描述"如何核验一条学术主张"的工作流步骤
+      </div>
+    </div>
+
+    <!-- ── 调用箭头 ── -->
+    <div class="s19-call-row">
+      <div class="s19-call-line"></div>
+      <div class="s19-call-badge">
+        <div class="s19-call-arrow">&#8595;</div>
+        skills 调用 tools 完成操作
+        <div class="s19-call-arrow">&#8595;</div>
+      </div>
+      <div class="s19-call-line"></div>
+    </div>
+
+    <!-- ── 下层：MCP Tools 执行层 ── -->
+    <div class="s19-layer s19-layer-tools">
+      <div class="s19-layer-head">
+        <div class="s19-count-badge s19-count-tools">约 90</div>
+        <div class="s19-layer-meta">
+          <div class="s19-layer-name">MCP Tools · 执行层</div>
+          <div class="s19-layer-tag">HOW to do it · 类型化 API · 带 inputSchema</div>
+        </div>
+      </div>
+      <div class="s19-features">
+        <div class="s19-feature"><div class="s19-feat-dot-t"></div><span>可被调用的<strong>类型化接口</strong>，带明确 inputSchema，真正读写页面、执行搜索</span></div>
+        <div class="s19-feature"><div class="s19-feat-dot-t"></div><span>v0.42.44.0 实测 90 个（随小版本浮动，README 数字过时）</span></div>
+        <div class="s19-feature"><div class="s19-feat-dot-t"></div><span><code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--primary);font-style:normal;">publish_skills=true</code> 时 skills 也暴露为 tools，故约 90 &gt; 纯 CRUD 数</span></div>
+      </div>
+      <div class="s19-example s19-example-tools">
+        示例：<strong>get_page</strong> tool — 带 <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--primary);font-style:normal;">inputSchema: {slug: string}</code> 的接口，真去执行"按 slug 读一个页面"
+      </div>
+    </div>
+
+  </div>
+
+  <!-- bottom key insight -->
+  <div class="s19-insight">
+    <div class="s19-insight-sep"></div>
+    <div class="s19-insight-text">
+      <strong>51 和约 90 不矛盾</strong>——它们是同一系统的两个切面，测的根本不是同一件事。<em>别信 README 数字，以自己环境的实测为准</em>——文档里的 skills / tools 数字常滞后于代码，真实数量要在本地数一遍。
+    </div>
+  </div>
+</div>

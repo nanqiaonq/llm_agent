@@ -1,0 +1,545 @@
+<style>
+  /* ── P06 极简钢蓝 CSS 变量 ── */
+  :root {
+    --p06-primary: #9bcbd7;
+    --p06-secondary: #6a8ba0;
+    --p06-accent: #e8a849;
+    --p06-bg-deep: #141a26;
+    --p06-bg-mid: #1e2838;
+    --p06-text-primary: #e2e8ee;
+    --p06-text-dim: #7d8fa4;
+    --p06-card-bg: rgba(30, 40, 56, 0.7);
+    --p06-card-border: rgba(155, 203, 215, 0.18);
+    --p06-eyebrow: #81a8b9;
+    --p06-shadow: rgba(0, 0, 0, 0.35);
+  }
+
+  .s007-wrap {
+    transform: scale(1.0);
+    transform-origin: center center;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 4.5rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    font-style: normal; /* AD-05 #1 */
+    position: relative;
+  }
+
+  .s007-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1100px;
+    font-style: normal; /* AD-05 #2 */
+  }
+
+  /* 标题区 */
+  .s007-head {
+    margin-bottom: 2rem;
+  }
+
+  .s007-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p06-eyebrow);
+    font-style: normal; /* AD-05 #3 */
+    margin-bottom: 0.6rem;
+  }
+
+  .s007-title {
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.55rem, 2.6vw, 2.1rem);
+    font-weight: 700;
+    color: var(--p06-text-primary);
+    font-style: normal;
+    margin: 0 0 0.35rem;
+    line-height: 1.25;
+  }
+
+  .s007-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.82rem, 1.3vw, 0.92rem);
+    color: var(--p06-text-dim);
+    font-style: normal;
+  }
+
+  /* ── 主体：两栏 ── */
+  .s007-body {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 2.2rem;
+    align-items: start;
+    min-width: 0;
+  }
+
+  /* ── 左侧：重画的 Markdown 面板 ── */
+  .s007-md-panel {
+    background: rgba(18, 24, 36, 0.9);
+    border: 1px solid var(--p06-card-border);
+    border-radius: 0.8rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px var(--p06-shadow);
+    min-width: 0;
+  }
+
+  /* macOS 三点标题栏 */
+  .s007-md-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.9rem;
+    background: rgba(30, 40, 56, 0.8);
+    border-bottom: 1px solid var(--p06-card-border);
+  }
+
+  .s007-mac-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .s007-mac-dot--red    { background: #ff5f57; }
+  .s007-mac-dot--yellow { background: #ffbd2e; }
+  .s007-mac-dot--green  { background: #28c940; }
+
+  .s007-md-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    margin-left: 0.5rem;
+  }
+
+  /* Markdown 内容区（HTML重画，不嵌真实代码） */
+  .s007-md-body {
+    padding: 1.2rem 1.4rem 1.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.85;
+    font-style: normal;
+    color: var(--p06-text-dim);
+  }
+
+  /* Markdown 语法元素样式 */
+  .s007-md-h1 {
+    color: var(--p06-primary);
+    font-size: 0.92rem;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .s007-md-h1-marker {
+    color: var(--p06-text-dim);
+    opacity: 0.5;
+    font-style: normal;
+  }
+
+  .s007-md-frontmatter {
+    color: var(--p06-text-dim);
+    opacity: 0.55;
+    font-size: 0.75rem;
+    font-style: normal;
+  }
+
+  .s007-md-frontmatter-key {
+    color: var(--p06-secondary);
+    font-style: normal;
+  }
+
+  .s007-md-frontmatter-val {
+    color: var(--p06-text-primary);
+    opacity: 0.8;
+    font-style: normal;
+  }
+
+  .s007-md-text {
+    color: var(--p06-text-primary);
+    opacity: 0.75;
+    font-style: normal;
+  }
+
+  /* wikilink 高亮样式 */
+  .s007-wikilink {
+    color: var(--p06-primary);
+    font-weight: 600;
+    background: rgba(155, 203, 215, 0.1);
+    border-radius: 3px;
+    padding: 0 3px;
+    font-style: normal;
+    position: relative;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .s007-wikilink.s007-hl {
+    background: rgba(155, 203, 215, 0.22);
+    box-shadow: 0 0 10px rgba(155, 203, 215, 0.3);
+  }
+
+  /* 语义动词高亮 */
+  .s007-verb {
+    color: var(--p06-accent);
+    font-weight: 600;
+    font-style: normal;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .s007-verb.s007-hl {
+    background: rgba(232, 168, 73, 0.15);
+    border-radius: 3px;
+    padding: 0 3px;
+    box-shadow: 0 0 8px rgba(232, 168, 73, 0.25);
+  }
+
+  /* 高亮行 */
+  .s007-md-line {
+    display: block;
+    padding: 0 0.2rem;
+    border-radius: 3px;
+    transition: background 0.3s ease;
+    font-style: normal;
+  }
+
+  .s007-md-line.s007-line-hl {
+    background: rgba(155, 203, 215, 0.07);
+  }
+
+  /* 分割线 */
+  .s007-md-sep {
+    border: none;
+    border-top: 1px solid var(--p06-card-border);
+    margin: 0.5rem 0;
+  }
+
+  /* ── 右侧：解读卡 ── */
+  .s007-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    min-width: 0;
+  }
+
+  .s007-cards-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--p06-text-dim);
+    margin-bottom: 0.2rem;
+  }
+
+  .s007-card {
+    background: var(--p06-card-bg);
+    border: 1px solid var(--p06-card-border);
+    border-radius: 0.6rem;
+    padding: 0.9rem 1.05rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 2px 10px var(--p06-shadow);
+    opacity: 0.18;
+    transform: translateX(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .s007-card.s007-active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .s007-card-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    font-style: normal;
+  }
+
+  .s007-card-body {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.8rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    line-height: 1.55;
+  }
+
+  .s007-card-body em {
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .s007-card--wikilink .s007-card-title { color: var(--p06-primary); }
+  .s007-card--wikilink .s007-card-body em { color: var(--p06-primary); }
+  .s007-card--wikilink { border-color: rgba(155,203,215,0.28); }
+
+  .s007-card--verb .s007-card-title { color: var(--p06-accent); }
+  .s007-card--verb .s007-card-body em { color: var(--p06-accent); }
+  .s007-card--verb { border-color: rgba(232,168,73,0.22); }
+
+  .s007-card--key .s007-card-title { color: var(--p06-text-primary); }
+  .s007-card--key .s007-card-body em { color: var(--p06-primary); }
+
+  /* 核心论断 */
+  .s007-thesis {
+    margin-top: 1.4rem;
+    padding: 0.85rem 1.2rem;
+    background: rgba(155,203,215,0.06);
+    border-left: 3px solid var(--p06-primary);
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.9rem;
+    color: var(--p06-text-primary);
+    font-style: normal;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .s007-thesis.s007-show { opacity: 1; }
+
+  .s007-thesis em {
+    font-style: normal;
+    color: var(--p06-primary);
+    font-weight: 700;
+  }
+
+  /* 启动按钮 */
+  .s007-btn-row {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.4rem;
+    align-items: center;
+  }
+
+  .s007-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.73rem;
+    font-weight: 600;
+    font-style: normal;
+    color: var(--p06-bg-deep);
+    background: var(--p06-primary);
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.45rem 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .s007-btn:hover { background: #aee3eb; }
+
+  .s007-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    opacity: 0.7;
+  }
+
+  @media (max-height: 700px) {
+    .s007-wrap { padding: 1.5rem 4.5rem; }
+    .s007-head { margin-bottom: 1.2rem; }
+    .s007-md-body { padding: 0.8rem 1rem 1rem; font-size: 0.75rem; }
+    .s007-card { padding: 0.65rem 0.85rem; }
+  }
+</style>
+
+<div class="slide" id="S007">
+  <div class="s007-wrap">
+    <div class="s007-inner">
+
+      <!-- 标题 -->
+      <div class="s007-head">
+        <div class="s007-eyebrow">能力一：建图 self-wiring</div>
+        <h2 class="s007-title">建图的起点：你怎么声明关系</h2>
+        <p class="s007-subtitle">关系是你在 markdown 里显式写的，不是机器猜的</p>
+      </div>
+
+      <!-- 主体两栏 -->
+      <div class="s007-body">
+
+        <!-- 左：重画的 Markdown 编辑器 -->
+        <div class="s007-md-panel">
+          <!-- 标题栏 -->
+          <div class="s007-md-titlebar">
+            <div class="s007-mac-dot s007-mac-dot--red"></div>
+            <div class="s007-mac-dot s007-mac-dot--yellow"></div>
+            <div class="s007-mac-dot s007-mac-dot--green"></div>
+            <span class="s007-md-filename">people/alice.md</span>
+          </div>
+
+          <!-- Markdown 正文（HTML重画） -->
+          <div class="s007-md-body">
+            <!-- frontmatter -->
+            <span class="s007-md-line s007-md-frontmatter">---</span>
+            <span class="s007-md-line">
+              <span class="s007-md-frontmatter-key">name</span><span class="s007-md-frontmatter">: </span><span class="s007-md-frontmatter-val">Alice Chen</span>
+            </span>
+            <span class="s007-md-line">
+              <span class="s007-md-frontmatter-key">role</span><span class="s007-md-frontmatter">: </span><span class="s007-md-frontmatter-val">Co-Founder &amp; CEO</span>
+            </span>
+            <span class="s007-md-line">
+              <span class="s007-md-frontmatter-key">works_at</span><span class="s007-md-frontmatter">: </span>
+              <span class="s007-wikilink" id="s007-wl-frontmatter">[[companies/nexaflow]]</span>
+            </span>
+            <span class="s007-md-line s007-md-frontmatter">---</span>
+            <span style="display:block;height:0.4rem;"></span>
+
+            <!-- 正文标题 -->
+            <span class="s007-md-line">
+              <span class="s007-md-h1-marker"># </span>
+              <span class="s007-md-h1">Alice Chen</span>
+            </span>
+            <span style="display:block;height:0.3rem;"></span>
+
+            <!-- 正文段落·第一句（关键行） -->
+            <span class="s007-md-line" id="s007-line-key">
+              <span class="s007-md-text">Alice </span>
+              <span class="s007-verb" id="s007-verb1">founded</span>
+              <span class="s007-md-text"> </span>
+              <span class="s007-wikilink" id="s007-wl-main">[[companies/nexaflow]]</span>
+              <span class="s007-md-text"> in 2021.</span>
+            </span>
+            <span style="display:block;height:0.2rem;"></span>
+
+            <!-- 第二句 -->
+            <span class="s007-md-line" id="s007-line-2">
+              <span class="s007-md-text">She </span>
+              <span class="s007-verb" id="s007-verb2">advises</span>
+              <span class="s007-md-text"> </span>
+              <span class="s007-wikilink" id="s007-wl-alpha">[[companies/alphaventures]]</span>
+              <span class="s007-md-text"> on AI strategy.</span>
+            </span>
+            <span style="display:block;height:0.2rem;"></span>
+
+            <!-- 第三句 -->
+            <span class="s007-md-line">
+              <span class="s007-md-text">Bob </span>
+              <span class="s007-verb" id="s007-verb3">works_at</span>
+              <span class="s007-md-text"> </span>
+              <span class="s007-wikilink" id="s007-wl-bob">[[companies/nexaflow]]</span>
+              <span class="s007-md-text"> as CTO.</span>
+            </span>
+
+            <hr class="s007-md-sep">
+
+            <!-- 解读提示行 -->
+            <span class="s007-md-line" style="font-size:0.72rem; color: var(--p06-text-dim); opacity:0.6;">
+              <!-- 注释式提示 -->
+              &lt;!-- wikilink [[...]] = 节点；动词 = 边类型 --&gt;
+            </span>
+          </div>
+        </div>
+
+        <!-- 右：解读卡 -->
+        <div class="s007-cards">
+          <div class="s007-cards-label">如何读这段 markdown</div>
+
+          <!-- wikilink 卡 -->
+          <div class="s007-card s007-card--wikilink" id="s007-c-wikilink">
+            <div class="s007-card-title">[[wikilink]] = 节点引用</div>
+            <div class="s007-card-body">
+              双方括号 <em>[[companies/nexaflow]]</em> 告诉 GBrain：这里有一个指向另一个页面的<em>显式链接</em>。<br>
+              GBrain 扫描后知道：Alice 和 NexaFlow 之间存在关系。
+            </div>
+          </div>
+
+          <!-- 语义动词卡 -->
+          <div class="s007-card s007-card--verb" id="s007-c-verb">
+            <div class="s007-card-title">语义动词 = 关系类型</div>
+            <div class="s007-card-body">
+              <em>founded / advises / works_at</em> 这些措辞告诉 GBrain 关系的<em>方向和类型</em>。<br>
+              不是 LLM 猜测——是你写在正文里的，确定可审计。
+            </div>
+          </div>
+
+          <!-- 关键结论卡 -->
+          <div class="s007-card s007-card--key" id="s007-c-key">
+            <div class="s007-card-title">四种关系类型</div>
+            <div class="s007-card-body">
+              <em>founded · works_at · invested_in · advises</em><br>
+              GBrain 用正则规则把这四类解析成有向边，<em>零 LLM</em>，确定性，每条边都能溯源到你写的那一行。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 核心论断 -->
+      <div class="s007-thesis" id="s007-thesis">
+        <em>关系是你显式写的，不是机器猜的</em>——这是 self-wiring 与传统 LLM 知识图谱的根本区别，也是"零 LLM 零成本"的前提
+      </div>
+
+      <!-- 启动按钮 -->
+      <div class="s007-btn-row">
+        <button class="s007-btn" id="s007-btn">高亮 wikilink</button>
+        <span class="s007-hint">点击逐步揭示</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var step = 0;
+  var btn = document.getElementById('s007-btn');
+
+  var steps = [
+    {
+      // step 0: 高亮所有 wikilink
+      action: function() {
+        ['s007-wl-frontmatter','s007-wl-main','s007-wl-alpha','s007-wl-bob'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.add('s007-hl');
+        });
+        document.getElementById('s007-c-wikilink').classList.add('s007-active');
+      },
+      label: '高亮语义动词'
+    },
+    {
+      // step 1: 高亮语义动词
+      action: function() {
+        ['s007-verb1','s007-verb2','s007-verb3'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.add('s007-hl');
+        });
+        document.getElementById('s007-line-key').classList.add('s007-line-hl');
+        document.getElementById('s007-line-2').classList.add('s007-line-hl');
+        document.getElementById('s007-c-verb').classList.add('s007-active');
+      },
+      label: '展示四类型'
+    },
+    {
+      // step 2: 展示关键结论卡 + 论断
+      action: function() {
+        document.getElementById('s007-c-key').classList.add('s007-active');
+        setTimeout(function() {
+          document.getElementById('s007-thesis').classList.add('s007-show');
+        }, 300);
+      },
+      label: '完成'
+    }
+  ];
+
+  btn.addEventListener('click', function() {
+    if (step < steps.length) {
+      steps[step].action();
+      step++;
+      if (step < steps.length) {
+        btn.textContent = steps[step - 1].label;
+      } else {
+        btn.textContent = '已完成';
+        btn.disabled = true;
+        btn.style.opacity = '0.4';
+      }
+    }
+  });
+})();
+</script>

@@ -1,0 +1,491 @@
+<style>
+  /* ── P06 极简钢蓝 CSS 变量 ── */
+  :root {
+    --p06-primary: #9bcbd7;
+    --p06-secondary: #6a8ba0;
+    --p06-accent: #e8a849;
+    --p06-bg-deep: #141a26;
+    --p06-bg-mid: #1e2838;
+    --p06-text-primary: #e2e8ee;
+    --p06-text-dim: #7d8fa4;
+    --p06-card-bg: rgba(30, 40, 56, 0.7);
+    --p06-card-border: rgba(155, 203, 215, 0.18);
+    --p06-eyebrow: #81a8b9;
+    --p06-shadow: rgba(0, 0, 0, 0.35);
+  }
+
+  .s003-wrap {
+    transform: scale(1.12);
+    transform-origin: center center;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 7rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    font-style: normal; /* AD-05 #1 */
+    position: relative;
+  }
+
+  /* grid 网格底纹 */
+
+  .s003-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 900px;
+    font-style: normal; /* AD-05 #2 */
+  }
+
+  /* 标题区 */
+  .s003-head {
+    margin-bottom: 2.4rem;
+    text-align: center;
+  }
+
+  .s003-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p06-eyebrow);
+    font-style: normal; /* AD-05 #3 */
+    margin-bottom: 0.7rem;
+  }
+
+  .s003-title {
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+    font-weight: 700;
+    color: var(--p06-text-primary);
+    font-style: normal;
+    margin: 0 0 0.4rem;
+    line-height: 1.25;
+  }
+
+  .s003-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+    color: var(--p06-text-dim);
+    font-style: normal;
+    margin: 0;
+  }
+
+  /* 主体：两栏（金字塔 + 三操作） */
+  .s003-body {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 2.4rem;
+    align-items: start;
+    min-width: 0;
+  }
+
+  /* ── 左侧：三层金字塔 ── */
+  .s003-pyramid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .s003-pyramid-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--p06-text-dim);
+    margin-bottom: 0.8rem;
+  }
+
+  /* 每一层 */
+  .s003-layer {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    opacity: 0.28;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .s003-layer.s003-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 层级索引条（左侧颜色竖杠） */
+  .s003-layer-bar {
+    width: 4px;
+    border-radius: 2px 0 0 2px;
+    flex-shrink: 0;
+  }
+
+  /* 层内容卡片 */
+  .s003-layer-card {
+    flex: 1;
+    min-width: 0;
+    background: var(--p06-card-bg);
+    border: 1px solid var(--p06-card-border);
+    border-left: none;
+    border-radius: 0 0.6rem 0.6rem 0;
+    padding: 0.9rem 1.1rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 2px 12px var(--p06-shadow);
+  }
+
+  /* 层级间的连接线 */
+  .s003-layer-connector {
+    width: 4px;
+    height: 10px;
+    background: var(--p06-card-border);
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+
+  .s003-layer-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-style: normal;
+  }
+
+  .s003-layer-role {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.78rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    margin-bottom: 0.25rem;
+  }
+
+  .s003-layer-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.82rem;
+    color: var(--p06-text-primary);
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  /* 三层颜色 */
+  .s003-layer--raw .s003-layer-bar   { background: var(--p06-text-dim); }
+  .s003-layer--raw .s003-layer-tag   { color: var(--p06-text-dim); }
+  .s003-layer--wiki .s003-layer-bar  { background: var(--p06-primary); }
+  .s003-layer--wiki .s003-layer-tag  { color: var(--p06-primary); }
+  .s003-layer--rule .s003-layer-bar  { background: var(--p06-accent); }
+  .s003-layer--rule .s003-layer-tag  { color: var(--p06-accent); }
+
+  /* 层间连接线容器 */
+  .s003-connector-wrap {
+    display: flex;
+    padding-left: 0;
+    align-items: center;
+  }
+
+  .s003-connector-line {
+    width: 4px;
+    height: 8px;
+    background: linear-gradient(to bottom, var(--p06-card-border), transparent);
+    margin: 0;
+  }
+
+  /* ── 右侧：三操作循环 ── */
+  .s003-ops {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .s003-ops-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--p06-text-dim);
+    margin-bottom: 0.8rem;
+  }
+
+  .s003-op-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    min-height: 5.8rem;       /* 三操作卡片统一高度 */
+    background: var(--p06-card-bg);
+    border: 1px solid var(--p06-card-border);
+    border-radius: 0.6rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 2px 10px var(--p06-shadow);
+    opacity: 0.28;
+    transform: translateX(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .s003-op-item.s003-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* 操作间连接箭头 */
+  .s003-op-arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2rem 0;
+    color: var(--p06-text-dim);
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .s003-op-arrow.s003-visible {
+    opacity: 1;
+  }
+
+  .s003-op-badge {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    font-style: normal;
+  }
+
+  .s003-op-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .s003-op-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.22rem;
+    font-style: normal;
+  }
+
+  .s003-op-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.8rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  /* 三操作颜色 */
+  .s003-op--ingest .s003-op-badge { background: rgba(155,203,215,0.15); color: var(--p06-primary); }
+  .s003-op--ingest .s003-op-name  { color: var(--p06-primary); }
+  .s003-op--query .s003-op-badge  { background: rgba(155,203,215,0.12); color: var(--p06-secondary); }
+  .s003-op--query .s003-op-name   { color: var(--p06-secondary); }
+  .s003-op--lint .s003-op-badge   { background: rgba(232,168,73,0.12); color: var(--p06-accent); }
+  .s003-op--lint .s003-op-name    { color: var(--p06-accent); }
+
+  /* 循环闭合提示 */
+  .s003-cycle-hint {
+    margin-top: 0.6rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.8s;
+  }
+
+  .s003-cycle-hint.s003-visible {
+    opacity: 1;
+  }
+
+  /* 启动按钮 */
+  .s003-btn-wrap {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .s003-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-style: normal;
+    letter-spacing: 0.08em;
+    color: var(--p06-bg-deep);
+    background: var(--p06-primary);
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  .s003-btn:hover { background: #aee3eb; transform: translateY(-1px); }
+  .s003-btn:active { transform: translateY(0); }
+
+  /* 完成态提示 */
+  .s003-done-hint {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.75rem;
+    color: var(--p06-accent);
+    font-style: normal;
+    margin-left: 1rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    align-self: center;
+  }
+
+  .s003-done-hint.s003-visible { opacity: 1; }
+
+  @media (max-height: 700px) {
+    .s003-wrap { padding: 1.5rem 6rem; }
+    .s003-head { margin-bottom: 1.4rem; }
+    .s003-body { gap: 1.6rem; }
+    .s003-layer-card { padding: 0.6rem 0.9rem; }
+    .s003-op-item { padding: 0.7rem 0.9rem; }
+  }
+</style>
+
+<div class="slide" id="S003">
+  <div class="s003-wrap">
+    <div class="s003-inner">
+      <!-- 标题区 -->
+      <div class="s003-head">
+        <div class="s003-eyebrow">开篇与背景</div>
+        <h2 class="s003-title">三层 + 三操作骨架</h2>
+        <p class="s003-subtitle">GBrain 用三层存储组织知识，三个操作驱动整个循环</p>
+      </div>
+
+      <!-- 两栏主体 -->
+      <div class="s003-body">
+
+        <!-- 左侧：三层金字塔 -->
+        <div class="s003-pyramid">
+          <div class="s003-pyramid-label">三层存储结构</div>
+
+          <!-- raw层（原料层·与 Ingest 对齐：Ingest 读取 raw/） -->
+          <div class="s003-layer s003-layer--raw" id="s003-layer-raw">
+            <div class="s003-layer-bar"></div>
+            <div class="s003-layer-card">
+              <div class="s003-layer-tag">raw/</div>
+              <div class="s003-layer-role">原料层 · 只读，永不修改</div>
+              <div class="s003-layer-desc">你的原始笔记、文档、素材，GBrain 只读不改</div>
+            </div>
+          </div>
+
+          <div style="height:6px;"></div>
+
+          <!-- wiki层（产物层·与 Query 对齐：Query 检索 wiki/） -->
+          <div class="s003-layer s003-layer--wiki" id="s003-layer-wiki">
+            <div class="s003-layer-bar"></div>
+            <div class="s003-layer-card">
+              <div class="s003-layer-tag">wiki/</div>
+              <div class="s003-layer-role">产物层 · LLM 维护的可读输出</div>
+              <div class="s003-layer-desc">编译后的结构化页面，可直接读取；查询时 GBrain 读的是这里</div>
+            </div>
+          </div>
+
+          <div style="height:6px;"></div>
+
+          <!-- 规则层（规则层·与 Lint 对齐：Lint 依 CLAUDE.md 检查） -->
+          <div class="s003-layer s003-layer--rule" id="s003-layer-rule">
+            <div class="s003-layer-bar"></div>
+            <div class="s003-layer-card">
+              <div class="s003-layer-tag">CLAUDE.md</div>
+              <div class="s003-layer-role">规则层 · 行为约束</div>
+              <div class="s003-layer-desc">告诉 LLM 维护 wiki 的规则与约定，Lint 据此检查</div>
+            </div>
+          </div>
+
+          <div class="s003-btn-wrap">
+            <button class="s003-btn" id="s003-btn">逐层揭示</button>
+            <span class="s003-done-hint" id="s003-done-hint">三层全展 · 三操作循环已激活</span>
+          </div>
+        </div>
+
+        <!-- 右侧：三操作循环 -->
+        <div class="s003-ops">
+          <div class="s003-ops-label">三个操作 · 循环驱动</div>
+
+          <div class="s003-op-item s003-op--ingest" id="s003-op-ingest">
+            <div class="s003-op-badge">I</div>
+            <div class="s003-op-content">
+              <div class="s003-op-name">Ingest</div>
+              <div class="s003-op-desc">读取 raw/ 原料，编译写入 wiki/ 产物；触发关系抽取和图更新</div>
+            </div>
+          </div>
+
+          <div class="s003-op-arrow" id="s003-arrow-1">↓</div>
+
+          <div class="s003-op-item s003-op--query" id="s003-op-query">
+            <div class="s003-op-badge">Q</div>
+            <div class="s003-op-content">
+              <div class="s003-op-name">Query</div>
+              <div class="s003-op-desc">检索 wiki/ 产物，综合给出带引用答案和空白分析（gap）</div>
+            </div>
+          </div>
+
+          <div class="s003-op-arrow" id="s003-arrow-2">↓</div>
+
+          <div class="s003-op-item s003-op--lint" id="s003-op-lint">
+            <div class="s003-op-badge">L</div>
+            <div class="s003-op-content">
+              <div class="s003-op-name">Lint</div>
+              <div class="s003-op-desc">依 CLAUDE.md 规则检查 wiki/ 质量；去重、修引用、检矛盾</div>
+            </div>
+          </div>
+
+          <div class="s003-cycle-hint" id="s003-cycle-hint">
+            ↻ &nbsp;Ingest → Query → Lint → Ingest · 持续循环驱动
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var step = 0;
+  var layers = ['s003-layer-raw', 's003-layer-wiki', 's003-layer-rule'];
+  var ops = ['s003-op-ingest', 's003-op-query', 's003-op-lint'];
+  var arrows = ['s003-arrow-1', 's003-arrow-2'];
+  var btn = document.getElementById('s003-btn');
+  var doneHint = document.getElementById('s003-done-hint');
+  var cycleHint = document.getElementById('s003-cycle-hint');
+
+  function reveal() {
+    if (step < layers.length) {
+      // 揭示对应层
+      document.getElementById(layers[step]).classList.add('s003-visible');
+      // 同步揭示对应操作
+      document.getElementById(ops[step]).classList.add('s003-visible');
+      if (step > 0) {
+        document.getElementById(arrows[step - 1]).classList.add('s003-visible');
+      }
+      step++;
+      if (step === layers.length) {
+        btn.textContent = '完成';
+        btn.disabled = true;
+        btn.style.opacity = '0.45';
+        doneHint.classList.add('s003-visible');
+        cycleHint.classList.add('s003-visible');
+      }
+    }
+  }
+
+  btn.addEventListener('click', reveal);
+})();
+</script>

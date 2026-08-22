@@ -1,0 +1,243 @@
+<style>
+/* S001 封面 · 隐喻符号型 · G1 月白灰蓝 亮色主题 */
+/* font-style:normal 已由 main.css 全局声明；此处关键元素显式重声明 ≥3 次 */
+
+.s001-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  max-width: 1640px;
+  min-height: 86vh;
+  padding: 2rem 4rem 2rem 7rem; /* 7rem = toolbar 避让 */
+  box-sizing: border-box;
+  gap: 0;
+  font-style: normal;
+}
+
+/* 标题区分组：保持主标题+副标题紧凑 */
+.s001-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+/* 顶部眉标 */
+.s001-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--primary);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 0;
+  opacity: 1;
+}
+
+/* 主标题 */
+.s001-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5.6vw, 5rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.16;
+  margin-bottom: 0;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* 副标题 LLM Wiki */
+.s001-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 0;
+  letter-spacing: 0.02em;
+}
+
+/* 隐喻箭头符号区 */
+.s001-metaphor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 0;
+}
+
+.s001-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.s001-node-box {
+  font-family: var(--font-mono);
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+  font-weight: 600;
+  font-style: normal;
+  padding: 0.8rem 1.7rem;
+  border: 1.5px solid var(--card-border);
+  border-radius: 0.5rem;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+.s001-node-box.raw {
+  color: var(--color-raw);
+  border-color: var(--color-raw);
+  background: rgba(154, 170, 182, 0.08);
+}
+
+.s001-node-box.compile {
+  color: var(--color-compile);
+  border-color: var(--color-compile);
+  background: rgba(110, 140, 136, 0.1);
+  font-size: clamp(1.2rem, 1.85vw, 1.5rem);
+  padding: 0.95rem 2rem;
+  border-radius: 0.75rem;
+}
+
+.s001-node-box.wiki {
+  color: var(--color-wiki);
+  border-color: var(--color-wiki);
+  background: rgba(126, 154, 150, 0.08);
+}
+
+.s001-node-label {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* 箭头 */
+.s001-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  margin-bottom: 1.5rem; /* 对齐 node-box 中线 */
+}
+
+.s001-arrow-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.s001-arrow svg {
+  color: var(--primary);
+  opacity: 0.55;
+}
+
+.s001-arrow-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-style: normal;
+  color: var(--text-dim);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+/* 点题句 */
+.s001-hook {
+  font-family: var(--font-body);
+  font-size: clamp(1.3rem, 1.95vw, 1.65rem);
+  font-weight: 500;
+  font-style: normal;
+  color: var(--accent);
+  text-align: center;
+  letter-spacing: 0.01em;
+  padding: 1.15rem 2.8rem;
+  border-top: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  background: rgba(110, 140, 136, 0.06);
+  border-radius: 0.5rem;
+}
+
+/* 入场动画 */
+.s001-eyebrow  { animation: s001FadeUp 0.5s ease both; animation-delay: 0ms; }
+.s001-title    { animation: s001FadeUp 0.5s ease both; animation-delay: 80ms; }
+.s001-subtitle { animation: s001FadeUp 0.5s ease both; animation-delay: 130ms; }
+.s001-metaphor { animation: s001FadeUp 0.5s ease both; animation-delay: 180ms; }
+.s001-hook     { animation: s001FadeUp 0.5s ease both; animation-delay: 200ms; }
+
+@keyframes s001FadeUp {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="1">
+  <div class="s001-wrap">
+    <!-- 眉标 -->
+    <div class="s001-eyebrow">LLM Wiki · 编译式 RAG 原理</div>
+
+    <!-- 主标题区 -->
+    <div class="s001-head">
+      <h1 class="s001-title">编译式 RAG：LLM Wiki 原理</h1>
+      <p class="s001-subtitle">Karpathy 范式 + GBrain 生产实现</p>
+    </div>
+
+    <!-- 核心隐喻符号：[raw] →〔编译〕→ [wiki] -->
+    <div class="s001-metaphor">
+      <!-- raw 节点 -->
+      <div class="s001-node">
+        <div class="s001-node-box raw">[ raw ]</div>
+        <div class="s001-node-label">原始资料<br>事实源头层</div>
+      </div>
+
+      <!-- 箭头 1 -->
+      <div class="s001-arrow">
+        <div class="s001-arrow-line">
+          <svg width="52" height="18" viewBox="0 0 52 18" fill="none">
+            <line x1="2" y1="9" x2="42" y2="9" stroke="currentColor" stroke-width="1.5"/>
+            <polyline points="38,4 50,9 38,14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <span class="s001-arrow-label">输入</span>
+        </div>
+      </div>
+
+      <!-- 编译 节点 -->
+      <div class="s001-node">
+        <div class="s001-node-box compile">〔 编译 〕</div>
+        <div class="s001-node-label">LLM agent<br>一次消化</div>
+      </div>
+
+      <!-- 箭头 2 -->
+      <div class="s001-arrow">
+        <div class="s001-arrow-line">
+          <svg width="52" height="18" viewBox="0 0 52 18" fill="none">
+            <line x1="2" y1="9" x2="42" y2="9" stroke="currentColor" stroke-width="1.5"/>
+            <polyline points="38,4 50,9 38,14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <span class="s001-arrow-label">输出</span>
+        </div>
+      </div>
+
+      <!-- wiki 节点 -->
+      <div class="s001-node">
+        <div class="s001-node-box wiki">[ wiki ]</div>
+        <div class="s001-node-label">互链知识层<br>LLM 持续维护</div>
+      </div>
+    </div>
+
+    <!-- 点题句 -->
+    <div class="s001-hook">把每次重查变编译一次</div>
+  </div>
+</div>

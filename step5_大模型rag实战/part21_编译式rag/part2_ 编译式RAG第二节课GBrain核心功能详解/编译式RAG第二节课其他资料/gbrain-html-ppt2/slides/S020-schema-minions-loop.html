@@ -1,0 +1,399 @@
+<style>
+/* S020 schema 包 + Minions 梦循环 */
+:root {
+  --bg-deep: #141a26;
+  --bg-mid: #1e2838;
+  --primary: #9bcbd7;
+  --secondary: #6a8ba0;
+  --accent: #e8a849;
+  --text-primary: #e2e8ee;
+  --text-dim: #7d8fa4;
+  --card-bg: rgba(30,40,56,0.7);
+  --card-border: rgba(155,203,215,0.18);
+  --card-title: #aadcec;
+  --eyebrow: #81a8b9;
+  --danger: #e05c5c;
+}
+
+.s020-wrap {
+    transform: scale(1.0);
+    transform-origin: center center;
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  background-color: var(--bg-deep);
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 4rem;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.s020-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eyebrow);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.s020-title {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.35rem;
+  line-height: 1.25;
+}
+
+.s020-subtitle {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 2.2rem;
+}
+
+.s020-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/* === schema 区 === */
+.s020-schema-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.5rem 1.4rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.s020-panel-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.2rem;
+}
+
+.s020-panel-title {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: 700;
+  color: var(--card-title);
+  margin-bottom: 0.3rem;
+}
+
+.s020-panel-desc {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+}
+
+.s020-types-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.s020-type-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(155,203,215,0.08);
+  border: 1px solid rgba(155,203,215,0.15);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  font-style: normal;
+}
+
+.s020-type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.s020-type-dot--person   { background: var(--accent); }
+.s020-type-dot--company  { background: var(--primary); }
+.s020-type-dot--project  { background: #a78bde; }
+.s020-type-dot--document { background: var(--secondary); }
+.s020-type-dot--meeting  { background: #6dbfa0; }
+.s020-type-dot--note     { background: #e08870; }
+
+.s020-type-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.s020-type-cn {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.73rem;
+  color: var(--text-dim);
+}
+
+.s020-schema-note {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  border-left: 3px solid var(--primary);
+  padding-left: 0.75rem;
+  line-height: 1.55;
+  margin-top: 0.3rem;
+}
+
+/* === Minions 区 === */
+.s020-minions-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.5rem 1.4rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.s020-night-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(232,168,73,0.12);
+  border: 1px solid rgba(232,168,73,0.3);
+  border-radius: 2rem;
+  padding: 0.28rem 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  width: fit-content;
+}
+
+.s020-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.s020-task-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(155,203,215,0.05);
+  border: 1px solid rgba(155,203,215,0.1);
+  border-radius: 0.6rem;
+  font-style: normal;
+  transition: border-color 0.3s ease;
+}
+
+.s020-task-row:hover {
+  border-color: rgba(155,203,215,0.3);
+}
+
+.s020-task-icon {
+  font-size: 1rem;
+  margin-top: 0.05rem;
+  flex-shrink: 0;
+}
+
+.s020-task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.s020-task-name {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--card-title);
+}
+
+.s020-task-detail {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.s020-loop-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(232,168,73,0.07);
+  border: 1px solid rgba(232,168,73,0.2);
+  border-radius: 0.6rem;
+  margin-top: 0.2rem;
+  font-style: normal;
+}
+
+.s020-loop-arrow {
+  font-size: 1rem;
+  color: var(--accent);
+  animation: s020-spin 3s linear infinite;
+}
+
+@keyframes s020-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.s020-loop-text {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.82rem;
+  color: var(--accent);
+  line-height: 1.4;
+}
+</style>
+
+<div class="slide s020-wrap" id="S020">
+  <p class="s020-eyebrow">生态 — 运行支撑</p>
+  <h1 class="s020-title">schema 包 + Minions 梦循环</h1>
+  <p class="s020-subtitle">让大脑认识知识类型，夜间自动打扫维护</p>
+
+  <div class="s020-body">
+
+    <!-- 左: schema 类型系统 -->
+    <div class="s020-schema-panel">
+      <div>
+        <div class="s020-panel-label">schema 包</div>
+        <div class="s020-panel-title">大脑认识知识的"词汇表"</div>
+        <p class="s020-panel-desc">
+          schema 定义节点类型——告诉 GBrain 这个 wiki 页是 <em style="font-style:normal;color:var(--primary)">person</em>、<em style="font-style:normal;color:var(--primary)">company</em> 还是 <em style="font-style:normal;color:var(--primary)">project</em>。有了类型，图谱才能按语义分类检索，而不是一视同仁的文本堆。
+        </p>
+      </div>
+
+      <div class="s020-types-grid">
+        <div class="s020-type-chip">
+          <div class="s020-type-dot s020-type-dot--person"></div>
+          <div>
+            <div class="s020-type-name">person</div>
+            <div class="s020-type-cn">人物</div>
+          </div>
+        </div>
+        <div class="s020-type-chip">
+          <div class="s020-type-dot s020-type-dot--company"></div>
+          <div>
+            <div class="s020-type-name">company</div>
+            <div class="s020-type-cn">公司/组织</div>
+          </div>
+        </div>
+        <div class="s020-type-chip">
+          <div class="s020-type-dot s020-type-dot--project"></div>
+          <div>
+            <div class="s020-type-name">project</div>
+            <div class="s020-type-cn">项目</div>
+          </div>
+        </div>
+        <div class="s020-type-chip">
+          <div class="s020-type-dot s020-type-dot--document"></div>
+          <div>
+            <div class="s020-type-name">document</div>
+            <div class="s020-type-cn">文档/笔记</div>
+          </div>
+        </div>
+        <div class="s020-type-chip">
+          <div class="s020-type-dot s020-type-dot--meeting"></div>
+          <div>
+            <div class="s020-type-name">meeting</div>
+            <div class="s020-type-cn">会议</div>
+          </div>
+        </div>
+        <div class="s020-type-chip">
+          <div class="s020-type-dot s020-type-dot--note"></div>
+          <div>
+            <div class="s020-type-name">note</div>
+            <div class="s020-type-cn">笔记/想法</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="s020-schema-note">
+        类型存于 <span style="font-family:'JetBrains Mono',monospace;font-style:normal;color:var(--primary);font-size:0.8rem;">CLAUDE.md</span> 规则层，改类型定义就改大脑的"认知边界"——无需重构代码，只需改规则文件。
+      </p>
+    </div>
+
+    <!-- 右: Minions 梦循环 -->
+    <div class="s020-minions-panel">
+      <div>
+        <div class="s020-night-badge">&#127769; Minions — 夜间自动维护</div>
+        <div class="s020-panel-title" style="margin-top:0.6rem;">图谱的"清洁工"，你睡它干活</div>
+        <p class="s020-panel-desc">
+          Minions 是一组后台任务，在你不用 GBrain 时自动运行。它们保持图谱健康、消除冗余、修复断链，让知识库越用越干净而不是越用越乱。
+        </p>
+      </div>
+
+      <div class="s020-tasks">
+        <div class="s020-task-row">
+          <div class="s020-task-icon">&#9032;</div>
+          <div class="s020-task-content">
+            <div class="s020-task-name">去重合并 (Dedup)</div>
+            <div class="s020-task-detail">发现"同一实体多个页面"时合并为单一权威节点，消除图谱中的冗余分身</div>
+          </div>
+        </div>
+        <div class="s020-task-row">
+          <div class="s020-task-icon">&#128279;</div>
+          <div class="s020-task-content">
+            <div class="s020-task-name">修复引用 (Re-link)</div>
+            <div class="s020-task-detail">检测 wikilink 指向已改名/已删除页面，自动更新引用路径，防止边悬空</div>
+          </div>
+        </div>
+        <div class="s020-task-row">
+          <div class="s020-task-icon">&#9888;</div>
+          <div class="s020-task-content">
+            <div class="s020-task-name">矛盾检测 (Conflict)</div>
+            <div class="s020-task-detail">同一实体属性前后矛盾时标记，在 gap 分析中浮出"自相矛盾"信号供人工确认</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="s020-loop-footer">
+        <div class="s020-loop-arrow">&#8635;</div>
+        <div class="s020-loop-text">夜间持续循环 · 每轮改写后自动重跑 · 图谱常保健康</div>
+      </div>
+    </div>
+
+  </div>
+</div>

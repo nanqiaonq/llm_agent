@@ -1,0 +1,370 @@
+<style>
+  /* S010 self-wiring vs GraphRAG — comparison-matrix-dual-input */
+  /* P06 极简钢蓝数据感 · dark theme */
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  .s010-wrap {
+    transform: scale(1.0);
+    transform-origin: center center;
+    width: 100%;
+    max-width: 900px;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 4rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    position: relative;
+    font-style: normal;
+
+    --bg-deep: #141a26;
+    --bg-mid: #1e2838;
+    --primary: #9bcbd7;
+    --secondary: #6a8ba0;
+    --accent: #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim: #7d8fa4;
+    --card-bg: rgba(30,40,56,0.7);
+    --card-border: rgba(155,203,215,0.18);
+    --card-title: #aadcec;
+    --eyebrow-col: #81a8b9;
+    --col-self: #9bcbd7;
+    --col-graph: #e8a849;
+    --border-accent-15: rgba(232,168,73,0.15);
+
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+  }
+
+  .s010-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow-col);
+    font-style: normal;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .s010-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 0.3rem;
+    line-height: 1.25;
+  }
+
+  .s010-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+    font-weight: 400;
+    color: var(--text-dim);
+    text-align: center;
+    font-style: normal;
+    margin-bottom: 1.4rem;
+  }
+
+  /* 对比矩阵 */
+  .s010-matrix {
+    width: 100%;
+    min-width: 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  }
+
+  .s010-matrix-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    background: rgba(30,40,56,0.9);
+    min-width: 0;
+  }
+
+  .s010-hdr-cell {
+    padding: 0.75rem 1rem;
+    font-style: normal;
+  }
+
+  .s010-hdr-cell:not(:last-child) {
+    border-right: 1px solid var(--card-border);
+  }
+
+  .s010-hdr-dim {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-style: normal;
+  }
+
+  .s010-hdr-name {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+    font-weight: 700;
+    font-style: normal;
+    margin-top: 0.2rem;
+  }
+
+  .s010-hdr-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 400;
+    font-style: normal;
+    margin-top: 0.15rem;
+    opacity: 0.7;
+  }
+
+  .s010-matrix-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    border-top: 1px solid rgba(155,203,215,0.08);
+    transition: background 0.2s ease;
+    min-width: 0;
+  }
+
+  .s010-matrix-row:hover {
+    background: rgba(155,203,215,0.04);
+  }
+
+  .s010-matrix-row.highlight-row {
+    background: rgba(232,168,73,0.06);
+    border-color: var(--border-accent-15);
+  }
+
+  .s010-cell {
+    padding: 0.65rem 1rem;
+    min-width: 0;
+    font-style: normal;
+  }
+
+  .s010-cell:not(:last-child) {
+    border-right: 1px solid rgba(155,203,215,0.08);
+  }
+
+  .s010-dim-label {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-style: normal;
+  }
+
+  .s010-dim-note {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-style: normal;
+    margin-top: 0.15rem;
+    line-height: 1.4;
+  }
+
+  .s010-val {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.82rem;
+    font-style: normal;
+    line-height: 1.45;
+  }
+
+  .s010-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    margin-top: 0.2rem;
+    font-style: normal;
+  }
+
+  .tag-green { background: rgba(155,203,215,0.15); color: var(--col-self); }
+  .tag-amber { background: rgba(232,168,73,0.15); color: var(--col-graph); }
+  .tag-dim { background: rgba(125,143,164,0.15); color: var(--text-dim); }
+
+  /* 反例横幅 */
+  .s010-counterexample {
+    width: 100%;
+    margin-top: 1rem;
+    background: rgba(232,168,73,0.07);
+    border: 1px solid rgba(232,168,73,0.25);
+    border-radius: 0.75rem;
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    min-width: 0;
+  }
+
+  .s010-counter-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+
+  .s010-counter-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .s010-counter-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-style: normal;
+    margin-bottom: 0.2rem;
+  }
+
+  .s010-counter-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .s010-counter-desc strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  @media (max-height: 700px) {
+    .s010-wrap { padding: 1.5rem 3rem; }
+    .s010-cell { padding: 0.45rem 0.8rem; }
+    .s010-counterexample { margin-top: 0.7rem; padding: 0.6rem 1rem; }
+  }
+</style>
+
+<div class="slide" id="S010">
+  <div class="s010-wrap">
+
+    <div class="s010-eyebrow">能力一 · 建图 Self-Wiring</div>
+    <div class="s010-title">self-wiring vs GraphRAG</div>
+    <div class="s010-subtitle">两种为不同输入设计的方案，不是优劣之争</div>
+
+    <div class="s010-matrix">
+      <!-- 表头 -->
+      <div class="s010-matrix-header">
+        <div class="s010-hdr-cell">
+          <div class="s010-hdr-dim">对比维度</div>
+        </div>
+        <div class="s010-hdr-cell" style="background: rgba(155,203,215,0.06);">
+          <div class="s010-hdr-dim">GBrain</div>
+          <div class="s010-hdr-name" style="color:var(--col-self);">self-wiring</div>
+          <div class="s010-hdr-sub" style="color:var(--col-self);">解析显式链接</div>
+        </div>
+        <div class="s010-hdr-cell" style="background: rgba(232,168,73,0.04);">
+          <div class="s010-hdr-dim">对比</div>
+          <div class="s010-hdr-name" style="color:var(--col-graph);">GraphRAG</div>
+          <div class="s010-hdr-sub" style="color:var(--col-graph);">LLM 抽实体推关系</div>
+        </div>
+      </div>
+
+      <!-- 行1: 输入类型 -->
+      <div class="s010-matrix-row">
+        <div class="s010-cell">
+          <div class="s010-dim-label">输入类型</div>
+          <div class="s010-dim-note">什么样的知识库适用</div>
+        </div>
+        <div class="s010-cell" style="background: rgba(155,203,215,0.03);">
+          <div class="s010-val" style="color:var(--text-primary);">有 wikilink 的结构化笔记</div>
+          <div><span class="s010-tag tag-green">[[显式关系]]</span></div>
+        </div>
+        <div class="s010-cell">
+          <div class="s010-val" style="color:var(--text-primary);">纯散文 / 非结构化文本</div>
+          <div><span class="s010-tag tag-amber">任意文本</span></div>
+        </div>
+      </div>
+
+      <!-- 行2: 确定性 -->
+      <div class="s010-matrix-row">
+        <div class="s010-cell">
+          <div class="s010-dim-label">确定性</div>
+          <div class="s010-dim-note">重跑结果是否一致</div>
+        </div>
+        <div class="s010-cell" style="background: rgba(155,203,215,0.03);">
+          <div class="s010-val" style="color:var(--col-self);">完全确定</div>
+          <div class="s010-val" style="font-size:0.72rem;color:var(--text-dim);">正则规则 · 幂等</div>
+        </div>
+        <div class="s010-cell">
+          <div class="s010-val" style="color:var(--col-graph);">非确定</div>
+          <div class="s010-val" style="font-size:0.72rem;color:var(--text-dim);">LLM 推断 · 每次可能不同</div>
+        </div>
+      </div>
+
+      <!-- 行3: LLM 需求 -->
+      <div class="s010-matrix-row">
+        <div class="s010-cell">
+          <div class="s010-dim-label">LLM 需求</div>
+          <div class="s010-dim-note">建图阶段是否调用 LLM</div>
+        </div>
+        <div class="s010-cell" style="background: rgba(155,203,215,0.03);">
+          <div class="s010-val" style="color:var(--col-self);">零 LLM</div>
+          <div><span class="s010-tag tag-green">$0.00 建图成本</span></div>
+        </div>
+        <div class="s010-cell">
+          <div class="s010-val" style="color:var(--col-graph);">必须 LLM</div>
+          <div><span class="s010-tag tag-amber">+ 图数据库</span></div>
+        </div>
+      </div>
+
+      <!-- 行4: 可审计性 -->
+      <div class="s010-matrix-row">
+        <div class="s010-cell">
+          <div class="s010-dim-label">可审计性</div>
+          <div class="s010-dim-note">每条边来源是否可溯</div>
+        </div>
+        <div class="s010-cell" style="background: rgba(155,203,215,0.03);">
+          <div class="s010-val" style="color:var(--col-self);">行级溯源</div>
+          <div class="s010-val" style="font-size:0.72rem;color:var(--text-dim);">每条边 → 源 markdown 行</div>
+        </div>
+        <div class="s010-cell">
+          <div class="s010-val" style="color:var(--text-dim);">难以直接审计</div>
+          <div class="s010-val" style="font-size:0.72rem;color:var(--text-dim);">LLM 推断 black box</div>
+        </div>
+      </div>
+
+      <!-- 行5: 适用场景 -->
+      <div class="s010-matrix-row">
+        <div class="s010-cell">
+          <div class="s010-dim-label">最佳场景</div>
+          <div class="s010-dim-note">核心优势所在</div>
+        </div>
+        <div class="s010-cell" style="background: rgba(155,203,215,0.03);">
+          <div class="s010-val" style="color:var(--text-primary);">个人/团队笔记、wiki、结构化知识库</div>
+        </div>
+        <div class="s010-cell">
+          <div class="s010-val" style="color:var(--text-primary);">已有非结构化语料、需挖潜在关系</div>
+        </div>
+      </div>
+
+    </div><!-- /s010-matrix -->
+
+    <!-- 反例: 圣诞颂歌 -->
+    <div class="s010-counterexample">
+      <div class="s010-counter-icon">&#9888;</div>
+      <div class="s010-counter-body">
+        <div class="s010-counter-title">设计使然：《圣诞颂歌》纯散文喂进 GBrain → 建出 0 条边</div>
+        <div class="s010-counter-desc">
+          狄更斯散文没有 <code style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--primary);">[[wikilink]]</code>，
+          GBrain 无法解析显式关系 → 输出空图谱。
+          <strong>这不是 bug，是边界</strong>——self-wiring 为显式结构化知识库设计，散文请用 GraphRAG。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

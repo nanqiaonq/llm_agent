@@ -1,0 +1,439 @@
+<style>
+  /* ── P06 极简钢蓝 CSS 变量 ── */
+  :root {
+    --p06-primary: #9bcbd7;
+    --p06-secondary: #6a8ba0;
+    --p06-accent: #e8a849;
+    --p06-bg-deep: #141a26;
+    --p06-bg-mid: #1e2838;
+    --p06-text-primary: #e2e8ee;
+    --p06-text-dim: #7d8fa4;
+    --p06-card-bg: rgba(30, 40, 56, 0.7);
+    --p06-card-border: rgba(155, 203, 215, 0.18);
+    --p06-eyebrow: #81a8b9;
+    --p06-shadow: rgba(0, 0, 0, 0.35);
+  }
+
+  .s004-wrap {
+    transform: scale(1.16);
+    transform-origin: center center;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 7rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    font-style: normal; /* AD-05 #1 */
+    position: relative;
+  }
+
+  .s004-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 840px;
+    font-style: normal; /* AD-05 #2 */
+  }
+
+  /* 标题区 */
+  .s004-head {
+    margin-bottom: 2.2rem;
+    text-align: center;
+  }
+
+  .s004-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p06-eyebrow);
+    font-style: normal; /* AD-05 #3 */
+    margin-bottom: 0.6rem;
+  }
+
+  .s004-title {
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-size: clamp(1.6rem, 2.8vw, 2.1rem);
+    font-weight: 700;
+    color: var(--p06-text-primary);
+    font-style: normal;
+    margin: 0 0 0.4rem;
+    line-height: 1.25;
+  }
+
+  .s004-subtitle {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(0.82rem, 1.3vw, 0.92rem);
+    color: var(--p06-text-dim);
+    font-style: normal;
+  }
+
+  /* ── 顶层 think 皇冠 ── */
+  .s004-think-crown {
+    position: relative;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .s004-think-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 0.9rem 2.4rem;
+    background: linear-gradient(135deg, rgba(155,203,215,0.18) 0%, rgba(155,203,215,0.08) 100%);
+    border: 1.5px solid var(--p06-primary);
+    border-radius: 0.7rem;
+    box-shadow: 0 0 24px rgba(155,203,215,0.18), 0 2px 12px var(--p06-shadow);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.5s ease;
+    min-width: 220px;
+  }
+
+  .s004-think-box.s004-lit {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: 0 0 32px rgba(155,203,215,0.28), 0 4px 16px var(--p06-shadow);
+  }
+
+  .s004-think-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .s004-think-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--p06-primary);
+    font-style: normal;
+    letter-spacing: 0.04em;
+  }
+
+  .s004-think-sub {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.75rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+  }
+
+  /* 连接箭头（think 与三柱之间） */
+  .s004-crown-connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    position: relative;
+  }
+
+  .s004-crown-connector::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--p06-primary), var(--p06-card-border));
+    opacity: 0;
+    transition: opacity 0.4s ease 0.2s;
+  }
+
+  .s004-crown-connector.s004-show::after {
+    opacity: 1;
+  }
+
+  /* ── 三柱架构 ── */
+  .s004-pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .s004-pillar {
+    display: flex;
+    flex-direction: column;
+    background: var(--p06-card-bg);
+    border: 1px solid var(--p06-card-border);
+    border-radius: 0.7rem;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 2px 12px var(--p06-shadow);
+    opacity: 0.22;
+    transform: translateY(16px);
+    transition: opacity 0.45s ease, transform 0.45s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    align-self: stretch;
+  }
+
+  .s004-pillar.s004-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 柱顶色条 */
+  .s004-pillar-top {
+    height: 4px;
+    width: 100%;
+  }
+
+  .s004-pillar--storage .s004-pillar-top { background: var(--p06-secondary); }
+  .s004-pillar--graph   .s004-pillar-top { background: var(--p06-primary); }
+  .s004-pillar--retrieval .s004-pillar-top { background: var(--p06-accent); }
+
+  .s004-pillar-body {
+    padding: 1rem 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  .s004-pillar-en {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-style: normal;
+  }
+
+  .s004-pillar-cn {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.72rem;
+    font-style: normal;
+  }
+
+  .s004-pillar-desc {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.8rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    line-height: 1.55;
+    margin-top: 0.2rem;
+  }
+
+  .s004-pillar-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+  }
+
+  .s004-pillar-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    padding: 0.18rem 0.45rem;
+    border-radius: 0.25rem;
+    font-style: normal;
+  }
+
+  /* 柱颜色 */
+  .s004-pillar--storage .s004-pillar-en { color: var(--p06-secondary); }
+  .s004-pillar--storage .s004-pillar-cn { color: var(--p06-secondary); opacity: 0.8; }
+  .s004-pillar--storage .s004-pillar-tag { background: rgba(106,139,160,0.15); color: var(--p06-secondary); }
+
+  .s004-pillar--graph .s004-pillar-en { color: var(--p06-primary); }
+  .s004-pillar--graph .s004-pillar-cn { color: var(--p06-primary); opacity: 0.8; }
+  .s004-pillar--graph .s004-pillar-tag { background: rgba(155,203,215,0.12); color: var(--p06-primary); }
+
+  .s004-pillar--retrieval .s004-pillar-en { color: var(--p06-accent); }
+  .s004-pillar--retrieval .s004-pillar-cn { color: var(--p06-accent); opacity: 0.8; }
+  .s004-pillar--retrieval .s004-pillar-tag { background: rgba(232,168,73,0.12); color: var(--p06-accent); }
+
+  /* 底部论断 */
+  .s004-thesis {
+    margin-top: 1.6rem;
+    padding: 0.85rem 1.4rem;
+    background: rgba(155,203,215,0.06);
+    border-top: 1px solid var(--p06-card-border);
+    border-radius: 0.5rem;
+    text-align: center;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 0.88rem;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .s004-thesis.s004-show { opacity: 1; }
+
+  .s004-thesis em {
+    font-style: normal;
+    color: var(--p06-primary);
+    font-weight: 600;
+  }
+
+  /* 启动按钮 */
+  .s004-btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1.6rem;
+    align-items: center;
+  }
+
+  .s004-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.73rem;
+    font-weight: 600;
+    font-style: normal;
+    color: var(--p06-bg-deep);
+    background: var(--p06-primary);
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.45rem 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .s004-btn:hover { background: #aee3eb; }
+
+  @media (max-height: 700px) {
+    .s004-wrap { padding: 1.5rem 6rem; }
+    .s004-head { margin-bottom: 1.2rem; }
+    .s004-pillar-body { padding: 0.7rem 0.9rem 0.9rem; }
+    .s004-think-box { padding: 0.6rem 1.8rem; }
+  }
+</style>
+
+<div class="slide" id="S004">
+  <div class="s004-wrap">
+    <div class="s004-inner">
+
+      <!-- 标题 -->
+      <div class="s004-head">
+        <div class="s004-eyebrow">GBrain 全景与两大能力</div>
+        <h2 class="s004-title">GBrain 是什么 + 三层架构</h2>
+        <p class="s004-subtitle">Storage / Graph / Retrieval 三层协同支撑顶层 think 综合能力</p>
+      </div>
+
+      <!-- 顶层 think 皇冠 -->
+      <div class="s004-think-crown">
+        <div class="s004-think-box" id="s004-think-box">
+          <div class="s004-think-icon">&#x1F9E0;</div>
+          <div>
+            <div class="s004-think-label">think</div>
+            <div class="s004-think-sub">跨页综合 · 带引用答案 · gap 空白分析</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 皇冠与三柱连接线 -->
+      <div class="s004-crown-connector" id="s004-connector"></div>
+
+      <!-- 三层支撑柱 -->
+      <div class="s004-pillars">
+
+        <div class="s004-pillar s004-pillar--storage" id="s004-p-storage">
+          <div class="s004-pillar-top"></div>
+          <div class="s004-pillar-body">
+            <div>
+              <div class="s004-pillar-en">Storage</div>
+              <div class="s004-pillar-cn">存 · 双轨存储</div>
+            </div>
+            <div class="s004-pillar-desc">
+              raw/（只读原料）+ wiki/（编译产物）双轨；两引擎 PGLite / Postgres 可换
+            </div>
+            <div class="s004-pillar-tags">
+              <span class="s004-pillar-tag">raw/</span>
+              <span class="s004-pillar-tag">wiki/</span>
+              <span class="s004-pillar-tag">PGLite</span>
+              <span class="s004-pillar-tag">Postgres</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="s004-pillar s004-pillar--graph" id="s004-p-graph">
+          <div class="s004-pillar-top"></div>
+          <div class="s004-pillar-body">
+            <div>
+              <div class="s004-pillar-en">Graph</div>
+              <div class="s004-pillar-cn">连 · 知识图谱</div>
+            </div>
+            <div class="s004-pillar-desc">
+              self-wiring 解析 wikilink，零 LLM 织成 typed 有向图谱，关系人显式写
+            </div>
+            <div class="s004-pillar-tags">
+              <span class="s004-pillar-tag">wikilink</span>
+              <span class="s004-pillar-tag">zero-LLM</span>
+              <span class="s004-pillar-tag">typed edges</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="s004-pillar s004-pillar--retrieval" id="s004-p-retrieval">
+          <div class="s004-pillar-top"></div>
+          <div class="s004-pillar-body">
+            <div>
+              <div class="s004-pillar-en">Retrieval</div>
+              <div class="s004-pillar-cn">取 · 混合检索</div>
+            </div>
+            <div class="s004-pillar-desc">
+              HNSW 向量 + BM25 关键词并行，RRF 融合，让 think 取到最相关的页面
+            </div>
+            <div class="s004-pillar-tags">
+              <span class="s004-pillar-tag">HNSW</span>
+              <span class="s004-pillar-tag">BM25</span>
+              <span class="s004-pillar-tag">RRF</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 底部论断 -->
+      <div class="s004-thesis" id="s004-thesis">
+        三层各司其职：<em>Storage 存</em>、<em>Graph 连</em>、<em>Retrieval 取</em>——共同托起 <em>think</em> 的跨页综合能力
+      </div>
+
+      <!-- 启动按钮 -->
+      <div class="s004-btn-row">
+        <button class="s004-btn" id="s004-btn">逐层点亮</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var pillars = ['s004-p-storage', 's004-p-graph', 's004-p-retrieval'];
+  var step = 0;
+  var btn = document.getElementById('s004-btn');
+  var thinkBox = document.getElementById('s004-think-box');
+  var connector = document.getElementById('s004-connector');
+  var thesis = document.getElementById('s004-thesis');
+
+  function nextStep() {
+    if (step < pillars.length) {
+      document.getElementById(pillars[step]).classList.add('s004-active');
+      step++;
+      if (step === pillars.length) {
+        // 全部点亮后，托起 think
+        setTimeout(function() {
+          connector.classList.add('s004-show');
+          thinkBox.classList.add('s004-lit');
+        }, 180);
+        setTimeout(function() {
+          thesis.classList.add('s004-show');
+        }, 500);
+        btn.textContent = '已全亮';
+        btn.disabled = true;
+        btn.style.opacity = '0.4';
+      }
+    }
+  }
+
+  btn.addEventListener('click', nextStep);
+})();
+</script>

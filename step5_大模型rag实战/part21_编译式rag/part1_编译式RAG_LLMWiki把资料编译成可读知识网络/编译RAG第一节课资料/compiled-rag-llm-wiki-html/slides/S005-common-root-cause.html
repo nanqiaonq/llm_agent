@@ -1,0 +1,252 @@
+<style>
+/* S005 共同边界与真正分野 · G1 月白灰蓝 · 静态页 */
+/* font-style:normal 关键元素 ≥3 次显式声明 */
+
+.s005-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;   /* 纵向铺开 */
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1180px;
+  padding: 2.2rem 4rem 2.2rem 7rem;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+/* 标题组 */
+.s005-heading { text-align: center; }
+.s005-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+.s005-hooksub {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.6rem;
+}
+
+/* 共同边界：左右对照 */
+.s005-compare {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  gap: 1.4rem;
+  align-items: stretch;
+}
+.s005-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.1rem 1.3rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.s005-card.trad { border-color: rgba(154, 170, 182, 0.4); }
+.s005-card.comp { border-color: rgba(110, 140, 136, 0.4); }
+.s005-card-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  width: fit-content;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.3rem;
+}
+.s005-card.trad .s005-card-tag { background: rgba(154, 170, 182, 0.15); color: var(--color-raw); }
+.s005-card.comp .s005-card-tag { background: rgba(110, 140, 136, 0.15); color: var(--color-compile); }
+.s005-flow {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 1.15vw, 0.9rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.85;
+}
+.s005-flow .chg { color: var(--accent); font-weight: 700; }
+.s005-flow .old { color: var(--color-interpret); font-weight: 700; }
+.s005-flow-foot {
+  margin-top: auto;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-style: normal;
+  color: var(--text-dim);
+  border-top: 1px solid var(--card-border);
+  padding-top: 0.5rem;
+}
+.s005-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* 共同点条 */
+.s005-common {
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.s005-common strong { color: var(--text-primary); font-weight: 700; }
+
+/* 真正分野 */
+.s005-divide {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 1.4rem;
+  align-items: stretch;
+}
+.s005-div-col {
+  border-radius: 0.9rem;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.s005-div-col.idx  { background: rgba(154, 170, 182, 0.08); border: 1.5px solid rgba(154, 170, 182, 0.3); }
+.s005-div-col.wiki { background: rgba(110, 140, 136, 0.08); border: 1.5px solid rgba(110, 140, 136, 0.35); }
+.s005-div-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.2;
+}
+.s005-div-col.idx  .s005-div-name { color: var(--color-raw); }
+.s005-div-col.wiki .s005-div-name { color: var(--color-compile); }
+.s005-div-trait {
+  font-family: var(--font-body);
+  font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* 误区 + 追问 */
+.s005-foot {
+  width: 100%;
+  max-width: 1060px;
+  background: rgba(79, 96, 110, 0.06);
+  border: 1px solid var(--card-border);
+  border-radius: 0.7rem;
+  padding: 0.9rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  text-align: center;
+}
+.s005-myth {
+  font-family: var(--font-body);
+  font-size: clamp(0.85rem, 1.2vw, 0.98rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.s005-myth strong { color: var(--color-interpret); font-weight: 700; }
+.s005-ask {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+  font-weight: 500;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.s005-ask em { color: var(--accent); font-style: normal; font-weight: 700; }
+
+/* 入场动画 */
+.s005-heading { animation: s005Up 0.45s ease both 0ms; }
+.s005-compare { animation: s005Up 0.45s ease both 80ms; }
+.s005-common  { animation: s005Up 0.45s ease both 140ms; }
+.s005-divide  { animation: s005Up 0.45s ease both 200ms; }
+.s005-foot    { animation: s005Up 0.45s ease both 260ms; }
+@keyframes s005Up {
+  from { opacity: 0; transform: translateY(0.8rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="5">
+  <div class="s005-wrap">
+
+    <!-- 标题组 -->
+    <div class="s005-heading">
+      <h2 class="s005-title">共同边界：源材料变了，中间产物都要更新</h2>
+      <p class="s005-hooksub">传统 RAG 更新索引，编译式 RAG 更新 wiki——区别不在"谁自动同步"</p>
+    </div>
+
+    <!-- 共同边界对照 -->
+    <div class="s005-compare">
+      <div class="s005-card trad">
+        <span class="s005-card-tag">传统向量 RAG</span>
+        <div class="s005-flow">
+          源文档：<span class="chg">99 → 199</span><br>
+          向量索引：仍是 <span class="old">99</span>（旧快照）<br>
+          查询：命中旧 chunk，答 <span class="old">99</span>
+        </div>
+        <div class="s005-flow-foot">必须 rebuild / 增量更新索引，新值才生效</div>
+      </div>
+
+      <div class="s005-vs">vs</div>
+
+      <div class="s005-card comp">
+        <span class="s005-card-tag">编译式 RAG</span>
+        <div class="s005-flow">
+          raw/：<span class="chg">20 → 50</span><br>
+          wiki/：仍是 <span class="old">20</span>（旧产物）<br>
+          查询：读旧 wiki 页，答 <span class="old">20</span>
+        </div>
+        <div class="s005-flow-foot">必须 re-ingest / compile，新值才生效</div>
+      </div>
+    </div>
+
+    <!-- 共同点 -->
+    <div class="s005-common">
+      共同点：<strong>两者都依赖中间产物，中间产物不更新就用旧内容回答</strong>——"答旧值"不是传统 RAG 独有的毛病。
+    </div>
+
+    <!-- 真正分野 -->
+    <div class="s005-divide">
+      <div class="s005-div-col idx">
+        <div class="s005-div-name">机器索引</div>
+        <div class="s005-div-trait">chunks / embeddings / 向量索引——给机器读、高度优化的黑箱，人难直接打开审查</div>
+      </div>
+      <div class="s005-div-col wiki">
+        <div class="s005-div-name">可读 wiki</div>
+        <div class="s005-div-trait">markdown / index.md / log.md——给人读，可 diff、可审计、可 log，组织过程看得见</div>
+      </div>
+    </div>
+
+    <!-- 误区 + 追问 -->
+    <div class="s005-foot">
+      <div class="s005-myth">
+        <strong>常见误区</strong>：以为"编译式把知识沉淀了，更新自然就跟上"——其实它<strong>同样不会自动同步</strong>，raw 改了不重新 ingest，wiki 还是旧产物。
+      </div>
+      <div class="s005-ask">
+        → 真正的分野不在"谁自动同步"，而在：我们想维护一个<em>机器索引</em>，还是一份<em>可读、可治理的 wiki</em>？
+      </div>
+    </div>
+
+  </div>
+</div>

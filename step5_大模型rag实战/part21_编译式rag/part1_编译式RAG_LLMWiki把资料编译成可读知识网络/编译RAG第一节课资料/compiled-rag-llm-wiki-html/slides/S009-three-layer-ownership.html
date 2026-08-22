@@ -1,0 +1,495 @@
+<style>
+/* S009 三层架构所有权 · 点选高亮 · G1 月白灰蓝 */
+/* font-style:normal 关键元素 ≥3 次显式声明 */
+
+.s009-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1480px;
+  padding: 2rem 5rem 2rem 7rem;
+  box-sizing: border-box;
+  font-style: normal;
+}
+
+/* 标题区 */
+.s009-heading {
+  width: 100%;
+  text-align: center;
+}
+.s009-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s009-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+/* 主体三列布局 */
+.s009-body {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 3.2rem 1fr;
+  gap: 0;
+  align-items: center;
+  min-width: 0;
+}
+
+/* ---- 左侧：文件树 ---- */
+.s009-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.s009-tree-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.3rem;
+  padding-left: 0.2rem;
+}
+
+/* 每个文件树节点（可点击） */
+.s009-layer {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border-radius: 0.85rem;
+  border: 1.5px solid var(--card-border);
+  background: var(--card-bg);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease;
+  opacity: 1;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+/* AD-14 渐进点亮 */
+.s009-layer.dim {
+  opacity: 0.45;
+  filter: grayscale(55%);
+}
+.s009-layer.active {
+  opacity: 1;
+  filter: none;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+}
+
+.s009-layer.raw-layer:hover,
+.s009-layer.raw-layer.active {
+  border-color: rgba(154, 170, 182, 0.6);
+}
+.s009-layer.wiki-layer:hover,
+.s009-layer.wiki-layer.active {
+  border-color: rgba(126, 154, 150, 0.6);
+}
+.s009-layer.claude-layer:hover,
+.s009-layer.claude-layer.active {
+  border-color: rgba(185, 168, 146, 0.6);
+}
+
+/* 左侧颜色条 */
+.s009-layer-color-bar {
+  width: 4px;
+  flex-shrink: 0;
+  border-radius: 0.85rem 0 0 0.85rem;
+}
+.raw-layer    .s009-layer-color-bar { background: var(--color-raw); }
+.wiki-layer   .s009-layer-color-bar { background: var(--color-wiki); }
+.claude-layer .s009-layer-color-bar { background: var(--color-claude-md); }
+
+/* 层内容区 */
+.s009-layer-inner {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+/* 文件图标+名 */
+.s009-layer-file {
+  flex: 1;
+  min-width: 0;
+}
+.s009-layer-path {
+  font-family: var(--font-mono);
+  font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+  font-weight: 700;
+  font-style: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.raw-layer    .s009-layer-path { color: var(--color-raw); }
+.wiki-layer   .s009-layer-path { color: var(--color-wiki); }
+.claude-layer .s009-layer-path { color: var(--color-claude-md); }
+
+.s009-layer-role {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+
+/* 权限徽章 */
+.s009-badge-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  align-items: flex-end;
+}
+.s009-badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  font-style: normal;
+  padding: 0.22rem 0.6rem;
+  border-radius: 0.3rem;
+  white-space: nowrap;
+}
+.badge-readonly {
+  background: rgba(154, 170, 182, 0.15);
+  color: var(--color-raw);
+  border: 1px solid rgba(154, 170, 182, 0.4);
+}
+.badge-writable {
+  background: rgba(126, 154, 150, 0.15);
+  color: var(--color-wiki);
+  border: 1px solid rgba(126, 154, 150, 0.4);
+}
+.badge-rules {
+  background: rgba(185, 168, 146, 0.15);
+  color: var(--color-claude-md);
+  border: 1px solid rgba(185, 168, 146, 0.4);
+}
+
+/* 点击提示箭头 */
+.s009-layer-arrow {
+  font-size: 0.9rem;
+  color: var(--secondary);
+  opacity: 0.5;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.s009-layer:hover .s009-layer-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* ---- 中列：编译箭头 ---- */
+.s009-arrow-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0 0.2rem;
+}
+
+.s009-arrow-label {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-compile);
+  text-align: center;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  line-height: 1.5rem;
+}
+
+.s009-arrow-svg {
+  flex-shrink: 0;
+}
+
+.s009-arrow-annotation {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  line-height: 1.4rem;
+  white-space: nowrap;
+}
+
+/* ---- 右侧：详情面板 ---- */
+.s009-detail {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.4rem 1.6rem;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  backdrop-filter: blur(12px);
+  min-height: 16rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  transition: border-color 0.4s ease;
+  align-self: stretch;
+  justify-content: center;
+}
+.s009-detail.raw-focus    { border-color: rgba(154, 170, 182, 0.5); }
+.s009-detail.wiki-focus   { border-color: rgba(126, 154, 150, 0.5); }
+.s009-detail.claude-focus { border-color: rgba(185, 168, 146, 0.5); }
+
+.s009-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.s009-detail-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.s009-detail-name {
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  font-weight: 700;
+  font-style: normal;
+}
+.s009-detail-name.raw-color    { color: var(--color-raw); }
+.s009-detail-name.wiki-color   { color: var(--color-wiki); }
+.s009-detail-name.claude-color { color: var(--color-claude-md); }
+
+.s009-detail-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.s009-detail-row {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.s009-detail-key {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.s009-detail-val {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.s009-detail-principle {
+  padding: 0.75rem 0.95rem;
+  border-radius: 0.55rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-style: normal;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.s009-detail-principle.raw-bg    { background: rgba(154, 170, 182, 0.1); border-left: 3px solid var(--color-raw); color: var(--color-raw); }
+.s009-detail-principle.wiki-bg   { background: rgba(126, 154, 150, 0.1); border-left: 3px solid var(--color-wiki); color: var(--color-wiki); }
+.s009-detail-principle.claude-bg { background: rgba(185, 168, 146, 0.1); border-left: 3px solid var(--color-claude-md); color: var(--color-claude-md); }
+
+/* IDLE 占位 */
+.s009-detail-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex: 1;
+  opacity: 0.6;
+  text-align: center;
+}
+.s009-idle-icon { font-size: 2rem; }
+.s009-idle-text {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* 底部提示 */
+.s009-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.s009-footer-hint {
+  font-family: var(--font-mono);
+  font-size: 0.94rem;
+  font-style: normal;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+.s009-footer-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+/* 入场动画 */
+.s009-heading { animation: s009Up 0.4s ease both 0ms; }
+.s009-body    { animation: s009Up 0.4s ease both 60ms; }
+.s009-footer  { animation: s009Up 0.4s ease both 120ms; }
+
+@keyframes s009Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: none; }
+}
+</style>
+
+<div class="slide" data-slide="9">
+  <div class="s009-wrap">
+
+    <!-- 标题 -->
+    <div class="s009-heading">
+      <h2 class="s009-title">LLM Wiki 三层架构：谁拥有、谁能改</h2>
+      <p class="s009-subtitle">点击任一层查看所有权与读写权限</p>
+    </div>
+
+    <!-- 主体 -->
+    <div class="s009-body">
+
+      <!-- 左侧文件树 -->
+      <div class="s009-tree">
+        <div class="s009-tree-title">项目结构</div>
+
+        <!-- raw/ 层 -->
+        <div class="s009-layer raw-layer" id="s009-raw" role="button" tabindex="0" aria-label="raw 层详情">
+          <div class="s009-layer-color-bar"></div>
+          <div class="s009-layer-inner">
+            <div class="s009-layer-file">
+              <div class="s009-layer-path">📁 raw/</div>
+              <div class="s009-layer-role">事实源头 · 人类维护</div>
+            </div>
+            <div class="s009-badge-group">
+              <div class="s009-badge badge-readonly">🔒 只读</div>
+              <div class="s009-badge badge-readonly">人类所有</div>
+            </div>
+            <div class="s009-layer-arrow">›</div>
+          </div>
+        </div>
+
+        <!-- 小箭头（树内部） -->
+        <div style="padding-left:1.5rem; opacity:0.4; font-family:var(--font-mono); font-size:0.7rem; color:var(--color-compile);">
+          ↓ 编译只读此层
+        </div>
+
+        <!-- wiki/ 层 -->
+        <div class="s009-layer wiki-layer" id="s009-wiki" role="button" tabindex="0" aria-label="wiki 层详情">
+          <div class="s009-layer-color-bar"></div>
+          <div class="s009-layer-inner">
+            <div class="s009-layer-file">
+              <div class="s009-layer-path">📁 wiki/</div>
+              <div class="s009-layer-role">编译产物 · LLM 维护</div>
+            </div>
+            <div class="s009-badge-group">
+              <div class="s009-badge badge-writable">✏ 可写</div>
+              <div class="s009-badge badge-writable">LLM 所有</div>
+            </div>
+            <div class="s009-layer-arrow">›</div>
+          </div>
+        </div>
+
+        <!-- 小箭头 -->
+        <div style="padding-left:1.5rem; opacity:0.4; font-family:var(--font-mono); font-size:0.7rem; color:var(--color-compile);">
+          ↓ 编译只写此层
+        </div>
+
+        <!-- CLAUDE.md -->
+        <div class="s009-layer claude-layer" id="s009-claude" role="button" tabindex="0" aria-label="CLAUDE.md 层详情">
+          <div class="s009-layer-color-bar"></div>
+          <div class="s009-layer-inner">
+            <div class="s009-layer-file">
+              <div class="s009-layer-path">📄 CLAUDE.md</div>
+              <div class="s009-layer-role">编译规则 · 人类立规</div>
+            </div>
+            <div class="s009-badge-group">
+              <div class="s009-badge badge-rules">📐 规则</div>
+              <div class="s009-badge badge-rules">人类所有</div>
+            </div>
+            <div class="s009-layer-arrow">›</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 中列：编译箭头 -->
+      <div class="s009-arrow-col">
+        <div class="s009-arrow-label">编译</div>
+        <svg class="s009-arrow-svg" width="28" height="60" viewBox="0 0 28 60" fill="none">
+          <path d="M14 4 L14 50 M14 50 L7 42 M14 50 L21 42"
+            stroke="var(--color-compile)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="14" cy="4" r="4" fill="var(--color-compile)" opacity="0.6"/>
+        </svg>
+        <div class="s009-arrow-annotation">只读 raw · 只写 wiki</div>
+      </div>
+
+      <!-- 右侧详情面板 -->
+      <div class="s009-detail" id="s009-detail">
+        <!-- IDLE 占位 -->
+        <div class="s009-detail-idle" id="s009-idle">
+          <div class="s009-idle-icon">👆</div>
+          <div class="s009-idle-text">点击左侧任一层<br>查看所有权与可变性说明</div>
+        </div>
+        <!-- 详情内容（JS 填充） -->
+        <div id="s009-detail-content" style="display:none; flex-direction:column; gap:0.9rem;">
+          <div class="s009-detail-header">
+            <div class="s009-detail-icon" id="s009-d-icon"></div>
+            <div class="s009-detail-name" id="s009-d-name"></div>
+          </div>
+          <div class="s009-detail-rows" id="s009-d-rows"></div>
+          <div class="s009-detail-principle" id="s009-d-principle"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 底部提示 -->
+    <div class="s009-footer">
+      <span class="s009-footer-dot" style="background:var(--color-raw);"></span>
+      <span class="s009-footer-hint">raw/ 人类可改·Agent 只读</span>
+      <span class="s009-footer-dot" style="background:var(--color-wiki);"></span>
+      <span class="s009-footer-hint">wiki/ LLM 可写</span>
+      <span class="s009-footer-dot" style="background:var(--color-claude-md);"></span>
+      <span class="s009-footer-hint">CLAUDE.md 人类立规</span>
+      <span class="s009-footer-hint" style="margin-left:0.5rem; color:var(--color-compile);">· 编译：只读 raw → 只写 wiki</span>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,236 @@
+<style>
+  /* ── P06 极简钢蓝 CSS 变量 ── */
+  :root {
+    --p06-primary: #9bcbd7;
+    --p06-secondary: #6a8ba0;
+    --p06-accent: #e8a849;
+    --p06-bg-deep: #141a26;
+    --p06-bg-mid: #1e2838;
+    --p06-text-primary: #e2e8ee;
+    --p06-text-dim: #7d8fa4;
+    --p06-card-bg: rgba(30, 40, 56, 0.7);
+    --p06-card-border: rgba(155, 203, 215, 0.18);
+    --p06-eyebrow: #81a8b9;
+    --p06-shadow: rgba(0, 0, 0, 0.35);
+  }
+
+  .s001-wrap {
+    transform: scale(1.16);
+    transform-origin: center center;
+    /* 居中铁律强制三件套 */
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* 内容容器铁律 */
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 7rem; /* 含左侧 toolbar 避让 */
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    font-style: normal; /* AD-05 font-style:normal #1 */
+    position: relative;
+  }
+
+  /* 封面页对称内边距：覆盖 .slide 基类的 toolbar 避让，使内容真正水平居中 */
+  #S001 { padding-left: 2rem; padding-right: 2rem; }
+
+  /* 右侧装饰光晕（右分治） */
+  .s001-deco-right {
+    position: fixed;
+    right: 0;
+    top: 20%;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(155, 203, 215, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .s001-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 860px;
+    width: 100%;
+    gap: 0;
+    font-style: normal; /* AD-05 font-style:normal #2 */
+  }
+
+  /* 章节徽章 / eyebrow */
+  .s001-eyebrow {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--p06-eyebrow);
+    font-style: normal; /* AD-05 font-style:normal #3 */
+    margin-bottom: 1.4rem;
+    opacity: 0;
+    animation: s001-fade-up 0.5s ease forwards;
+    animation-delay: 0.05s;
+  }
+
+  /* 主标题 */
+  .s001-title {
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-size: clamp(2.5rem, 4.5vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.18;
+    color: var(--p06-text-primary);
+    font-style: normal;
+    margin: 0 0 0.5rem;
+    opacity: 0;
+    animation: s001-fade-up 0.55s ease forwards;
+    animation-delay: 0.12s;
+  }
+
+  /* 主标题钢蓝高亮部分 */
+  .s001-title-accent {
+    color: var(--p06-primary);
+  }
+
+  /* 副标题 */
+  .s001-subtitle {
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-size: clamp(1rem, 1.8vw, 1.3rem);
+    font-weight: 400;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    margin: 0 0 1.6rem;
+    opacity: 0;
+    animation: s001-fade-up 0.55s ease forwards;
+    animation-delay: 0.18s;
+  }
+
+  /* 分割线 */
+  .s001-divider {
+    width: 56px;
+    height: 2px;
+    background: linear-gradient(to right, var(--p06-primary), transparent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: s001-fade-in 0.4s ease forwards;
+    animation-delay: 0.26s;
+  }
+
+  /* 钩子句容器 */
+  .s001-hook {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.2rem 1.6rem;
+    background: rgba(232, 168, 73, 0.07);
+    border-left: 3px solid var(--p06-accent);
+    border-radius: 0 0.5rem 0.5rem 0;
+    max-width: 620px;
+    opacity: 0;
+    animation: s001-fade-up 0.5s ease forwards;
+    animation-delay: 0.32s;
+  }
+
+  .s001-hook-text {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    font-weight: 500;
+    color: var(--p06-text-primary);
+    font-style: normal;
+    line-height: 1.55;
+  }
+
+  .s001-hook-em {
+    color: var(--p06-accent);
+    font-weight: 600;
+  }
+
+  /* 底部信息行 */
+  .s001-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    margin-top: 2.2rem;
+    opacity: 0;
+    animation: s001-fade-in 0.4s ease forwards;
+    animation-delay: 0.42s;
+  }
+
+  .s001-meta-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--p06-text-dim);
+    font-style: normal;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--p06-card-border);
+    border-radius: 0.3rem;
+    background: var(--p06-card-bg);
+  }
+
+  .s001-meta-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--p06-text-dim);
+    opacity: 0.5;
+  }
+
+  /* 动画 */
+  @keyframes s001-fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes s001-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* 低屏响应 */
+  @media (max-height: 700px) {
+    .s001-wrap { padding: 1.5rem 6rem; }
+    .s001-title { font-size: 2rem; }
+    .s001-hook { padding: 0.8rem 1.2rem; }
+    .s001-meta-row { margin-top: 1.8rem; }
+  }
+</style>
+
+<div class="slide" id="S001">
+  <div class="s001-deco-right"></div>
+  <div class="s001-wrap">
+    <div class="s001-inner">
+      <div class="s001-eyebrow">GBrain · Brain Layer</div>
+
+      <h1 class="s001-title">
+        GBrain：从笔记到<br>
+        <span class="s001-title-accent">会思考的大脑</span>
+      </h1>
+
+      <p class="s001-subtitle">编译式 RAG 的生产级实现</p>
+
+      <div class="s001-divider"></div>
+
+      <div class="s001-hook">
+        <div class="s001-hook-text">
+          它不只给你<span class="s001-hook-em">页面</span>，而是给你<span class="s001-hook-em">答案</span>
+        </div>
+      </div>
+
+      <div class="s001-meta-row">
+        <span class="s001-meta-tag">编译式 RAG</span>
+        <span class="s001-meta-dot"></span>
+        <span class="s001-meta-tag">self-wiring 建图</span>
+        <span class="s001-meta-dot"></span>
+        <span class="s001-meta-tag">读 search + 想 think</span>
+      </div>
+    </div>
+  </div>
+</div>

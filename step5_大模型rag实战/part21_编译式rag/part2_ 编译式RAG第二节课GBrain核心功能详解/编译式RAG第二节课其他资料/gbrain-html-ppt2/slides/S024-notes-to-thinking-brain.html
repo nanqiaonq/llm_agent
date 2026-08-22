@@ -1,0 +1,359 @@
+<style>
+/* S024 从笔记到会思考的大脑 · 收尾回顾 */
+:root {
+  --bg-deep: #141a26;
+  --bg-mid: #1e2838;
+  --primary: #9bcbd7;
+  --secondary: #6a8ba0;
+  --accent: #e8a849;
+  --text-primary: #e2e8ee;
+  --text-dim: #7d8fa4;
+  --card-bg: rgba(30,40,56,0.7);
+  --card-border: rgba(155,203,215,0.18);
+  --card-title: #aadcec;
+  --eyebrow: #81a8b9;
+}
+
+.s024-wrap {
+    transform: scale(0.984);
+    transform-origin: center center;
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  background-color: var(--bg-deep);
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 4rem;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.s024-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eyebrow);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.s024-title {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.3rem;
+  line-height: 1.2;
+}
+
+.s024-tagline {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* === 两大能力回顾 === */
+.s024-caps-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.3rem;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 1.3rem;
+}
+
+.s024-cap-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.3rem 1.3rem 1.1rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  align-self: stretch;
+}
+
+.s024-cap-card--connect { border-color: rgba(155,203,215,0.35); }
+.s024-cap-card--think   { border-color: rgba(232,168,73,0.28); }
+
+.s024-cap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  width: fit-content;
+}
+
+.s024-cap-badge--connect {
+  background: rgba(155,203,215,0.12);
+  border: 1px solid rgba(155,203,215,0.3);
+  color: var(--primary);
+}
+
+.s024-cap-badge--think {
+  background: rgba(232,168,73,0.1);
+  border: 1px solid rgba(232,168,73,0.28);
+  color: var(--accent);
+}
+
+.s024-cap-headline {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.s024-cap-headline--connect { color: var(--primary); }
+.s024-cap-headline--think   { color: var(--accent); }
+
+.s024-cap-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.s024-cap-point {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-style: normal;
+}
+
+.s024-cap-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.45rem;
+}
+
+.s024-cap-dot--connect { background: var(--primary); opacity: 0.7; }
+.s024-cap-dot--think   { background: var(--accent);  opacity: 0.7; }
+
+.s024-cap-pt-text {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.s024-cap-pt-text em {
+  font-style: normal;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* === 判断的尺 === */
+.s024-ruler-section {
+  width: 100%;
+  background: rgba(155,203,215,0.06);
+  border: 1px solid rgba(155,203,215,0.25);
+  border-radius: 1rem;
+  padding: 1.1rem 1.4rem;
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.s024-ruler-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.s024-ruler-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.s024-ruler-title {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-weight: 700;
+  color: var(--card-title);
+}
+
+.s024-ruler-marks {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.s024-mark {
+  background: rgba(155,203,215,0.06);
+  border: 1px solid rgba(155,203,215,0.14);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-style: normal;
+}
+
+.s024-mark-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.s024-mark-q {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.s024-mark-hint {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* === 结语 === */
+.s024-closing {
+  width: 100%;
+  margin-top: 0.8rem;
+  text-align: center;
+  font-style: normal;
+}
+
+.s024-closing-text {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(0.9rem, 1.3vw, 1rem);
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.s024-closing-text strong {
+  color: var(--card-title);
+}
+</style>
+
+<div class="slide s024-wrap" id="S024">
+  <p class="s024-eyebrow">收尾</p>
+  <h1 class="s024-title">从笔记到会思考的大脑</h1>
+  <p class="s024-tagline">连得起来，也想得明白——你带走的是一把判断的尺</p>
+
+  <!-- 两大能力回顾 -->
+  <div class="s024-caps-row">
+
+    <!-- 能力一: 建图 Connect -->
+    <div class="s024-cap-card s024-cap-card--connect">
+      <div class="s024-cap-badge s024-cap-badge--connect">&#9654; 能力一 · 建图 Connect</div>
+      <div class="s024-cap-headline s024-cap-headline--connect">self-wiring：零 LLM 把知识连起来</div>
+      <div class="s024-cap-points">
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--connect"></div>
+          <span class="s024-cap-pt-text">关系来自你在 markdown 里<em>显式写下的 wikilink</em>，不是机器猜的</span>
+        </div>
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--connect"></div>
+          <span class="s024-cap-pt-text"><em>零 LLM、零成本</em>，正则解析 → typed 图谱，结果确定可复现</span>
+        </div>
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--connect"></div>
+          <span class="s024-cap-pt-text">改一行 markdown，图谱跟着变；每条边都能<em>溯源到来源行</em></span>
+        </div>
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--connect"></div>
+          <span class="s024-cap-pt-text">Minions 夜间自动去重、修引用、检测矛盾，<em>图谱常保健康</em></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 能力二: 读+想 Read & Think -->
+    <div class="s024-cap-card s024-cap-card--think">
+      <div class="s024-cap-badge s024-cap-badge--think">&#9654; 能力二 · 读+想 Read &amp; Think</div>
+      <div class="s024-cap-headline s024-cap-headline--think">混合检索 + think 综合出有据可查的答案</div>
+      <div class="s024-cap-points">
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--think"></div>
+          <span class="s024-cap-pt-text">HNSW + BM25 + RRF 三路合流，<em>检索质量 R@5 = 97.6%</em></span>
+        </div>
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--think"></div>
+          <span class="s024-cap-pt-text">search 给页面列表；<em>think 替你读完跨页综合</em>成带引用成文答案</span>
+        </div>
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--think"></div>
+          <span class="s024-cap-pt-text">gap 诚实告诉你还不知道什么：<em>过期信息 / 无引用论断 / 自相矛盾</em></span>
+        </div>
+        <div class="s024-cap-point">
+          <div class="s024-cap-dot s024-cap-dot--think"></div>
+          <span class="s024-cap-pt-text">约 <em>21× token</em> 是多跳综合的代价，换来可读可溯源的知识库</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 判断的尺 -->
+  <div class="s024-ruler-section">
+    <div class="s024-ruler-header">
+      <div class="s024-ruler-icon">&#128207;</div>
+      <div class="s024-ruler-title">你真正带走的：一把判断的尺</div>
+    </div>
+    <div class="s024-ruler-marks">
+      <div class="s024-mark">
+        <div class="s024-mark-label">刻度 1 · 存储层</div>
+        <div class="s024-mark-q">知识怎么存？</div>
+        <div class="s024-mark-hint">源真相在 git markdown；编译产物在数据库；改左≠自动追右，需重编译</div>
+      </div>
+      <div class="s024-mark">
+        <div class="s024-mark-label">刻度 2 · 检索层</div>
+        <div class="s024-mark-q">benchmark 诚不诚实？</div>
+        <div class="s024-mark-hint">口径（R@5 vs P@5）/ 数据集（公开 vs 厂商自建）/ 判题方式（规则 vs LLM judge）严禁混引</div>
+      </div>
+      <div class="s024-mark">
+        <div class="s024-mark-label">刻度 3 · 综合层</div>
+        <div class="s024-mark-q">成本值不值？</div>
+        <div class="s024-mark-hint">稳定知识 + 需跨源深综合 → think 划算；高频简单查询 → search 更合适</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="s024-closing">
+    <p class="s024-closing-text">
+      <strong>GBrain 是一个完整的 brain layer</strong>——两大能力缺一不可：连得起来才能溯源，想得明白才能给答案。<br>
+      拿这把尺去拆任何 RAG/记忆系统，你就知道它在哪一层做了什么、做得怎么样。
+    </p>
+  </div>
+
+</div>

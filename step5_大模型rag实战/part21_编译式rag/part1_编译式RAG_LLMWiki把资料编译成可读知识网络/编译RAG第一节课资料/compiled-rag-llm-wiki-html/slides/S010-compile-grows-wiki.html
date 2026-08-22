@@ -1,0 +1,187 @@
+<style>
+/* S010 编译生长 wiki · 溯源连线版 · 5 语义阶段 · G1 月白灰蓝 */
+.s010-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  min-height: 84vh; width: 100%; max-width: 1640px;
+  padding: 1.3rem 4rem 1.3rem 7rem; box-sizing: border-box; font-style: normal;
+}
+.s010-heading { width: 100%; text-align: center; flex-shrink: 0; }
+.s010-title {
+  font-family: var(--font-display); font-size: clamp(1.7rem, 2.9vw, 2.35rem);
+  font-weight: 700; font-style: normal; color: var(--text-primary); line-height: 1.2;
+}
+.s010-subtitle {
+  font-family: var(--font-body); font-size: clamp(0.86rem, 1.35vw, 1.02rem);
+  font-weight: 400; font-style: normal; color: var(--text-secondary); margin-top: 0.35rem;
+}
+.s010-subtitle b { color: var(--color-compile); font-weight: 600; }
+
+/* 主体：左 raw | 中 ingest | 右 wiki + SVG 连线层 */
+.s010-body {
+  position: relative; width: 100%; flex: 1;
+  display: grid; grid-template-columns: minmax(0,1fr) 5.5rem minmax(0,1.05fr);
+  gap: 0; align-items: start; margin: 0.6rem 0;
+}
+.s010-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+
+.s010-col { display: flex; flex-direction: column; gap: 0.55rem; min-width: 0; position: relative; z-index: 2; }
+.s010-col-head { display: flex; align-items: baseline; gap: 0.6rem; padding: 0 0.3rem 0.2rem; font-style: normal; }
+.s010-col-tag { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; font-style: normal; letter-spacing: 0.06em; }
+.s010-raw-col .s010-col-tag { color: var(--color-raw); }
+.s010-wiki-col .s010-col-tag { color: var(--color-compile); }
+.s010-col-note { font-family: var(--font-body); font-size: 0.74rem; font-style: normal; color: var(--text-dim); }
+
+/* raw 卡 */
+.s010-raw-card {
+  display: flex; align-items: center; gap: 0.7rem; padding: 0.75rem 0.9rem;
+  border-radius: 0.7rem; background: var(--card-bg); border: 1.5px solid rgba(154, 170, 182, 0.4);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.s010-raw-card.locked-glow { border-color: var(--color-raw); box-shadow: 0 0 0 3px rgba(154,170,182,0.18); }
+.s010-card-icon { font-size: 1.3rem; flex-shrink: 0; line-height: 1; }
+.s010-card-body { flex: 1; min-width: 0; }
+.s010-card-name { font-family: var(--font-mono); font-size: 0.86rem; font-weight: 700; font-style: normal; color: var(--text-primary); }
+.s010-card-desc { font-family: var(--font-body); font-size: 0.72rem; font-style: normal; color: var(--text-dim); margin-top: 0.12rem; }
+.s010-card-src { font-family: var(--font-mono); font-size: 0.7rem; font-style: normal; color: var(--color-compile); margin-top: 0.12rem; }
+.s010-lock {
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; font-style: normal; flex-shrink: 0;
+  color: var(--color-raw); background: rgba(154,170,182,0.12); border: 1px solid rgba(154,170,182,0.35);
+  padding: 0.22rem 0.5rem; border-radius: 0.35rem;
+}
+
+/* 中列 ingest */
+.s010-mid { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; position: relative; z-index: 2; }
+.s010-mid-tag { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; font-style: normal; color: var(--color-compile); writing-mode: vertical-rl; letter-spacing: 0.1em; }
+.s010-mid-arrow { font-family: var(--font-mono); font-size: 1.3rem; color: var(--color-compile); }
+.s010-mid-sub { font-family: var(--font-body); font-size: 0.66rem; font-style: normal; color: var(--text-dim); writing-mode: vertical-rl; }
+
+/* wiki 卡（逐 stage 生长） */
+.s010-wiki-card {
+  display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.85rem;
+  border-radius: 0.7rem; background: rgba(110,140,136,0.08); border: 1.5px solid rgba(110,140,136,0.32);
+  opacity: 0; transform: translateX(14px) scale(0.97);
+  transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.s010-wiki-card.grown { opacity: 1; transform: none; }
+.s010-wiki-card .s010-card-name { color: var(--color-compile); }
+.s010-wiki-card.cross { background: rgba(185,168,146,0.1); border-color: rgba(185,168,146,0.45); }
+.s010-wiki-card.cross .s010-card-name { color: var(--color-claude-md); }
+.s010-wiki-card.cross.grown.pulse { box-shadow: 0 0 0 4px rgba(185,168,146,0.22); }
+.s010-wiki-card.index-card { background: rgba(110,126,140,0.08); border-color: rgba(110,126,140,0.4); border-style: dashed; }
+.s010-cross-badge {
+  flex-shrink: 0; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--color-claude-md); padding: 0.12rem 0.5rem; border-radius: 0.3rem;
+}
+
+/* 控制 */
+.s010-controls { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 100%; flex-shrink: 0; }
+.s010-btn-row { display: flex; align-items: center; gap: 0.6rem; }
+.s010-play-btn {
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; font-style: normal;
+  color: var(--bg-surface); background: var(--color-compile); border: none; border-radius: 0.6rem;
+  padding: 0.55rem 1.6rem; cursor: pointer; box-shadow: 0 4px 14px rgba(110,140,136,0.3);
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+.s010-play-btn:hover:not(:disabled) { transform: translateY(-1px); }
+.s010-play-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.s010-ctrl-btn {
+  font-family: var(--font-mono); font-size: 0.76rem; font-weight: 600; font-style: normal;
+  color: var(--text-secondary); background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 0.45rem; padding: 0.42rem 0.85rem; cursor: pointer; transition: background 0.2s ease, color 0.2s ease;
+}
+.s010-ctrl-btn:hover { background: rgba(110,126,140,0.12); color: var(--accent); }
+.s010-dots { display: flex; align-items: center; gap: 0.45rem; }
+.s010-dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: rgba(110,140,136,0.25); transition: background 0.3s ease, transform 0.3s ease; }
+.s010-dot.active { background: var(--color-compile); transform: scale(1.25); }
+.s010-dot.cross-dot.active { background: var(--color-claude-md); }
+.s010-narration {
+  font-family: var(--font-body); font-size: 0.86rem; font-style: normal; color: var(--text-secondary);
+  text-align: center; min-height: 1.3rem; max-width: 1100px; line-height: 1.4;
+}
+.s010-narration b { color: var(--color-compile); font-weight: 700; }
+.s010-narration b.cross-hl { color: var(--color-claude-md); }
+
+.s010-heading { animation: s010Up 0.4s ease both 0ms; }
+.s010-body    { animation: s010Up 0.4s ease both 80ms; }
+.s010-controls{ animation: s010Up 0.4s ease both 140ms; }
+@keyframes s010Up { from { opacity: 0; transform: translateY(0.7rem); } to { opacity: 1; transform: none; } }
+</style>
+
+<div class="slide" data-slide="10">
+  <div class="s010-wrap">
+
+    <div class="s010-heading">
+      <h2 class="s010-title">编译过程：原料如何长成互链 wiki</h2>
+      <p class="s010-subtitle">编译 ≠ 搬运——<b>raw 一字不动</b>（改了要重新 ingest），wiki 从空目录生长出「标了来源、跨源对齐矛盾」的知识页</p>
+    </div>
+
+    <div class="s010-body" id="s010-body">
+      <svg class="s010-lines" id="s010-lines" xmlns="http://www.w3.org/2000/svg"></svg>
+
+      <!-- 左：raw -->
+      <div class="s010-col s010-raw-col">
+        <div class="s010-col-head"><span class="s010-col-tag">📁 RAW/</span><span class="s010-col-note">原料 · 事实源头 · 编译期不改</span></div>
+        <div class="s010-raw-card" id="raw-r01">
+          <div class="s010-card-icon">📄</div>
+          <div class="s010-card-body"><div class="s010-card-name">raw/01-概念源.md</div><div class="s010-card-desc">基础概念与定义</div></div>
+          <div class="s010-lock">🔒 未改动</div>
+        </div>
+        <div class="s010-raw-card" id="raw-r02">
+          <div class="s010-card-icon">📄</div>
+          <div class="s010-card-body"><div class="s010-card-name">raw/02-工程实现.md</div><div class="s010-card-desc">实现细节与模式</div></div>
+          <div class="s010-lock">🔒 未改动</div>
+        </div>
+        <div class="s010-raw-card" id="raw-r03">
+          <div class="s010-card-icon">📄</div>
+          <div class="s010-card-body"><div class="s010-card-name">raw/03-证伪实验.md</div><div class="s010-card-desc">实验数据与证伪结果</div></div>
+          <div class="s010-lock">🔒 未改动</div>
+        </div>
+      </div>
+
+      <!-- 中：ingest -->
+      <div class="s010-mid">
+        <span class="s010-mid-tag">INGEST</span>
+        <span class="s010-mid-arrow">▶</span>
+        <span class="s010-mid-sub">只读 raw · 只写 wiki</span>
+      </div>
+
+      <!-- 右：wiki -->
+      <div class="s010-col s010-wiki-col">
+        <div class="s010-col-head"><span class="s010-col-tag">📁 WIKI/</span><span class="s010-col-note">编译产物 · 从空目录生长</span></div>
+        <div class="s010-wiki-card" id="wiki-concept">
+          <div class="s010-card-icon">📝</div>
+          <div class="s010-card-body"><div class="s010-card-name">[[概念基础]]</div><div class="s010-card-src">来源: raw/01 · 直接编译</div></div>
+        </div>
+        <div class="s010-wiki-card" id="wiki-impl">
+          <div class="s010-card-icon">📝</div>
+          <div class="s010-card-body"><div class="s010-card-name">[[实现模式]]</div><div class="s010-card-src">来源: raw/02 · 直接编译</div></div>
+        </div>
+        <div class="s010-wiki-card" id="wiki-falsify">
+          <div class="s010-card-icon">📝</div>
+          <div class="s010-card-body"><div class="s010-card-name">[[实验证伪]]</div><div class="s010-card-src">来源: raw/03 · 直接编译</div></div>
+        </div>
+        <div class="s010-wiki-card cross" id="wiki-cross">
+          <div class="s010-card-icon">⭐</div>
+          <div class="s010-card-body"><div class="s010-card-name">[[跨源张力分析]]</div><div class="s010-card-src">来源: raw/01 + raw/03 · 矛盾对齐</div></div>
+          <div class="s010-cross-badge">跨源</div>
+        </div>
+        <div class="s010-wiki-card index-card" id="wiki-index">
+          <div class="s010-card-icon">📑</div>
+          <div class="s010-card-body"><div class="s010-card-name">index.md 综合索引</div><div class="s010-card-src">链接所有页 · 查询入口</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s010-controls">
+      <div class="s010-btn-row">
+        <button class="s010-play-btn" id="s010-play">▶ 播放编译</button>
+        <button class="s010-ctrl-btn" id="s010-pause">⏸ 暂停</button>
+        <button class="s010-ctrl-btn" id="s010-step">⏭ 单步</button>
+        <button class="s010-ctrl-btn" id="s010-replay">↺ 重播</button>
+      </div>
+      <div class="s010-dots" id="s010-dots"></div>
+      <div class="s010-narration" id="s010-narration">点「▶ 播放编译」——raw 三篇原料，wiki 还是空目录，看「编译」一步步把原料长成互链 wiki</div>
+    </div>
+
+  </div>
+</div>

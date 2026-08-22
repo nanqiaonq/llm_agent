@@ -1,0 +1,392 @@
+<style>
+/* S004 索引滞后 · 改数字即时演示 · 🔴 交互 · G1 月白灰蓝 */
+/* FM 防御注释：font-style:normal 关键元素 ≥3 次显式声明 */
+/* window.slideHooks 注册交互逻辑，禁裸 <script> */
+
+.s004-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 84vh;
+  width: 100%;
+  max-width: 1640px;
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal; /* FM 防御 ① */
+}
+
+/* 标题区（窄顶） */
+.s004-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+.s004-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: normal; /* FM 防御 ② */
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s004-subtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+/* 三段联动（宽底） */
+.s004-pipeline {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+/* 箭头列 */
+.s004-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.6rem;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.s004-arrow-icon {
+  font-size: 1.5rem;
+  color: var(--secondary);
+  line-height: 1;
+}
+.s004-arrow-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  font-style: normal; /* FM 防御 ③ */
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 面板通用 */
+.s004-panel {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.2rem 1.3rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+  align-self: stretch;
+  transition: border-color 0.3s ease;
+}
+.s004-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--card-border);
+}
+.s004-panel-icon { font-size: 1.1rem; flex-shrink: 0; }
+.s004-panel-title {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+}
+.s004-panel-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.badge-live { background: rgba(110,140,136,0.15); color: var(--color-compile); }
+.badge-frozen { background: rgba(183,150,131,0.15); color: var(--color-interpret); }
+.badge-query { background: rgba(110,126,140,0.12); color: var(--secondary); }
+
+/* 面板内容体 */
+.s004-panel-body {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-style: normal;
+  color: var(--text-primary);
+  line-height: 1.75;
+  background: var(--bg-mid);
+  border-radius: 0.45rem;
+  padding: 0.7rem 0.8rem;
+  flex: 1;
+}
+.s004-panel-body .key { color: var(--accent); font-weight: 600; }
+
+/* 可编辑的价格数字 */
+.s004-editable-price {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-compile);
+  background: rgba(110,140,136,0.15);
+  border: 1.5px solid rgba(110,140,136,0.4);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.3rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 3.5rem;
+  text-align: center;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.s004-editable-price:focus {
+  border-color: var(--color-compile);
+  background: rgba(110,140,136,0.22);
+}
+.s004-editable-price.changed {
+  color: var(--color-compile);
+  animation: s004Pulse 0.4s ease;
+}
+@keyframes s004Pulse {
+  0%  { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100%{ transform: scale(1); }
+}
+
+/* 冻结快照价格（索引里不变的旧值） */
+.s004-frozen-price {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-interpret);
+  background: rgba(183,150,131,0.15);
+  border: 1.5px solid rgba(183,150,131,0.35);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.3rem;
+}
+
+/* 查询结果价格（跟索引走，不跟源文档） */
+.s004-result-price {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-interpret);
+}
+
+/* 警示横条（提示「索引没更新」） */
+.s004-stale-banner {
+  width: 100%;
+  max-width: 1120px;
+  background: rgba(183,150,131,0.08);
+  border: 1.5px solid rgba(183,150,131,0.35);
+  border-radius: 0.65rem;
+  padding: 0.75rem 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.s004-stale-banner.visible { opacity: 1; }
+.s004-stale-banner-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 1.2vw, 1rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.s004-stale-banner-text strong { color: var(--color-interpret); font-weight: 700; }
+
+/* 底部操作提示 */
+.s004-tip {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.s004-tip-text {
+  font-size: 0.82rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+}
+.s004-reset-btn {
+  background: none;
+  border: 1px solid var(--card-border);
+  border-radius: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.s004-reset-btn:hover { border-color: var(--secondary); color: var(--text-primary); }
+
+/* 入场动画 */
+.s004-heading      { animation: s004Up 0.4s ease both 0ms; }
+.s004-pipeline     { animation: s004Up 0.4s ease both 70ms; }
+.s004-stale-banner { animation: s004Up 0.4s ease both 110ms; }
+.s004-tip          { animation: s004Up 0.4s ease both 140ms; }
+@keyframes s004Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="4">
+  <div class="s004-wrap">
+
+    <!-- 标题（窄顶） -->
+    <div class="s004-heading">
+      <h2 class="s004-title">中间产物滞后：源变了、不更新就答旧值</h2>
+      <p class="s004-subtitle">点价格数字亲手改它——向量索引快照不动，查询结果仍命中旧值（这里用传统 RAG 演示）</p>
+    </div>
+
+    <!-- 三段联动（宽） -->
+    <div class="s004-pipeline">
+
+      <!-- 面板 1：源文档（可编辑） -->
+      <div class="s004-panel" id="s004-panel-src">
+        <div class="s004-panel-header">
+          <span class="s004-panel-icon">&#128196;</span>
+          <span class="s004-panel-title">源文档</span>
+          <span class="s004-panel-badge badge-live">实时更新</span>
+        </div>
+        <div class="s004-panel-body">
+<span class="key">title:</span> 产品价格手册<br>
+<span class="key">updated:</span> 2026-06-16<br>
+&#8203;<br>
+<span class="key">基础版价格：</span> <span id="s004-price-src" class="s004-editable-price" contenteditable="true" spellcheck="false" title="点击修改价格">¥299</span>/月<br>
+<span class="key">专业版价格：</span> ¥899/月<br>
+<span class="key">企业版价格：</span> 联系销售
+        </div>
+      </div>
+
+      <!-- 箭头 1 -->
+      <div class="s004-arrow">
+        <span class="s004-arrow-icon">&#8594;</span>
+        <span class="s004-arrow-label">建索引<br>（快照）</span>
+      </div>
+
+      <!-- 面板 2：向量索引（冻结快照） -->
+      <div class="s004-panel" id="s004-panel-idx">
+        <div class="s004-panel-header">
+          <span class="s004-panel-icon">&#128248;</span>
+          <span class="s004-panel-title">向量索引</span>
+          <span class="s004-panel-badge badge-frozen">快照·不自动更新</span>
+        </div>
+        <div class="s004-panel-body">
+<span class="key">chunk_id:</span> price-001<br>
+<span class="key">content:</span> "基础版<span id="s004-price-idx" class="s004-frozen-price">¥299</span>/月"<br>
+<span class="key">vector:</span> [0.82, 0.41, ...]<br>
+<span class="key">indexed_at:</span> 2026-06-10<br>
+<br>
+<span style="font-size:0.72rem; color:var(--color-interpret);">&#9888; 源文档已更新，索引仍是旧快照</span>
+        </div>
+      </div>
+
+      <!-- 箭头 2 -->
+      <div class="s004-arrow">
+        <span class="s004-arrow-icon">&#8594;</span>
+        <span class="s004-arrow-label">命中索引<br>（旧向量）</span>
+      </div>
+
+      <!-- 面板 3：查询结果（跟索引走） -->
+      <div class="s004-panel" id="s004-panel-result">
+        <div class="s004-panel-header">
+          <span class="s004-panel-icon">&#128172;</span>
+          <span class="s004-panel-title">查询结果</span>
+          <span class="s004-panel-badge badge-query">系统回答</span>
+        </div>
+        <div class="s004-panel-body">
+<span class="key">用户问：</span><br>
+&nbsp;&nbsp;"基础版多少钱？"<br>
+<br>
+<span class="key">系统答：</span><br>
+&nbsp;&nbsp;基础版价格为 <span id="s004-price-result" class="s004-result-price">¥299</span>/月。<br>
+<br>
+<span style="font-size:0.72rem; color:var(--color-interpret);">&#9888; 命中旧快照，答的是旧值</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 警示横条（改完价格后出现） -->
+    <div class="s004-stale-banner" id="s004-stale-banner">
+      <span style="font-size:1rem;">&#9888;</span>
+      <div class="s004-stale-banner-text">
+        源文档已更新——但中间产物（向量索引）没更新，查询仍命中旧快照，<strong>不报任何错</strong>。
+        这不是传统 RAG 独有：<strong>编译式 wiki 未重新 ingest 时同样会答旧值</strong>。
+      </div>
+    </div>
+
+    <!-- 底部提示 -->
+    <div class="s004-tip">
+      <span class="s004-tip-text">点价格数字直接编辑（如改成 ¥399）；不重建索引，查询就一直答旧值——编译式同理，要重新 ingest</span>
+      <button class="s004-reset-btn" id="s004-reset-btn">重置</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+window.slideHooks = window.slideHooks || {};
+window.slideHooks['slides/S004-stale-index.html'] = function() {
+  var priceSrc    = document.getElementById('s004-price-src');
+  var priceIdx    = document.getElementById('s004-price-idx');
+  var priceResult = document.getElementById('s004-price-result');
+  var banner      = document.getElementById('s004-stale-banner');
+  var resetBtn    = document.getElementById('s004-reset-btn');
+  var origPrice   = '¥299';
+  var changed     = false;
+
+  function onInput() {
+    var newVal = priceSrc ? priceSrc.textContent.trim() : origPrice;
+    if (newVal !== origPrice) {
+      changed = true;
+      // 索引和结果保持旧值不动
+      if (banner) banner.classList.add('visible');
+      // 源文档面板加红色边框提示已变
+      var srcPanel = document.getElementById('s004-panel-src');
+      if (srcPanel) srcPanel.style.borderColor = 'rgba(110,140,136,0.5)';
+    } else {
+      changed = false;
+      if (banner) banner.classList.remove('visible');
+      var srcPanel = document.getElementById('s004-panel-src');
+      if (srcPanel) srcPanel.style.borderColor = '';
+    }
+  }
+
+  function onReset() {
+    if (priceSrc) { priceSrc.textContent = origPrice; }
+    changed = false;
+    if (banner) banner.classList.remove('visible');
+    var srcPanel = document.getElementById('s004-panel-src');
+    if (srcPanel) srcPanel.style.borderColor = '';
+  }
+
+  if (priceSrc) { priceSrc.addEventListener('input', onInput); }
+  if (resetBtn) { resetBtn.addEventListener('click', onReset); }
+
+  return function() {
+    if (priceSrc) { priceSrc.removeEventListener('input', onInput); }
+    if (resetBtn) { resetBtn.removeEventListener('click', onReset); }
+  };
+};
+</script>

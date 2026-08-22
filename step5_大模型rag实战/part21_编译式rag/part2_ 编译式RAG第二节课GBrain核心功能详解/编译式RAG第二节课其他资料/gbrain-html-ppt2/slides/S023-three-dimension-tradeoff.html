@@ -1,0 +1,286 @@
+<style>
+/* S023 三维权衡：一把判断的尺 */
+:root {
+  --bg-deep: #141a26;
+  --bg-mid: #1e2838;
+  --primary: #9bcbd7;
+  --secondary: #6a8ba0;
+  --accent: #e8a849;
+  --text-primary: #e2e8ee;
+  --text-dim: #7d8fa4;
+  --card-bg: rgba(30,40,56,0.7);
+  --card-border: rgba(155,203,215,0.18);
+  --card-title: #aadcec;
+  --eyebrow: #81a8b9;
+  --sweet: rgba(155,203,215,0.12);
+  --sweet-border: rgba(155,203,215,0.35);
+}
+
+.s023-wrap {
+    transform: scale(1.04);
+    transform-origin: center center;
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  background-color: var(--bg-deep);
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 4rem;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.s023-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eyebrow);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.s023-title {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.35rem;
+  line-height: 1.25;
+}
+
+.s023-subtitle {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(0.88rem, 1.3vw, 1rem);
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+/* === 三维卡片横排 === */
+.s023-three-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.2rem;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 1.4rem;
+}
+
+.s023-dim-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.3rem 1.2rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  align-self: stretch;
+  font-style: normal;
+}
+
+.s023-dim-num {
+  font-family: 'Sora', sans-serif;
+  font-style: normal;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--secondary);
+}
+
+.s023-dim-name {
+  font-family: 'Sora', 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-weight: 700;
+  color: var(--card-title);
+  line-height: 1.2;
+}
+
+.s023-dim-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(155,203,215,0.1);
+  border: 1px solid rgba(155,203,215,0.2);
+  border-radius: 2rem;
+  padding: 0.25rem 0.7rem;
+  width: fit-content;
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.78rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.s023-dim-desc {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.83rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.s023-dim-desc em {
+  font-style: normal;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.s023-dim-verdict {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 600;
+  border-top: 1px solid rgba(155,203,215,0.12);
+  padding-top: 0.55rem;
+  line-height: 1.4;
+}
+
+/* === 甜区高亮 === */
+.s023-sweet-zone {
+  width: 100%;
+  background: var(--sweet);
+  border: 1px solid var(--sweet-border);
+  border-radius: 0.8rem;
+  padding: 1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-style: normal;
+}
+
+.s023-sweet-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.s023-sweet-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(155,203,215,0.2);
+  flex-shrink: 0;
+}
+
+.s023-sweet-text {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.9rem;
+  color: var(--card-title);
+  line-height: 1.55;
+}
+
+.s023-sweet-text strong {
+  color: var(--accent);
+}
+
+/* === 不适用场景 === */
+.s023-not-fit {
+  width: 100%;
+  background: rgba(224,92,92,0.06);
+  border: 1px solid rgba(224,92,92,0.2);
+  border-radius: 0.6rem;
+  padding: 0.65rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+  font-style: normal;
+}
+
+.s023-not-fit-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: rgba(224,92,92,0.8);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.s023-not-fit-text {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-style: normal;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+</style>
+
+<div class="slide s023-wrap" id="S023">
+  <p class="s023-eyebrow">判断力 benchmark — 三维权衡</p>
+  <h1 class="s023-title">三维权衡：一把判断的尺</h1>
+  <p class="s023-subtitle">检索质量 / 查询成本 / 适用场景——三维一起看才知道值不值</p>
+
+  <div class="s023-three-cols">
+
+    <!-- 维度 1: 检索质量 -->
+    <div class="s023-dim-card">
+      <div class="s023-dim-num">01</div>
+      <div class="s023-dim-name">检索质量</div>
+      <div class="s023-dim-value">&#9650; 高 · 可复现</div>
+      <p class="s023-dim-desc">
+        混合检索（HNSW 向量 + BM25 关键词 + RRF 平权）兼顾语义与字面，LongMemEval R@5 达 <em>97.6%</em>，结果可独立复现。知识图谱保证跨页溯源，每条引用可追到原始 markdown 行。
+      </p>
+      <div class="s023-dim-verdict">适合：需要"找对、找全"的知识型查询</div>
+    </div>
+
+    <!-- 维度 2: 查询成本 -->
+    <div class="s023-dim-card">
+      <div class="s023-dim-num">02</div>
+      <div class="s023-dim-name">查询成本</div>
+      <div class="s023-dim-value">&#9650; 高 · ~21× token</div>
+      <p class="s023-dim-desc">
+        think 做<em>多跳综合推理</em>，跨多个 wiki 页读取、合并、生成带引用答案，token 消耗约是单次 search 的 <em>21 倍</em>。成本高是功能的必要代价，而非系统效率问题。
+      </p>
+      <div class="s023-dim-verdict">判断：高频简单查询用 search；深综合用 think</div>
+    </div>
+
+    <!-- 维度 3: 适用场景 -->
+    <div class="s023-dim-card">
+      <div class="s023-dim-num">03</div>
+      <div class="s023-dim-name">适用场景</div>
+      <div class="s023-dim-value">&#9654; 稳定知识 + 深综合</div>
+      <p class="s023-dim-desc">
+        最匹配场景：<em>知识相对稳定</em>（技术规范/会议记录/研究笔记）且<em>需要跨源综合</em>（关系梳理/趋势汇总/多线对齐）。实时事件、一次性搜索、纯关键词命中——用传统 RAG 或直接搜索更划算。
+      </p>
+      <div class="s023-dim-verdict">甜区：稳定知识库 + 需跨页深度综合</div>
+    </div>
+
+  </div>
+
+  <!-- 甜区总结 -->
+  <div class="s023-sweet-zone">
+    <div class="s023-sweet-label">甜区</div>
+    <div class="s023-sweet-divider"></div>
+    <div class="s023-sweet-text">
+      <strong>稳定知识 + 需深综合</strong> 才划算：每次查询都在"消耗"积累的编译成本，综合得越深、省去的手工对齐越多，ROI 越高
+    </div>
+  </div>
+
+  <div class="s023-not-fit">
+    <div class="s023-not-fit-label">不适用</div>
+    <div class="s023-not-fit-text">实时动态信息 / 高频简单关键词查询 / 知识库内容极不稳定（频繁重编译成本高）→ 传统 RAG 或直接搜索更合适</div>
+  </div>
+
+</div>

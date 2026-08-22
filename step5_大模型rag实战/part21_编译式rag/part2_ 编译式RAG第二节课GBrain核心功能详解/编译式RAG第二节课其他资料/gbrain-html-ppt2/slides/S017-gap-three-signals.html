@@ -1,0 +1,268 @@
+<style>
+  /* ── P06 极简钢蓝数据感 CSS 变量 ─────────────────────────────── */
+  :root {
+    --bg-deep:      #141a26;
+    --bg-mid:       #1e2838;
+    --primary:      #9bcbd7;
+    --secondary:    #6a8ba0;
+    --accent:       #e8a849;
+    --text-primary: #e2e8ee;
+    --text-dim:     #7d8fa4;
+    --card-bg:      rgba(30, 40, 56, 0.75);
+    --card-border:  rgba(155, 203, 215, 0.18);
+    --card-title:   #aadcec;
+    --eyebrow:      #81a8b9;
+    --shadow:       0 6px 24px rgba(0, 0, 0, 0.35);
+    --accent-dim:   rgba(232, 168, 73, 0.12);
+    --accent-border: rgba(232, 168, 73, 0.35);
+  }
+
+  /* ── slide wrapper ──────────────────────────────────────────── */
+  .s17-wrap {
+    transform: scale(1.04);
+    transform-origin: center center;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 4rem 3rem 7rem;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    background-color: var(--bg-deep);
+    font-family: 'Sora', 'Noto Sans SC', sans-serif;
+    font-style: normal;
+    color: var(--text-primary);
+  }
+
+  /* ── header ─────────────────────────────────────────────────── */
+  .s17-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-style: normal;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--eyebrow);
+    margin-bottom: 0.55rem;
+    align-self: center;
+    text-align: center;
+  }
+
+  .s17-title {
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--text-primary);
+    margin: 0 0 0.3rem 0;
+    align-self: center;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .s17-subtitle {
+    font-size: clamp(0.88rem, 1.3vw, 1rem);
+    font-style: normal;
+    color: var(--text-dim);
+    margin: 0 0 1.6rem 0;
+    align-self: center;
+    text-align: center;
+  }
+
+  /* ── priority banner ─────────────────────────────────────────── */
+  .s17-priority-banner {
+    width: 100%;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-border);
+    border-radius: 0.6rem;
+    padding: 0.7rem 1.2rem;
+    margin-bottom: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-style: normal;
+    justify-content: center;
+  }
+
+  .s17-banner-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+
+  .s17-banner-text {
+    font-size: 0.88rem;
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── 3 signal cards grid ─────────────────────────────────────── */
+  .s17-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.2rem;
+    width: 100%;
+    min-width: 0;
+    align-items: stretch;
+  }
+
+  .s17-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-top: 3px solid var(--accent);
+    border-radius: 1rem;
+    padding: clamp(1rem, 1.6vw, 1.5rem);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    font-style: normal;
+    min-width: 0;
+    align-self: stretch;
+  }
+
+  .s17-card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+    opacity: 0.8;
+  }
+
+  .s17-signal-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1;
+  }
+
+  .s17-card-title {
+    font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .s17-card-desc {
+    font-size: clamp(0.8rem, 1.1vw, 0.88rem);
+    font-style: normal;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  /* ── action block ────────────────────────────────────────────── */
+  .s17-action {
+    background: rgba(155, 203, 215, 0.06);
+    border: 1px solid rgba(155, 203, 215, 0.14);
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.8rem;
+    font-style: normal;
+    margin-top: auto;
+  }
+
+  .s17-action-label {
+    font-size: 0.65rem;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 0.3rem;
+  }
+
+  .s17-action-text {
+    font-size: clamp(0.78rem, 1vw, 0.85rem);
+    font-style: normal;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  /* ── bottom note ─────────────────────────────────────────────── */
+  .s17-bottom-note {
+    margin-top: 1.6rem;
+    font-size: 0.82rem;
+    font-style: normal;
+    color: var(--text-dim);
+    text-align: center;
+    width: 100%;
+    line-height: 1.5;
+  }
+
+  .s17-bottom-note strong {
+    color: var(--primary);
+    font-style: normal;
+  }
+</style>
+
+<div class="slide s17-wrap" id="S017">
+  <!-- eyebrow -->
+  <div class="s17-eyebrow">能力二：读+想</div>
+
+  <!-- title block -->
+  <h1 class="s17-title">空白分析 gap：最该先看的</h1>
+  <p class="s17-subtitle">think 诚实告诉你还不知道什么——三类信号，先看缺口再看正文</p>
+
+  <!-- priority banner -->
+  <div class="s17-priority-banner">
+    <div class="s17-banner-icon">&#9888;</div>
+    <div class="s17-banner-text">think 输出末尾的 gap 分析才是差异化价值所在——正文告诉你"已知的"，gap 告诉你"未知的"</div>
+  </div>
+
+  <!-- 3 signal cards -->
+  <div class="s17-cards">
+
+    <!-- 信号一：过期信息 -->
+    <div class="s17-card">
+      <div class="s17-card-num">SIGNAL 01</div>
+      <div class="s17-signal-icon">&#128336;</div>
+      <div class="s17-card-title">过期信息</div>
+      <div class="s17-card-desc">某页数据上次更新已超过合理时效——比如半年前记录的融资进展，对方可能已完成新一轮或换了方向。GBrain 对照页面时间戳与当前日期标记此类风险。</div>
+      <div class="s17-action">
+        <div class="s17-action-label">你该做什么</div>
+        <div class="s17-action-text">去核实最新情况，别拿旧数据做决策；必要时重新 import 更新后的笔记</div>
+      </div>
+    </div>
+
+    <!-- 信号二：无引用论断 -->
+    <div class="s17-card">
+      <div class="s17-card-num">SIGNAL 02</div>
+      <div class="s17-signal-icon">&#9888;</div>
+      <div class="s17-card-title">无引用论断</div>
+      <div class="s17-card-desc">某个结论在答案中出现，却找不到对应的支撑页面——模型可能在"脑补"而非从知识库引用。这类论断没有 [citation] 标注，最容易被误认为有据可查的事实。</div>
+      <div class="s17-action">
+        <div class="s17-action-label">你该做什么</div>
+        <div class="s17-action-text">保持警惕，不要直接复用；若重要则回溯原始资料手动核实</div>
+      </div>
+    </div>
+
+    <!-- 信号三：自相矛盾 -->
+    <div class="s17-card">
+      <div class="s17-card-num">SIGNAL 03</div>
+      <div class="s17-signal-icon">&#8651;</div>
+      <div class="s17-card-title">自相矛盾</div>
+      <div class="s17-card-desc">两页笔记对同一事实描述不一致——例如 A 页说"已完成 A 轮"，B 页还标注"种子轮阶段"。GBrain 检测到冲突后在 gap 段诚实列出，不擅自选边站。</div>
+      <div class="s17-action">
+        <div class="s17-action-label">你该做什么</div>
+        <div class="s17-action-text">人工判断哪条更可信，或将两条都标为"存疑"，更新知识库后重跑</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- bottom note -->
+  <div class="s17-bottom-note">
+    养成习惯：<strong>先读末尾 gap 分析，再看正文综合答案</strong>。gap 数为 0 才是真的"安全出发"。
+  </div>
+</div>

@@ -1,0 +1,382 @@
+<style>
+/* S003 答案抖动 · 双答案对比+三层归因 · 🔴 交互 · G1 月白灰蓝 */
+/* FM 防御注释：font-style:normal 关键元素 ≥3 次显式声明 */
+/* window.slideHooks 注册交互逻辑，禁裸 <script>（innerHTML 不自动执行） */
+
+.s003-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  min-height: 75vh;
+  width: 100%;
+  max-width: 1640px;
+  padding: 2.4rem 4rem 2.4rem 7rem;
+  box-sizing: border-box;
+  font-style: normal; /* FM 防御 ①：wrap 层 */
+}
+
+/* 标题区（窄顶） */
+.s003-heading {
+  width: 100%;
+  max-width: 1120px;
+  text-align: center;
+}
+.s003-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: normal; /* FM 防御 ② */
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.s003-subtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+}
+
+/* 问题条（窄） */
+.s003-question-bar {
+  width: 100%;
+  max-width: 1120px;
+  background: rgba(110, 126, 140, 0.08);
+  border: 1.5px solid var(--card-border);
+  border-radius: 0.85rem;
+  padding: 0.9rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.s003-q-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  font-weight: 600;
+  font-style: normal; /* FM 防御 ③ */
+  color: var(--text-primary);
+  flex: 1;
+}
+.s003-q-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--secondary);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.s003-retry-btn {
+  background: var(--color-interpret);
+  color: var(--bg-surface);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.45rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-style: normal;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+.s003-retry-btn:hover { opacity: 0.85; transform: scale(1.03); }
+
+/* 双答案区（宽底） */
+.s003-answers {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.4rem;
+  align-items: stretch;
+}
+.s003-answer-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 0.95rem 1.15rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
+  transition: border-color 0.25s ease;
+}
+.s003-answer-card.a1 { border-color: rgba(110,140,136,0.25); }
+.s003-answer-card.a2 { border-color: rgba(183,150,131,0.25); }
+
+.s003-answer-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--card-border);
+}
+.s003-answer-label.a1 { color: var(--color-compile); }
+.s003-answer-label.a2 { color: var(--color-interpret); }
+
+.s003-answer-body {
+  font-family: var(--font-body);
+  font-size: clamp(0.82rem, 1.2vw, 0.92rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  flex: 1;
+}
+/* 高亮差异文字 */
+.s003-diff {
+  background: rgba(183,150,131,0.22);
+  border-radius: 0.2rem;
+  padding: 0 0.15rem;
+  color: var(--color-interpret);
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+.s003-diff.hidden { background: transparent; color: inherit; font-weight: inherit; }
+
+/* 初始状态：第二答案隐藏，等待点击 */
+.s003-answer-card.a2.waiting {
+  opacity: 0.3;
+  filter: blur(2px);
+  pointer-events: none;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+.s003-answer-card.a2.revealed {
+  opacity: 1;
+  filter: none;
+  border-color: rgba(183,150,131,0.5);
+}
+
+/* 点击提示 */
+.s003-hint {
+  font-size: 0.8rem;
+  font-style: normal;
+  color: var(--text-dim);
+  text-align: center;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+.s003-hint.hidden { opacity: 0; }
+
+/* 三层归因（宽底，卡片） */
+.s003-layers {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2.2rem;
+  align-items: stretch;
+}
+.s003-layer-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.85rem;
+  padding: 0.7rem 0.9rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  align-self: stretch;
+}
+.s003-layer-num {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-style: normal;
+}
+.s003-layer-num.l1 { color: var(--color-compile); }
+.s003-layer-num.l2 { color: var(--color-interpret); }
+.s003-layer-num.l3 { color: var(--secondary); }
+.s003-layer-name {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-weight: 700;
+  font-style: normal;
+  color: var(--text-primary);
+}
+.s003-layer-desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 0.15rem;
+}
+.s003-layer-example {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  font-style: normal;
+  color: var(--text-dim);
+  background: rgba(110,126,140,0.08);
+  border-radius: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  margin-top: 0.2rem;
+}
+
+/* 底部红线结论（窄） */
+.s003-conclusion {
+  width: 100%;
+  max-width: 1120px;
+  background: rgba(183,150,131,0.08);
+  border: 1px solid rgba(183,150,131,0.3);
+  border-radius: 0.65rem;
+  padding: 0.75rem 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+.s003-conclusion-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.s003-conclusion-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 1.2vw, 1rem);
+  font-style: normal;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  text-align: center;
+}
+.s003-conclusion-text strong {
+  color: var(--color-interpret);
+  font-weight: 700;
+}
+
+/* 入场动画 */
+.s003-heading    { animation: s003Up 0.4s ease both 0ms; }
+.s003-question-bar { animation: s003Up 0.4s ease both 50ms; }
+.s003-answers    { animation: s003Up 0.4s ease both 100ms; }
+.s003-hint       { animation: s003Up 0.4s ease both 130ms; }
+.s003-layers     { animation: s003Up 0.4s ease both 160ms; }
+.s003-conclusion { animation: s003Up 0.4s ease both 200ms; }
+@keyframes s003Up {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="slide" data-slide="3">
+  <div class="s003-wrap">
+
+    <!-- 标题（窄顶） -->
+    <div class="s003-heading">
+      <h2 class="s003-title">答案抖动：生成层的随机，两种范式都有</h2>
+      <p class="s003-subtitle">点「再问一次」——看同一个问题如何给出两份不同的回答</p>
+    </div>
+
+    <!-- 问题 + 按钮（窄） -->
+    <div class="s003-question-bar">
+      <span class="s003-q-label">用户提问</span>
+      <span class="s003-q-text">「编译式 RAG 的核心优势是什么？请简要说明。」</span>
+      <button class="s003-retry-btn" id="s003-retry-btn">再问一次</button>
+    </div>
+
+    <!-- 双答案（宽） -->
+    <div class="s003-answers">
+      <!-- 第一次回答 -->
+      <div class="s003-answer-card a1">
+        <div class="s003-answer-label a1">第一次回答</div>
+        <div class="s003-answer-body">
+          编译式 RAG 的核心优势在于<span class="s003-diff">将知识预先编译为结构化 wiki</span>，避免每次查询重复消化原始资料。
+          查询时直接命中已提炼的产物，
+          <span class="s003-diff">跨源合成质量更高、结论更稳定</span>，
+          且产物人类可读、可审计。适合知识稳定、需要跨源对齐的场景。
+        </div>
+      </div>
+      <!-- 第二次回答（初始模糊等待） -->
+      <div class="s003-answer-card a2 waiting" id="s003-a2">
+        <div class="s003-answer-label a2">第二次回答</div>
+        <div class="s003-answer-body">
+          编译式 RAG 的主要价值在于<span class="s003-diff">一次编译、长期复用</span>，降低了查询期的重复消化成本。
+          它把知识固化成
+          <span class="s003-diff">可持续维护的互链 wiki</span>，
+          让 agent 查询时无需重读原始文档，
+          从而提升回答的<span class="s003-diff">一致性与可追溯性</span>。
+        </div>
+      </div>
+    </div>
+
+    <!-- 等待提示 -->
+    <div class="s003-hint" id="s003-hint">点「再问一次」，第二次回答与第一次有细微出入——三层随机源各自贡献了一点「抖动」</div>
+
+    <!-- 三层归因（宽） -->
+    <div class="s003-layers">
+      <div class="s003-layer-card">
+        <div class="s003-layer-num l1">层 1 · 检索召回</div>
+        <div class="s003-layer-name">检索有随机性</div>
+        <div class="s003-layer-desc">向量相似度前 k 名的排列每次略有差异，捞到的片段集合不完全相同，导致「素材池」第一步就不同了</div>
+        <div class="s003-layer-example">相关片段 A / B / C → 下次变成 A / B / D</div>
+      </div>
+      <div class="s003-layer-card">
+        <div class="s003-layer-num l2">层 2 · 片段排序</div>
+        <div class="s003-layer-name">排序有随机性</div>
+        <div class="s003-layer-desc">检索结果在拼入 prompt 时的顺序影响模型的注意力分布，相同片段排序不同往往得到不同侧重的回答</div>
+        <div class="s003-layer-example">片段 A→B→C 与 C→A→B 引发不同的回答侧重</div>
+      </div>
+      <div class="s003-layer-card">
+        <div class="s003-layer-num l3">层 3 · 模型生成</div>
+        <div class="s003-layer-name">生成有随机性</div>
+        <div class="s003-layer-desc">LLM 的 temperature&gt;0 使得相同 prompt 每次采样路径略异，措辞、结论侧重、引用选择都会漂移</div>
+        <div class="s003-layer-example">「核心优势」被归纳为「复利资产」vs「消化效率」</div>
+      </div>
+    </div>
+
+    <!-- 结论（窄） -->
+    <div class="s003-conclusion">
+      <span class="s003-conclusion-icon">&#9888;</span>
+      <div class="s003-conclusion-text">
+        答案抖动主要来自<strong>生成层的随机性</strong>，只在需要模型当场归纳的开放问题上显现。
+        它是两种范式<strong>共有</strong>的现象，与中间产物是机器索引还是 wiki 无关——编译式查询同样会有措辞漂移。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// S003 交互逻辑：window.slideHooks 注册，innerHTML 注入后由 main.js 提取执行
+window.slideHooks = window.slideHooks || {};
+window.slideHooks['slides/S003-answer-jitter.html'] = function() {
+  var btn = document.getElementById('s003-retry-btn');
+  var a2  = document.getElementById('s003-a2');
+  var hint = document.getElementById('s003-hint');
+  var clicked = false;
+
+  function onRetry() {
+    if (!clicked) {
+      // 第一次点击：揭示第二次回答
+      clicked = true;
+      a2.classList.remove('waiting');
+      a2.classList.add('revealed');
+      hint.classList.remove('hidden');
+      btn.textContent = '高亮差异';
+    } else {
+      // 后续点击：切换差异高亮
+      var diffs = document.querySelectorAll('#s003-a2 .s003-diff');
+      var isHidden = diffs[0] && diffs[0].classList.contains('hidden');
+      diffs.forEach(function(d) {
+        if (isHidden) { d.classList.remove('hidden'); }
+        else { d.classList.add('hidden'); }
+      });
+      btn.textContent = isHidden ? '隐藏差异' : '高亮差异';
+    }
+  }
+
+  if (btn) { btn.addEventListener('click', onRetry); }
+
+  // cleanup
+  return function() {
+    if (btn) { btn.removeEventListener('click', onRetry); }
+  };
+};
+</script>
